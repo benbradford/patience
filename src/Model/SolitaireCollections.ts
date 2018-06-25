@@ -22,11 +22,7 @@ enum SolitairePiles {
 
 export default class SolitaireCollections {
 
-    private table: CardTable;
-
-    constructor() {
-        this.table = new CardTable(SolitairePiles.Max);
-    }
+    private table: CardTable = new CardTable(SolitairePiles.Max);
 
     public deck(): CardCollection {
         let collection = this.table.collection(this.deck_index());

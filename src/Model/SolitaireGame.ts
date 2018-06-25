@@ -11,7 +11,6 @@ import CardActionExecutor from '../Model/Cards/CardActionExecutor';
 
 export default class SolitaireGame {
 
-    private collections: SolitaireCollections;
     private moveCard: MoveCardCommand;
     private nextCard: NextCardCommand;
     private moveMany: MoveManyCardsCommand;
@@ -25,7 +24,7 @@ export default class SolitaireGame {
         initialiser.card_shuffler().shuffle(this.cards);
         
         for (const card of this.cards) {
-            this.collections.deck().push(card);
+            collections.deck().push(card);
         }
 
         this.moveCard = moveCard;
@@ -49,29 +48,4 @@ export default class SolitaireGame {
     public card_executor() : CardActionExecutor {
         return this.cardExecutor;
     }
-/*
-    public turn_next(): Card  | null {
-        const card = this.table.deck_collection().peek();
-        if (card === null) {
-            return null;
-        }   
-        return card.move_to(this.table.turn_collection()).turn();
-    }
-
-    public replace_deck_from_turn() {
-        while (this.table.turn_collection().is_empty() === false) {
-            const card = this.table.turn_collection().peek();
-            if (card !== null) {
-                card.move_to(this.table.deck_collection());
-                card.turn();
-            }
-        }
-    }
-
-    public has_cards_in_deck(): boolean {
-        return this.table.deck_collection().is_empty() === false;
-    }
-
-    
-    */
 }
