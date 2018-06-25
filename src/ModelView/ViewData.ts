@@ -1,11 +1,14 @@
-import {Suit, Face, Turned} from '../Model/Cards/Card'
+import {Suit, Face} from '../Model/Cards/Card'
 
-interface ICardViewData {
+export interface ICardViewData {
     suit : Suit;
     face : Face;
-    turned : Turned;
+    turned : boolean;
+    collection : string;
 }
 
-interface IViewData {
+export interface IViewData {
     cards : ICardViewData;
+    canRedo: boolean;
+    canUndo: boolean;
 }

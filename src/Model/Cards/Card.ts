@@ -16,42 +16,32 @@ export enum Face {
     ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king
 }
 
-export enum Turned {
-    up,
-    down,
-}
 export class Card {
     
     public readonly suit: Suit;
     public readonly face: Face;
+    public readonly colour: Colour;
     public collection : CardCollection | undefined;
-    private turned: Turned;
+    private facingUp: boolean;
     
-    constructor(suit: Suit, face: Face, turned: Turned) {
+    constructor(suit: Suit, face: Face, facingUp : boolean = false) {
         this.suit = suit;
         this.face = face;
-        this.turned = turned;
+        this.facingUp = facingUp;
         this.collection = undefined;
+        if (this.suit === Suit.hearts || this.suit === Suit.diamonds) {
+            this.colour = Colour.red;
+        } else {
+            this.colour = Colour.black;
+        }
     }
 
     public is_turned_up(): boolean {
-        return this.turned === Turned.up;
+        return this.facingUp;
     }
 
-    public turn(): Card {
-        if (this.is_turned_up()) {
-            this.turned = Turned.down;
-        } else {
-            this.turned = Turned.up;
-        }
-        return this;
-    }
-
-    public colour(): Colour {
-        if (this.suit === Suit.hearts || this.suit === Suit.diamonds) {
-            return Colour.red;
-        }
-        return Colour.black;
+    public turn() {
+        this.facingUp = !this.facingUp;
     }
 
     public validate(): boolean {

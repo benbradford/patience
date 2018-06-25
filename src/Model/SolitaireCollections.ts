@@ -20,49 +20,38 @@ enum SolitairePiles {
     Max
 }
 
+type ScoreIndex = 0 | 1 | 2 | 3;
+type HoldIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
 export default class SolitaireCollections {
 
-    private table: CardTable = new CardTable(SolitairePiles.Max);
+    private table: CardTable<SolitairePiles.Max> = new CardTable(SolitairePiles.Max);
 
     public deck(): CardCollection {
-        let collection = this.table.collection(this.deck_index());
-        if (!collection) {
-            throw Error("no deck");
-        }
+        const collection = this.table.collection(SolitairePiles.Deck as number);
         return collection;
     }
 
     public turned(): CardCollection {
-        let collection = this.table.collection(this.turned_index());
-        if (!collection) {
-            throw Error("no turned");
-        }
+        const collection = this.table.collection(SolitairePiles.Turned as number);
         return collection;
     }
 
-    public hold(index: number): CardCollection | null {
-        const adjustedIndex = this.hold_index(index);
-        if (!adjustedIndex) {
-            return null;
-        }
-        return this.table.collection(adjustedIndex);
+    public hold(index: HoldIndex): CardCollection {
+        const adjustedIndex = SolitairePiles.Hold0 + index; 
+        const collection = this.table.collection(adjustedIndex);
+        return collection;
     }
 
-    public score(index: number): CardCollection | null {
-        const adjustedIndex = this.score_index(index);
-        if (!adjustedIndex) {
-            return null;
-        }
-        return this.table.collection(adjustedIndex);
+    public score(index: ScoreIndex): CardCollection {
+        const adjustedIndex = SolitairePiles.Score0 + index;
+        const collection = this.table.collection(adjustedIndex);
+        return collection;
     }
 
     public is_hold(collection: CardCollection): boolean {
-        const minHold = this.hold_index(0);
-        const maxHold = this.hold_index(7);
-        if (!minHold || !maxHold) {
-            throw Error("invalid hold");
-        }
-        for (let i = minHold; i && i  < maxHold; ++i) {
+        const valid : HoldIndex[] = [0, 1, 2, 3, 4, 5, 6, 7];
+        for (const i of valid) {
             if (collection === this.hold(i)) {
                 return true;
             }
@@ -71,38 +60,12 @@ export default class SolitaireCollections {
     }
 
     public is_score(collection: CardCollection): boolean {
-        const minScore = this.score_index(0);
-        const maxScore = this.score_index(4);
-        if (!minScore || !maxScore) {
-            throw Error("invalid score");
-        }
-        for (let i = minScore; i && i  < maxScore; ++i) {
+        const valid : ScoreIndex[] = [0, 1, 2, 3];
+        for (const i of valid) {
             if (collection === this.score(i)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private deck_index(): number {
-        return SolitairePiles.Deck;
-    }
-
-    private turned_index(): number {
-        return SolitairePiles.Turned;
-    }
-
-    private hold_index(index: number): number | null {
-        if (index >= 7) {
-            return null;
-        }
-        return SolitairePiles.Hold0 + index;
-    }
-
-    private score_index(index: number): number | null {
-        if (index >= 4) {
-            return null;
-        }
-        return SolitairePiles.Score0 + index;
     }
 }

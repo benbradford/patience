@@ -19,15 +19,15 @@ export default class MoveManyCardsCommand implements ICardCommand {
         if (this.collections.is_score(action.collection1) || this.collections.is_score(action.collection2)) {
             return false;
         }
-        if (action.collection1.contains(action.card) == false) {
+        if (action.collection1.contains(action.card) === false) {
             return false;
         }
-        if (action.card.is_turned_up() == false) {
+        if (action.card.is_turned_up() === false) {
             return false;
         }
         const dest = action.collection2.peek();
         if (!dest) {
-            if (this.collections.is_hold(action.collection2) && action.card.face != Face.king) {
+            if (this.collections.is_hold(action.collection2) && action.card.face !== Face.king) {
                 return false;
             }
         } else {
@@ -67,7 +67,7 @@ export default class MoveManyCardsCommand implements ICardCommand {
                 throw Error("cannot pop in moveMany");
             }
             tmp.push(c);
-            if (c == target) {
+            if (c === target) {
                 break;
             }
         }

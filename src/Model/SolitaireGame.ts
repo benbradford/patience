@@ -4,20 +4,20 @@ import SolitaireCollections from './SolitaireCollections'
 import CardInitialiser from './CardInitialiser'
 import CardCollection from './Cards/CardCollection';
 import MoveCardCommand from './Command/MoveCardCommand'
-import MoveManyCardsCommand from './Command/MoveCardCommand'
-import NextCardCommand from './Command/MoveCardCommand'
+import MoveManyCardsCommand from './Command/MoveManyCardsCommand'
+import NextCardCommand from './Command/NextCardCommand'
 import CardAction from '../Model/Cards/CardAction';
 import CardActionExecutor from '../Model/Cards/CardActionExecutor';
 
 export default class SolitaireGame {
 
+    public readonly cards: Card[];
+    
     private moveCard: MoveCardCommand;
     private nextCard: NextCardCommand;
     private moveMany: MoveManyCardsCommand;
 
     private cardExecutor: CardActionExecutor;
-
-    public readonly cards: Card[];
 
     constructor(collections: SolitaireCollections, initialiser: CardInitialiser, moveCard: MoveCardCommand, nextCard: NextCardCommand, moveMany: MoveManyCardsCommand) {
         this.cards = initialiser.deck_maker().make_full_deck();

@@ -1,8 +1,8 @@
-import {Card, Suit, Face, Turned} from '../Card'
+import {Card, Suit, Face} from '../Card'
 import CardCollection from '../CardCollection'
 
 function make_arbitrary_card() : Card {
-    return new Card(Suit.clubs, Face.ace, Turned.down);
+    return new Card(Suit.clubs, Face.ace);
 }
 
 function make_cards_and_add_to_collection(num : number, collection : CardCollection) : Card[] {
@@ -16,12 +16,12 @@ function make_cards_and_add_to_collection(num : number, collection : CardCollect
 
 it('WHEN empty construction of collection THEN collection is empty', () => {
     const collection = new CardCollection();
-    expect(collection.is_empty());
+    expect(collection.is_empty()).toBeTruthy();
 });
 
 it ('GIVEN empty collection, WHEN attemping to remove THEN null returned', () => {
     const collection = new CardCollection();
-    expect(collection.remove(0) == null);
+    expect(collection.remove(0)).toEqual(null);
 
     const card = make_arbitrary_card();
 
@@ -32,10 +32,10 @@ it('GIVEN empty collection, WHEN adding a card THEN card has new collection set'
     const collection = new CardCollection();
     const card = make_arbitrary_card();
     collection.push(card);
-    expect(collection.contains(card));
+    expect(collection.contains(card)).toBeTruthy();
     expect(card.collection).toEqual(collection);
-    expect(card.validate());
-    expect(collection.validate());
+    expect(card.validate()).toBeTruthy();
+    expect(collection.validate()).toBeTruthy();
 });
 
 it ('WHEN adding a card to a collection, THEN card collection is set', () =>{
@@ -53,7 +53,7 @@ it ('GIVEN collection with card, WHEN attempting to add to another collection, T
 
     expect(collection2.push(card)).toEqual(null);
     expect(collection2.contains(card)).toEqual(false);
-    expect(collection1.contains(card));
+    expect(collection1.contains(card)).toBeTruthy();
 });
 
 it ('GIVEN empty collection, WHEN pushing and removing from top THEN peek always returns top', () => {
@@ -63,10 +63,10 @@ it ('GIVEN empty collection, WHEN pushing and removing from top THEN peek always
     const card3 = make_arbitrary_card();
 
     const validate = () =>  {
-        expect(collection.validate());
-        expect(card1.validate());
-        expect(card2.validate());
-        expect(card3.validate());
+        expect(collection.validate()).toBeTruthy();
+        expect(card1.validate()).toBeTruthy();
+        expect(card2.validate()).toBeTruthy();
+        expect(card3.validate()).toBeTruthy();
     };
 
     validate();
@@ -104,10 +104,10 @@ it('GIVEN collection filled with cards, WHEN peeking from top, THEN returns corr
     const collection = new CardCollection();
     const cards = make_cards_and_add_to_collection(20, collection);
     for (let k = 20; k > -1; --k) {
-        expect(collection.size() === k);
-        expect(collection.peek(k) === null);
+        expect(collection.size()).toEqual(k);
+        expect(collection.peek(k)).toEqual(null);
         for (let i = 0; i < k; ++i) {
-            expect(collection.peek(i) === cards[k-1-i]);
+            expect(collection.peek(i)).toEqual(cards[k-1-i]);
         }
         collection.remove(0);
     }
@@ -122,8 +122,8 @@ it ('GIVEN collection with cards, WHEN attempting to remove card that does not e
     expect(collection.remove_card(cards[5]) === null);
 
     for (let i = 0; i < 4; ++i) {
-        expect(collection.peek() === cards[9-i]);
-        expect(collection.remove_card(cards[9-i]));
+        expect(collection.peek()).toEqual(cards[9-i]);
+        expect(collection.remove_card(cards[9-i])).toBeTruthy();
     }
 
     expect(collection.validate());
@@ -134,8 +134,8 @@ it ('GIVEN collection with cards, WHEN attempting to remove card that does not e
 
     for (let i = 9; i >-1; --i) {
         collection.remove_card(cards[i]);
-        expect(cards[i].validate());
+        expect(cards[i].validate()).toBeTruthy();
     }
 
-    expect(collection.validate());
+    expect(collection.validate()).toBeTruthy();
 });

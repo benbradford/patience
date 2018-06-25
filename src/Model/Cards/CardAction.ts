@@ -8,7 +8,7 @@ export default class CardAction {
     public collection2: CardCollection | undefined;
     public command: ICardCommand;
 
-    constructor(command: ICardCommand, card: Card | undefined = undefined, collection1: CardCollection | undefined = undefined, collection2: CardCollection | undefined = undefined) {
+    constructor(command: ICardCommand, card?: Card, collection1?: CardCollection, collection2?: CardCollection) {
         this.command = command;
         this.card = card;
         this.collection1 = collection1;

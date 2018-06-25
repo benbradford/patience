@@ -2,9 +2,18 @@ import * as React from 'react';
 import './App.css';
 
 import logo from './logo.svg';
+// import { IViewData, ICardViewData } from './ModelView/ViewData';
 
 class App extends React.Component {
   public render() {
+    /* const data : IViewData = {
+       cards: [new ICardViewData{
+
+        } ],
+       canRedo: false,
+       canUndo: false,
+    };
+    data.canRedo = true; */
     return (
       <div className="App">
         <header className="App-header">

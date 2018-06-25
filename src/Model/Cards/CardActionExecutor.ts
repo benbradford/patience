@@ -26,7 +26,7 @@ export default class CardActionExecutor {
     }
 
     public undo(): boolean {
-        if (this.can_undo() == false) {
+        if (this.can_undo() === false) {
             return false;
         }
         const action = this.executed.pop();
@@ -38,18 +38,18 @@ export default class CardActionExecutor {
     }
 
     public redo(): boolean {
-        if (this.can_redo() == false) {
+        if (this.can_redo() === false) {
             return false;
         }
-        let action = this.undone[this.undone.length-1];
+        const action = this.undone[this.undone.length-1];
         if (!action) {
             return false;
         }
-        if (action.command.can_execute(action) == false) {
+        if (action.command.can_execute(action) === false) {
             return false;
         }
         const result = action.command.execute(action);
-        if (result == false) {
+        if (result === false) {
             return false;
         }
         this.undone.pop();     

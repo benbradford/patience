@@ -16,19 +16,19 @@ export default class MoveCardCommand implements ICardCommand {
             return false;
         }
 
-        if (action.collection1.peek() != action.card) {
+        if (action.collection1.peek() !== action.card) {
             return false;
         }
-        if (action.card.is_turned_up() == false) {
+        if (!action.card.is_turned_up()) {
             return false;
         }
         const dest = action.collection2.peek();
 
         if (!dest) {
-            if (this.collections.is_hold(action.collection2) && action.card.face != Face.king) {
+            if (this.collections.is_hold(action.collection2) && action.card.face !== Face.king) {
                 return false;
             }
-            if (this.collections.is_score(action.collection2) && action.card.face != Face.ace) {
+            if (this.collections.is_score(action.collection2) && action.card.face !== Face.ace) {
                 return false;
             }
         }
@@ -47,6 +47,8 @@ export default class MoveCardCommand implements ICardCommand {
                 if (dest.face !== action.card.face-1) {
                     return false;
                 }
+            } else {
+                return false;
             }
         }
         return true;
