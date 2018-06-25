@@ -1,7 +1,7 @@
 import DeckMaker from './Cards/DeckMaker'
 import CardShuffler from './Cards/CardShuffler'
 
-export default class CardManipulator {
+export default class CardInitialiser {
 
     private deckMaker : DeckMaker;
     private shuffler : CardShuffler;

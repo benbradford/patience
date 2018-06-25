@@ -7,6 +7,11 @@ export enum Suit {
     diamonds
 }
 
+export enum Colour {
+    red,
+    black
+}
+
 export enum Face {
     ace, two, three, four, five, six, seven, eight, nine, ten, jack, queen, king
 }
@@ -22,7 +27,7 @@ export class Card {
     public collection : CardCollection | undefined;
     private turned: Turned;
     
-    constructor(suit : Suit, face : Face, turned : Turned) {
+    constructor(suit: Suit, face: Face, turned: Turned) {
         this.suit = suit;
         this.face = face;
         this.turned = turned;
@@ -40,6 +45,13 @@ export class Card {
             this.turned = Turned.up;
         }
         return this;
+    }
+
+    public colour(): Colour {
+        if (this.suit === Suit.hearts || this.suit === Suit.diamonds) {
+            return Colour.red;
+        }
+        return Colour.black;
     }
 
     public validate(): boolean {

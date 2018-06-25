@@ -1,21 +1,53 @@
-import Table from './Table'
-import {Card} from './Cards/Card'
 
-import CardManipulator from './CardManipulator'
+import {Card} from './Cards/Card'
+import SolitaireCollections from './SolitaireCollections'
+import CardInitialiser from './CardInitialiser'
+import CardCollection from './Cards/CardCollection';
+import MoveCardCommand from './Command/MoveCardCommand'
+import MoveManyCardsCommand from './Command/MoveCardCommand'
+import NextCardCommand from './Command/MoveCardCommand'
+import CardAction from '../Model/Cards/CardAction';
+import CardActionExecutor from '../Model/Cards/CardActionExecutor';
 
 export default class SolitaireGame {
 
-    private table : Table;
-    private readonly cards : Card[];
+    private collections: SolitaireCollections;
+    private moveCard: MoveCardCommand;
+    private nextCard: NextCardCommand;
+    private moveMany: MoveManyCardsCommand;
 
-    constructor(table : Table, manipulator : CardManipulator) {
-        this.table = table;
-        this.cards = manipulator.deck_maker().make_full_deck();
+    private cardExecutor: CardActionExecutor;
 
-        manipulator.card_shuffler().shuffle(this.cards);
+    public readonly cards: Card[];
+
+    constructor(collections: SolitaireCollections, initialiser: CardInitialiser, moveCard: MoveCardCommand, nextCard: NextCardCommand, moveMany: MoveManyCardsCommand) {
+        this.cards = initialiser.deck_maker().make_full_deck();
+        initialiser.card_shuffler().shuffle(this.cards);
+        
         for (const card of this.cards) {
-            this.table.deck_collection().push(card);
+            this.collections.deck().push(card);
         }
+
+        this.moveCard = moveCard;
+        this.nextCard = nextCard;
+        this.moveMany = moveMany;
+        this.cardExecutor = new CardActionExecutor();
+    }
+
+    public move(card: Card, to: CardCollection): boolean {
+        return this.cardExecutor.attempt(new CardAction(this.moveCard, card, card.collection, to));
+    }
+
+    public next() : boolean {
+        return this.cardExecutor.attempt(new CardAction(this.nextCard));
+    }
+
+    public move_many(card: Card, to: CardCollection): boolean {
+        return this.cardExecutor.attempt(new CardAction(this.moveMany, card, card.collection, to));
+    }
+
+    public card_executor() : CardActionExecutor {
+        return this.cardExecutor;
     }
 /*
     public turn_next(): Card  | null {
@@ -40,28 +72,6 @@ export default class SolitaireGame {
         return this.table.deck_collection().is_empty() === false;
     }
 
-    private setUpTable(): boolean {
-        const deck = this.table.deck_collection();
-        deck.shuffle();
-
-        for (let i = 0; i < 7; ++i) {
-            const faceUpCard = this.table.deck_collection().remove();
-            const holdCardCollection = this.table.hold_collection(i);
-            if (faceUpCard === null || holdCardCollection === null)  {
-                return false;
-            }
-            faceUpCard.turn();
-            holdCardCollection.push(faceUpCard);
-            for (let j=i+1; j < 7; ++j) {
-                const card = deck.remove();
-                if (card === null) {
-                    return false;
-                }
-                holdCardCollection.push(card);
-            }
-        }
-
-        return true;
-    }
+    
     */
 }
