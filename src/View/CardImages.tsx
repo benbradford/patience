@@ -1,7 +1,6 @@
 
-import {Suit, Face} from '../Model/Cards/Card'
 
-const images = [
+export const cardImages = [
     require('../Asset/Classic/c01.png'),
     require('../Asset/Classic/c02.png'),
     require('../Asset/Classic/c03.png'),
@@ -56,17 +55,7 @@ const images = [
     require('../Asset/Classic/h10.png'),
     require('../Asset/Classic/h11.png'),
     require('../Asset/Classic/h12.png'),
-    require('../Asset/Classic/h13.png')
-];
+    require('../Asset/Classic/h13.png'),
 
-export function card_image(s : Suit, f : Face) {
-    let indexStart = 0;
-    if (s === Suit.spades) {
-        indexStart = 13;
-    } else if (s === Suit.diamonds) {
-        indexStart = 26;
-    } else if (s === Suit.hearts) {
-        indexStart = 39;
-    }
-    return images[indexStart + f];
-}
+    require('../Asset/Backs/Card-Back-01.png')
+];
