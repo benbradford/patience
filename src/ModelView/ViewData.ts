@@ -6,9 +6,3 @@ export interface ICardViewData {
     turned : boolean;
     collection : string;
 }
-
-export interface IViewData {
-    cards : ICardViewData[];
-    canRedo: boolean;
-    canUndo: boolean;
-}
