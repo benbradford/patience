@@ -15,61 +15,119 @@ interface IHoldPileView {
 
 export default class CardTableView extends React.Component<{}, {}>{
 
-    private pile : IHoldPileView = {
-        cards: [
-            {
-                suit : Suit.clubs,
-                face : Face.ace,
-                turnedUp : false
-            },
-            {
-                suit : Suit.clubs,
-                face : Face.king,
-                turnedUp : false,
-            },
-            {
-                suit : Suit.hearts,
-                face : Face.jack,
-                turnedUp : true,
-            },
-            {
-                suit : Suit.spades,
-                face : Face.ten,
-                turnedUp : true,
-            },
-            {
-                suit : Suit.diamonds,
-                face : Face.nine,
-                turnedUp : true,
-            },
-            {
-                suit : Suit.clubs,
-                face : Face.seven,
-                turnedUp : true,
-            }   
-        ]
-    }
+
+    private piles : IHoldPileView[] = [];
 
     private dragging : IHoldPileView = {cards: []};
     private dragX = 0;
     private dragY = 0;
+    private draggedFromPile : IHoldPileView | null = null;
 
-    public render() {         
+    private readonly cardWidth = "120px";
+    private readonly cardLength = " 160px";
+    private readonly previewLength = " 30px";
+
+    constructor(a: any, b: any) {
+        super(a,b);
+        const p0 : IHoldPileView = {
+            cards: [
+                {
+                    suit : Suit.clubs,
+                    face : Face.ace,
+                    turnedUp : false
+                },
+                {
+                    suit : Suit.clubs,
+                    face : Face.king,
+                    turnedUp : false,
+                },
+                {
+                    suit : Suit.hearts,
+                    face : Face.jack,
+                    turnedUp : true,
+                },
+                {
+                    suit : Suit.spades,
+                    face : Face.ten,
+                    turnedUp : true,
+                },
+                {
+                    suit : Suit.diamonds,
+                    face : Face.nine,
+                    turnedUp : true,
+                }  
+            ]
+        }
+    
+       const p1 : IHoldPileView = {
+            cards: [
+                {
+                    suit : Suit.clubs,
+                    face : Face.ace,
+                    turnedUp : false
+                },
+                {
+                    suit : Suit.clubs,
+                    face : Face.king,
+                    turnedUp : false,
+                },
+                {
+                    suit : Suit.hearts,
+                    face : Face.jack,
+                    turnedUp : true,
+                },
+                {
+                    suit : Suit.spades,
+                    face : Face.ten,
+                    turnedUp : true,
+                },
+                {
+                    suit : Suit.diamonds,
+                    face : Face.nine,
+                    turnedUp : true,
+                },
+                {
+                    suit : Suit.clubs,
+                    face : Face.seven,
+                    turnedUp : true,
+                }   
+            ]
+        } 
+
+        const p2 : IHoldPileView = {
+            cards: [
+                {
+                    suit : Suit.hearts,
+                    face : Face.three,
+                    turnedUp : false
+                }
+            ]
+        };
+        this.piles.push(p0);
+        this.piles.push(p1);
+        this.piles.push(p2);
+        this.piles.push({cards:[]});
+    }
+    public render(): JSX.Element {     
+  
         return (
-            <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} className="Table">   
+            <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                 {this.dragX} - {this.dragY}   
-                {this.render_drag()}        
-                {this.render_pile()}
+                
+                {this.piles.map(pile => this.render_pile(pile))}                 
+                
+                {this.render_drag()}     
+                
             </div>
         );
     }
 
-    private render_drag() {
+    private render_drag(): JSX.Element {
         if (this.dragging.cards.length === 0) {
-            return;
+            return (<p />);
         }
         return (
-            <table className="PileTable" > 
+            <table className="DragTable" > 
               <section style={this.drag_style()} className="Dragging">
 
                 {this.dragging.cards.map( card => this.render_card(this.dragging, card))}
@@ -78,15 +136,26 @@ export default class CardTableView extends React.Component<{}, {}>{
         )
     }
 
-    private render_pile() : any {
+    private render_pile(pile : IHoldPileView): JSX.Element{
+        if (pile.cards.length === 0) {
+            return (
+                <section>
+                 <div className="PileDiv">
+                    <section style={this.empty_style()} />
+                 </div>
+                </section>
+            )
+        }
         return (
-            <table className="PileTable"> 
-              {this.pile.cards.map( card => this.render_card(this.pile, card))}
-            </table>
+            <section>
+             <div className="PileDiv">
+              {pile.cards.map( card => this.render_card(pile, card))}
+             </div>
+            </section>
         )
     }
 
-    private render_card(pile: IHoldPileView, card : ICardView) {
+    private render_card(pile: IHoldPileView, card : ICardView): JSX.Element {
 
         let s = this.piled_style(card);
 
@@ -97,7 +166,7 @@ export default class CardTableView extends React.Component<{}, {}>{
         const f = () => { this.handleMouseDown(card); };
 
         return (       
-            <tr className="PileTR">
+            <tr>
                 <section style={s} onMouseDown={f}/> 
             </tr>
         );
@@ -106,9 +175,9 @@ export default class CardTableView extends React.Component<{}, {}>{
     private piled_style(card : ICardView) {
         const img = this.card_image(card);  
         return {
-            width: "150px",
-            height: "70px",
-            backgroundSize: "150px 200px",
+            width: this.cardWidth,
+            height: this.previewLength,
+            backgroundSize: this.cardWidth + this.cardLength,
             backgroundImage: "url(" + img + ")",
             padding:"0",
             margin:"0"
@@ -118,13 +187,23 @@ export default class CardTableView extends React.Component<{}, {}>{
     private front_style(card : ICardView) {
         const img = this.card_image(card);  
         return {
-            width: "150px",
-            height: "200px",
-            backgroundSize: "150px 200px",
+            width: this.cardWidth,
+            height: this.cardLength,
+            backgroundSize: this.cardWidth + this.cardLength,
             backgroundImage: "url(" + img + ")",
             padding:"0",
             margin:"0"
           };     
+    }
+
+    private empty_style() {
+        return {
+            width: this.cardWidth,
+            height: this.cardLength,
+            borderColor: "black",
+            border: "solid"
+
+        }
     }
 
     private drag_style() {
@@ -152,20 +231,26 @@ export default class CardTableView extends React.Component<{}, {}>{
 
     private handleMouseDown = (card : ICardView) => {
         let fromIndex = -1;
-       for (let i = 0; i < this.pile.cards.length; ++i) {
-           if (this.pile.cards[i] === card) {
-                fromIndex = i;
-                break;
-           }
-       }
+        let pile : IHoldPileView | null = null;
 
-       if (fromIndex === -1) {
+        for (const p of this.piles) {
+           
+            for (let i = 0; i < p.cards.length; ++i) {
+                if (p.cards[i] === card) {
+                    fromIndex = i;
+                    pile = p;
+                    break;
+                }
+            }
+        }
+
+       if (fromIndex === -1 || pile === null) {
            return;
        }
 
-       this.dragging.cards = this.pile.cards.slice(fromIndex, this.pile.cards.length);
-   
-       this.pile.cards.splice(fromIndex, this.pile.cards.length-fromIndex);
+       this.dragging.cards = pile.cards.slice(fromIndex, pile.cards.length);
+       this.draggedFromPile = pile;
+       pile.cards.splice(fromIndex, pile.cards.length-fromIndex);
 
        this.setState({});
     };
@@ -179,12 +264,22 @@ export default class CardTableView extends React.Component<{}, {}>{
     private handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
         this.dragX = event.clientX;
         this.dragY = event.clientY;
+        this.reset_drag();
+    }
 
+    private handleMouseLeave = () => {
+        this.reset_drag();
+    }
+
+    private reset_drag() {
+        if (this.draggedFromPile === null) {
+            return;
+        }
         for (const card of this.dragging.cards) {
-            this.pile.cards.push(card);
+            this.draggedFromPile.cards.push(card);
         }
         this.dragging.cards = [];
-
+        this.draggedFromPile = null;
         this.setState({});
     }
 }

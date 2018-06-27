@@ -1,24 +1,36 @@
-.PileTable {
+.Table {
+    width:100%;
+    height:100%;
+    background-color: rgb(226, 255, 255);
+    position: absolute;
+    vertical-align: 0px;
+    border-color: black;
+    border-spacing: 0px;
+    border: solid;
+}
+
+.PileDiv {
+    float:left;
+    width:130px;
+}
+
+.Dragging{
+    position: absolute;
+}
+
+.DragTable {
     border-collapse: collapse;
     border-spacing: 0;
     padding:0;
     margin:0;
+    vertical-align: 0px;
 }
 
-.PileTR{
-
-    border-collapse: collapse;
-    padding:0;
-    margin:0;
-  }
-
-  .Dragging{
-      position: absolute;
-  }
-
-  .Table {
-      width:100%;
-      height:100%;
-      background-color: aqua;
-      position: absolute;
-  }
+.EmptyPile {
+    width: 150px;
+    height: 200px;
+    border-color:black;
+    border:solid;
+    padding: 0;
+    margin: 0;
+}
