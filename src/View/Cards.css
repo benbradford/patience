@@ -1,0 +1,13 @@
+.PileTable {
+    border-collapse: collapse;
+    border-spacing: 0;
+    padding:0;
+    margin:0;
+}
+
+.PileTR{
+
+    border-collapse: collapse;
+    padding:0;
+    margin:0;
+  }

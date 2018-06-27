@@ -8,7 +8,7 @@ export interface ICardViewData {
 }
 
 export interface IViewData {
-    cards : ICardViewData;
+    cards : ICardViewData[];
     canRedo: boolean;
     canUndo: boolean;
 }

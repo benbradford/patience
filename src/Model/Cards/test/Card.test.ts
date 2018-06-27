@@ -3,6 +3,8 @@ import {Card, Suit, Face} from '../Card'
 it('WHEN creating a new card, THEN it has no collection',() => {
 
     const card = new Card(Suit.clubs, Face.ace);
+    expect(Suit[card.suit]).toEqual("clubs");
+    expect(Face[card.face]).toEqual("ace");
     expect(card.collection === undefined);
 });
 

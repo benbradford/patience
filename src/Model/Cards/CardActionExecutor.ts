@@ -6,10 +6,12 @@ export default class CardActionExecutor {
     private undone: CardAction[] = [];
 
     public attempt(action: CardAction) : boolean {
-        if (action.command.can_execute(action)) {
+        if (action.command.can_execute(action) === false) {
             return false;
         }
+        
         const result = action.command.execute(action);
+        
         if (result) {
             this.executed.push(action);
             this.clear_undone();

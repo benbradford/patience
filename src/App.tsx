@@ -1,28 +1,17 @@
 import * as React from 'react';
 import './App.css';
-
-import logo from './logo.svg';
-// import { IViewData, ICardViewData } from './ModelView/ViewData';
+import CardTableView from './View/CardTableView'
 
 class App extends React.Component {
   public render() {
-    /* const data : IViewData = {
-       cards: [new ICardViewData{
 
-        } ],
-       canRedo: false,
-       canUndo: false,
-    };
-    data.canRedo = true; */
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
+       
+        <p>
+          <CardTableView />
         </p>
+        
       </div>
     );
   }
