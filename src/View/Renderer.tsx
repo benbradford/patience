@@ -3,28 +3,19 @@ import {ICard, ICardPile} from '../ModelView/ViewData'
 import {Suit} from '../Model/Cards/Card'
 import {cardImages} from './CardImages'
 
-const cardWidth = "120px";
-const cardLength = " 160px";
+export const cardWidth = "120px";
+export const cardLength = " 160px";
 const previewLength = " 30px";
 
 export function render_card(pile: ICardPile, card : ICard, mouseDown: (card: ICard)=>void): JSX.Element {
 
-    
-    if (pile.cards.length === 0) {
-
-        return (
-           <section style={empty_style()} />
-
-        );
-    }
+    const f = () => { mouseDown(card); };
 
     let s = piled_style(card);
-    
+
     if (card === pile.cards[pile.cards.length-1]) {
         s = front_style(card);
     } 
-
-    const f = () => { mouseDown(card); };
 
     return (       
         <tr>
@@ -33,7 +24,7 @@ export function render_card(pile: ICardPile, card : ICard, mouseDown: (card: ICa
     );
 }
 
-function piled_style(card : ICard) {
+export function piled_style(card : ICard) {
     const img = card_image(card);  
     return {
         width: cardWidth,
@@ -45,7 +36,7 @@ function piled_style(card : ICard) {
       };     
 }
 
-function front_style(card : ICard) {
+export function front_style(card : ICard) {
     const img = card_image(card);  
     return {
         width: cardWidth,
@@ -70,15 +61,4 @@ function card_image(card : ICard) {
         indexStart = 39;
     }
     return cardImages[indexStart + card.face];
-}
-
-
-function empty_style() {
-    return {
-        width: cardWidth,
-        height: cardLength,
-        borderColor: "black",
-        border: "solid"
-
-    }
 }

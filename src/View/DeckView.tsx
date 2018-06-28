@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {render_card} from './Renderer'
+import {cardWidth, cardLength, front_style} from './Renderer'
 import './Cards.css'
 
 export default class DeckView extends React.Component<any, any>{
@@ -24,7 +24,7 @@ export default class DeckView extends React.Component<any, any>{
         }
         return (
             <section>
-               {render_card(this.props.deck, this.props.deck.cards[this.props.deck.cards.length-1], this.deckClick)}
+                 <section style={front_style(this.props.deck.cards[this.props.deck.cards.length-1])} onMouseDown={this.deckClick} />
             </section>
         );
     }
@@ -33,10 +33,28 @@ export default class DeckView extends React.Component<any, any>{
         if (this.props.turned === null) {
             return ( <p/> );
         }
-       
+        
+        let indexToShow : number = 0;
+        if (this.props.moving.cards.length > 0 && this.props.moving.cards[0] === this.props.turned.cards[this.props.turned.cards.length-1]) {
+            ++indexToShow;
+        }
+
+        const emptyStyle = {
+            width: cardWidth,
+            height: cardLength,
+            borderColor: "black",
+            border: "solid"
+
+        };
+
+        if (indexToShow >= this.props.turned.cards.length) {
+
+            return ( <section style={emptyStyle} /> );          
+        }
+   
         return (
            <section>
-              {render_card(this.props.turned, this.props.turned.cards[this.props.turned.cards.length-1], this.turnClick)}
+              <section style={front_style(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
            </section>  
         );
     }
@@ -46,7 +64,11 @@ export default class DeckView extends React.Component<any, any>{
     }
 
     private turnClick = (): void => {
-        this.props.onDeckClick();
+        if (this.props.turned.cards.length === 0) {
+            this.props.onDeckClick();
+            return;
+        }
+        this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1]);
     }
     
 }

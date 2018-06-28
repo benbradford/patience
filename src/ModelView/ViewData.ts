@@ -14,10 +14,6 @@ export interface ICardPile {
     cards : ICard[];
 }
 
-export interface IMoveData {
-    cards: ICard[];
-}
-
 export interface ITableData {
     deck: ICardPile;
     turned: ICardPile;
