@@ -46,16 +46,11 @@ export default class TableView extends React.Component<{}, IGameData>{
 
     private onTurnClick = (card: ICard) => {
 
-        // :TODO: start drag
-        // need to iterate through piles and see which actions are valid
-        // then add those targets to the data
-        
-        const data: IGameData = {
-            table: this.modelView.table_data(), 
-            moving: {cards: [card]}
-        };
-
-        this.setState(data);
+        const data = this.modelView.valid_move_to_destinations(card);
+        if (data.length > 0) {
+            this.modelView.move_card_to(card, data[0]);
+            this.update_state_no_moving();
+        }
     }
     /*
       private render_dragged() {

@@ -9,7 +9,8 @@ import NextCardCommand from '../Model/Command/NextCardCommand'
 import DeckMaker from '../Model/Cards/DeckMaker';
 import CardShuffler from '../Model/Cards/CardShuffler';
 import SolitaireGame from '../Model/SolitaireGame';
-import CardAction from 'src/Model/Cards/CardAction';
+import CardAction from '../Model/Cards/CardAction';
+import {Card} from '../Model/Cards/Card'
 
 export default class ModelViewDataSync {
 
@@ -29,17 +30,26 @@ export default class ModelViewDataSync {
             this.moveManyCardsCommand);
 
         this.lay_out_table();
-
         this.sync_view_with_model();
     }
 
-    public can_move_card_to(card: ICard, dest: PileName): boolean {     
-        const modelCard = this.model_collection_from_pile_name(card.pileName).find(card.suit, card.face);
-        if (modelCard === null) {
-            return false;
+   public valid_move_to_destinations(card: ICard): PileName[] {
+        const modelCard = this.model_card_from_view_card(card);
+        const destinations: PileName[] = [];
+        for (const i of this.all_hold_indices()) {
+            const dest = this.get_pile_if_valid_move_to(modelCard, this.collections.hold(i));
+            if (dest !== null) {
+                destinations.push(dest);
+            }
         }
-        const toPile = this.model_collection_from_pile_name(dest);
-        return this.moveCardCommand.can_execute(new CardAction(this.moveCardCommand, modelCard, toPile));
+
+        for (const i of this.all_score_indices()) {
+            const dest = this.get_pile_if_valid_move_to(modelCard, this.collections.score(i));
+            if (dest !== null) {
+                destinations.push(dest);
+            }
+        }
+        return destinations;
    }
 
    public move_card_to(card: ICard, dest: PileName): boolean {
@@ -67,9 +77,94 @@ export default class ModelViewDataSync {
        return this.tableData;
    }
 
+   private get_pile_if_valid_move_to(modelCard: Card, collection: CardCollection): PileName | null{
+    if (this.can_move_card_to(modelCard, collection)) {
+        return this.view_pile_from_model_pile(collection);     
+    }
+    return null;
+   }
+
+   private can_move_card_to(card: Card, dest: CardCollection): boolean {     
+       
+        return this.moveCardCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
+    }
+
+   private model_card_from_view_card(viewCard: ICard) : Card {
+        let found = this.collections.deck().find(viewCard.suit, viewCard.face);
+        if (found !== null) {
+            return found;
+        }
+        found = this.collections.turned().find(viewCard.suit, viewCard.face);
+        if (found !== null) {
+            return found;
+        }
+        for (const i of this.all_hold_indices()) {
+            found = this.collections.hold(i).find(viewCard.suit, viewCard.face);
+            if (found !== null) {
+                return found;
+            }
+        }
+        for (const i of this.all_score_indices()) {
+            found = this.collections.score(i).find(viewCard.suit, viewCard.face);
+            if (found !== null) {
+                return found;
+            }
+        }
+        throw Error("cannot find model card from view card");
+   }
+
+   private view_pile_from_model_pile(modelCollection: CardCollection): PileName {
+        if (modelCollection=== this.collections.deck()) {
+            return "deck";
+        }
+        if (modelCollection === this.collections.turned()) {
+            return "turned";
+        }
+        if (modelCollection === this.collections.hold(0)) {
+            return "hold0";
+        }
+        if (modelCollection === this.collections.hold(1)) {
+            return "hold1";
+        }
+        if (modelCollection === this.collections.hold(2)) {
+            return "hold2";
+        }
+        if (modelCollection === this.collections.hold(3)) {
+            return "hold3";
+        }
+        if (modelCollection === this.collections.hold(4)) {
+            return "hold4";
+        }
+        if (modelCollection === this.collections.hold(5)) {
+            return "hold5";
+        }
+        if (modelCollection === this.collections.hold(6)) {
+            return "hold6";
+        }
+        if (modelCollection === this.collections.score(0)) {
+            return "score0";
+        }
+        if (modelCollection === this.collections.score(1)) {
+            return "score1";
+        }
+        if (modelCollection === this.collections.score(2)) {
+            return "score2";
+        }
+        if (modelCollection === this.collections.score(3)) {
+            return "score3";
+        }
+    
+        
+        throw Error("cannot find view pile from model pile");
+   }
+
    private all_hold_indices() : HoldIndex[] {
         return [0, 1, 2, 3, 4, 5, 6];
    }
+
+   private all_score_indices() : ScoreIndex[] {
+        return [0, 1, 2, 3];
+    }
 
     private sync_view_with_model() {
         this.tableData = {
@@ -121,7 +216,7 @@ export default class ModelViewDataSync {
             return this.collections.deck();
         }
         if (name === "turned") {
-            return this.collections.deck();
+            return this.collections.turned();
         }
         if (name === "hold0") {
             return this.collections.hold(0);
@@ -165,7 +260,10 @@ export default class ModelViewDataSync {
             const holdCardCollection = this.collections.hold(i);
             if (faceUpCard === null || holdCardCollection === null)  {
                 return;
-            }   
+            }  
+            if (i === 0) {
+                faceUpCard.turn();
+            } 
             holdCardCollection.push(faceUpCard);
             for (let j=i-1; j >=0; --j) {
 
