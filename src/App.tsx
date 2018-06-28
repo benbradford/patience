@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './App.css';
-import CardTableView from './View/CardTableView'
+import TableView from './View/TableView'
 
 class App extends React.Component {
   public render() {
@@ -9,7 +9,7 @@ class App extends React.Component {
       <div className="App">
        
         <p>
-          <CardTableView />
+          <TableView />
         </p>
         
       </div>

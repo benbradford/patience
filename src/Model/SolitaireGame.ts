@@ -8,11 +8,10 @@ import MoveManyCardsCommand from './Command/MoveManyCardsCommand'
 import NextCardCommand from './Command/NextCardCommand'
 import CardAction from '../Model/Cards/CardAction';
 import CardActionExecutor from '../Model/Cards/CardActionExecutor';
-import ICardOwner from '../Model/Cards/ICardOwner'
 
-export default class SolitaireGame implements ICardOwner {
+export default class SolitaireGame {
 
-    public readonly cards: Card[];
+    private cards: Card[];
     
     private moveCard: MoveCardCommand;
     private nextCard: NextCardCommand;

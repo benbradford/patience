@@ -172,6 +172,7 @@ export default class CardTableView extends React.Component<{}, {}>{
         );
     }
 
+    // TODO move to helper functions
     private piled_style(card : ICardView) {
         const img = this.card_image(card);  
         return {

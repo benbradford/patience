@@ -1,4 +1,4 @@
-import {Card} from './Card'
+import {Card, Suit, Face} from './Card'
 
 export default class CardCollection {
     
@@ -45,6 +45,15 @@ export default class CardCollection {
             }
         }
         return false;
+    }
+
+    public find(suit: Suit, face: Face): Card | null {
+        for (const c of this.cards) {
+            if (c.suit === suit && c.face === face) {
+                return c;
+            }
+        }
+        return null;
     }
 
     public push(card : Card): Card | null {
