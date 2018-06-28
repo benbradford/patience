@@ -27,6 +27,9 @@ export default class ModelViewDataSync {
             this.moveCardCommand,
             this.nextCardCommand,
             this.moveManyCardsCommand);
+
+        this.lay_out_table();
+
         this.sync_view_with_model();
     }
 
@@ -64,6 +67,10 @@ export default class ModelViewDataSync {
        return this.tableData;
    }
 
+   private all_hold_indices() : HoldIndex[] {
+        return [0, 1, 2, 3, 4, 5, 6];
+   }
+
     private sync_view_with_model() {
         this.tableData = {
             deck: this.make_view_pile_from_model_pile(this.collections.deck(), "deck"),
@@ -84,8 +91,7 @@ export default class ModelViewDataSync {
 
     private make_hold_view_piles_from_model_piles(): ICardPile[] {
         const viewPiles: ICardPile[] = [];
-        const valid : HoldIndex[] = [0, 1, 2, 3];
-        for (const i of valid) {
+        for (const i of this.all_hold_indices()) {
             viewPiles.push(this.make_view_pile_from_model_pile(this.collections.hold(i), hold_name(i)));
         }
         return viewPiles;
@@ -151,5 +157,27 @@ export default class ModelViewDataSync {
             return this.collections.score(0);
         }
         throw Error("invalid pile name");
+    }
+
+    private lay_out_table(): void {
+        for (const i of this.all_hold_indices()) {
+            const faceUpCard = this.collections.deck().remove();
+            const holdCardCollection = this.collections.hold(i);
+            if (faceUpCard === null || holdCardCollection === null)  {
+                return;
+            }   
+            holdCardCollection.push(faceUpCard);
+            for (let j=i-1; j >=0; --j) {
+
+                const card = this.collections.deck().remove();
+                if (card === null) {
+                       return;
+                }
+                if (j === 0) {
+                    card.turn();
+                }
+                holdCardCollection.push(card);
+            }
+        }
     }
 }

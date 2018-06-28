@@ -2,7 +2,7 @@ import * as React from 'react'
 import {ITableData, ICard} from '../ModelView/ViewData'
 import ModelViewDataSync from '../ModelView/ModelViewDataSync'
 import DeckView from './DeckView'
-
+import HoldPileViews from './HoldPileViews'
 
 interface IMoveData {
     cards: ICard[];
@@ -26,9 +26,15 @@ export default class TableView extends React.Component<{}, IGameData>{
             return (<p/>);
         }
         return (
-            <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table"> 
-                <DeckView deck={this.state.table.deck} turned={this.state.table.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onTurnClick={this.onTurnClick} /> 
-            </div>
+            <section>
+                <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table"> 
+                    
+                    <DeckView deck={this.state.table.deck} turned={this.state.table.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onTurnClick={this.onTurnClick} /> 
+                    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+                    <HoldPileViews hold={this.state.table.hold} />
+                
+                </div>
+            </section>
         );
     }
 

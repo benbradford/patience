@@ -48,4 +48,5 @@ export default class SolitaireGame {
     public card_executor() : CardActionExecutor {
         return this.cardExecutor;
     }
+
 }
