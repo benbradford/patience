@@ -13,13 +13,13 @@ import CardAction from 'src/Model/Cards/CardAction';
 
 export default class ModelViewDataSync {
 
-    private tableData : ITableData;
+    private tableData: ITableData;
     private collections = new SolitaireCollections();
-    private game : SolitaireGame;
+    private game: SolitaireGame;
     private moveCardCommand = new MoveCardCommand(this.collections);
     private nextCardCommand = new NextCardCommand(this.collections);
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
-   
+
     constructor () {
         this.game = new SolitaireGame(
             this.collections, 
@@ -30,8 +30,7 @@ export default class ModelViewDataSync {
         this.sync_view_with_model();
     }
 
-    public can_move_card_to(card: ICard, dest: PileName): boolean {
-        
+    public can_move_card_to(card: ICard, dest: PileName): boolean {     
         const modelCard = this.model_collection_from_pile_name(card.pileName).find(card.suit, card.face);
         if (modelCard === null) {
             return false;
@@ -46,13 +45,25 @@ export default class ModelViewDataSync {
            return false;
        }
        const toPile = this.model_collection_from_pile_name(dest);
-       return this.game.move(modelCard, toPile);
+       if (this.game.move(modelCard, toPile)) {
+           this.sync_view_with_model();
+           return true;
+       }
+       return false;
+   }
+
+   public next_card(): boolean {
+       if (this.game.next()) {
+           this.sync_view_with_model();
+           return true;
+       }
+       return false;
    }
    
    public table_data(): ITableData {
        return this.tableData;
    }
-   
+
     private sync_view_with_model() {
         this.tableData = {
             deck: this.make_view_pile_from_model_pile(this.collections.deck(), "deck"),
@@ -63,7 +74,6 @@ export default class ModelViewDataSync {
     }
 
     private make_score_view_piles_from_model_piles(): ICardPile[] {
-
         const viewPiles: ICardPile[] = [];
         const valid : ScoreIndex[] = [0, 1, 2, 3];
         for (const i of valid) {
@@ -73,7 +83,6 @@ export default class ModelViewDataSync {
     }
 
     private make_hold_view_piles_from_model_piles(): ICardPile[] {
-
         const viewPiles: ICardPile[] = [];
         const valid : HoldIndex[] = [0, 1, 2, 3];
         for (const i of valid) {
@@ -82,8 +91,7 @@ export default class ModelViewDataSync {
         return viewPiles;
     }
 
-    private make_view_pile_from_model_pile(collection : CardCollection, nameOfPile: PileName): ICardPile {
-        
+    private make_view_pile_from_model_pile(collection: CardCollection, nameOfPile: PileName): ICardPile {  
         const viewCards : ICard[] = [];
 
         for (let i = collection.size()-1; i >= 0; --i) {

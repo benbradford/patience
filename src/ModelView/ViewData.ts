@@ -14,14 +14,19 @@ export interface ICardPile {
     cards : ICard[];
 }
 
-export interface ITableData {
-    deck : ICardPile;
-    turned : ICardPile;
-    score : ICardPile[];
-    hold : ICardPile[];
+export interface IMoveData {
+    cards: ICard[];
 }
 
-export function hold_name(index : HoldIndex): PileName {
+export interface ITableData {
+    deck: ICardPile;
+    turned: ICardPile;
+    score: ICardPile[];
+    hold: ICardPile[];
+    
+}
+
+export function hold_name(index: HoldIndex): PileName {
     switch(index) {
         case 0: return "hold0";
         case 1: return "hold1";
