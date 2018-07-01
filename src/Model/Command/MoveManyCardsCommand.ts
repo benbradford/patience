@@ -16,13 +16,16 @@ export default class MoveManyCardsCommand implements ICardCommand {
         if (!action.collection1 || !action.collection2 || !action.card) {
             return false;
         }
-        if (this.collections.is_score(action.collection1) || this.collections.is_score(action.collection2)) {
+        if (!(this.collections.is_hold(action.collection1) && this.collections.is_hold(action.collection2))) {
             return false;
         }
         if (action.collection1.contains(action.card) === false) {
             return false;
         }
         if (action.card.is_turned_up() === false) {
+            return false;
+        }
+        if (action.collection1 === action.collection2) {
             return false;
         }
         const dest = action.collection2.peek();

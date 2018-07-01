@@ -22,6 +22,9 @@ export default class MoveCardCommand implements ICardCommand {
         if (!action.card.is_turned_up()) {
             return false;
         }
+        if (action.collection1 === action.collection2) {
+            return false;
+        }
         const dest = action.collection2.peek();
 
         if (!dest) {
