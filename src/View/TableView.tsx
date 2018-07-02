@@ -3,13 +3,14 @@ import {ITableData, ICard, PileName} from '../ModelView/ViewData'
 import ModelViewDataSync from '../ModelView/ModelViewDataSync'
 import DeckView from './DeckView'
 import HoldPileViews from './HoldPileViews'
-import {front_style} from './Renderer'
+import {front_style, piled_style} from './Renderer'
+import {collect_all_cards_above} from '../ModelView/ViewData'
 
 interface IMoveData {
     card: ICard | null;
     destinations: PileName[];
-    moveX: number;
-    moveY: number;
+    mouseOffsetX: number;
+    mouseOffsetY: number;
 }
 
 interface IGameData {
@@ -48,26 +49,32 @@ export default class TableView extends React.Component<{}, IGameData>{
         if (this.state.moving.card === null) {
             return ( <p/> );
         }
+
+        const cards = collect_all_cards_above(this.state.moving.card, this.state.table);
+        
         return (
             <section style={this.drag_style()} className="Dragging">
              <table>
-                {this.render_moving_card(this.state.moving.card)}
+                {cards.map( (card: ICard, i: number) => this.render_moving_card(card, i === cards.length-1))}
              </table>
             </section>
         );
     }
 
     private drag_style() {
-        const x = this.lastMouseX + this.state.moving.moveX;
-        const y = this.lastMouseY + this.state.moving.moveY;
+        const x = this.lastMouseX + this.state.moving.mouseOffsetX;
+        const y = this.lastMouseY + this.state.moving.mouseOffsetY;
         return {
             left: x + "px",
             top: y + "px"
         };
     }
 
-    private render_moving_card(card: ICard) {
-        return ( <tr> <section style={front_style(card)} /> </tr> );
+    private render_moving_card(card: ICard, isTop: boolean) {
+        if (isTop) {
+            return ( <tr> <section style={front_style(card)} /> </tr> );
+        }
+        return ( <tr> <section style={piled_style(card)} /> </tr> );
     }
 
     private onDeckClick = () => {
@@ -80,7 +87,7 @@ export default class TableView extends React.Component<{}, IGameData>{
         const dests = this.modelView.valid_move_to_destinations(c);
         const data: IGameData = {
             table: this.state.table, 
-            moving: {card: c, destinations: dests, moveX: offsetX, moveY: offsetY}
+            moving: {card: c, destinations: dests, mouseOffsetX: offsetX, mouseOffsetY: offsetY}
         };
 
         this.setState(data);
@@ -91,7 +98,7 @@ export default class TableView extends React.Component<{}, IGameData>{
         const dests = this.modelView.valid_move_to_destinations(c);
         const data: IGameData = {
             table: this.state.table, 
-            moving: {card: c, destinations: dests, moveX: offsetX, moveY: offsetY}
+            moving: {card: c, destinations: dests, mouseOffsetX: offsetX, mouseOffsetY: offsetY}
         };
 
         this.setState(data);
@@ -103,7 +110,7 @@ export default class TableView extends React.Component<{}, IGameData>{
         if (this.state.moving.card !== null) {
             const data: IGameData = {
                 table: this.state.table, 
-                moving: {card: this.state.moving.card, destinations: this.state.moving.destinations, moveX: this.state.moving.moveX, moveY: this.state.moving.moveY}
+                moving: {card: this.state.moving.card, destinations: this.state.moving.destinations, mouseOffsetX: this.state.moving.mouseOffsetX, mouseOffsetY: this.state.moving.mouseOffsetY}
             };
             this.setState(data);
         }
@@ -127,7 +134,7 @@ export default class TableView extends React.Component<{}, IGameData>{
     private update_state_no_moving() {
         const data: IGameData = {
             table: this.modelView.table_data(), 
-            moving: {card: null, destinations: [], moveX: 0, moveY: 0}
+            moving: {card: null, destinations: [], mouseOffsetX: 0, mouseOffsetY: 0}
         };
 
         this.setState(data);

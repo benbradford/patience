@@ -1,6 +1,6 @@
 import {ITableData, ICardPile, ICard, PileName, score_name, hold_name} from './ViewData'
 import SolitaireCollections from '../Model/SolitaireCollections'
-import {ScoreIndex, HoldIndex} from '../Model/SolitaireCollections'
+import {ScoreIndex} from '../Model/SolitaireCollections'
 import CardInitialiser from '../Model/CardInitialiser'
 import CardCollection from '../Model/Cards/CardCollection';
 import MoveCardCommand from '../Model/Command/MoveCardCommand'
@@ -11,6 +11,7 @@ import CardShuffler from '../Model/Cards/CardShuffler';
 import SolitaireGame from '../Model/SolitaireGame';
 import CardAction from '../Model/Cards/CardAction';
 import {Card} from '../Model/Cards/Card'
+import {model_collection_from_pile_name, model_card_from_view_card, all_hold_indices, all_score_indices, view_pile_from_model_pile} from './ModelViewConversion'
 
 export default class ModelViewDataSync {
 
@@ -34,16 +35,16 @@ export default class ModelViewDataSync {
     }
 
    public valid_move_to_destinations(card: ICard): PileName[] {
-        const modelCard = this.model_card_from_view_card(card);
+        const modelCard = model_card_from_view_card(card, this.collections);
         const destinations: PileName[] = [];
-        for (const i of this.all_hold_indices()) {
+        for (const i of all_hold_indices()) {
             const dest = this.get_pile_if_valid_move_to(modelCard, this.collections.hold(i));
             if (dest !== null) {
                 destinations.push(dest);
             }
         }
 
-        for (const i of this.all_score_indices()) {
+        for (const i of all_score_indices()) {
             const dest = this.get_pile_if_valid_move_to(modelCard, this.collections.score(i));
             if (dest !== null) {
                 destinations.push(dest);
@@ -53,11 +54,11 @@ export default class ModelViewDataSync {
    }
 
    public move_card_to(card: ICard, dest: PileName): boolean {
-       const modelCard = this.model_collection_from_pile_name(card.pileName).find(card.suit, card.face);
+       const modelCard = model_collection_from_pile_name(card.pileName, this.collections).find(card.suit, card.face);
        if (modelCard === null) {
            return false;
        }
-       const toPile = this.model_collection_from_pile_name(dest);
+       const toPile = model_collection_from_pile_name(dest, this.collections);
        if (this.game.move(modelCard, toPile)) {
            this.sync_view_with_model();
            return true;
@@ -79,7 +80,7 @@ export default class ModelViewDataSync {
 
    private get_pile_if_valid_move_to(modelCard: Card, collection: CardCollection): PileName | null{
     if (this.can_move_card_to(modelCard, collection)) {
-        return this.view_pile_from_model_pile(collection);     
+        return view_pile_from_model_pile(collection, this.collections);     
     }
     return null;
    }
@@ -87,83 +88,6 @@ export default class ModelViewDataSync {
    private can_move_card_to(card: Card, dest: CardCollection): boolean {     
        
         return this.moveCardCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
-    }
-
-   private model_card_from_view_card(viewCard: ICard) : Card {
-        let found = this.collections.deck().find(viewCard.suit, viewCard.face);
-        if (found !== null) {
-            return found;
-        }
-        found = this.collections.turned().find(viewCard.suit, viewCard.face);
-        if (found !== null) {
-            return found;
-        }
-        for (const i of this.all_hold_indices()) {
-            found = this.collections.hold(i).find(viewCard.suit, viewCard.face);
-            if (found !== null) {
-                return found;
-            }
-        }
-        for (const i of this.all_score_indices()) {
-            found = this.collections.score(i).find(viewCard.suit, viewCard.face);
-            if (found !== null) {
-                return found;
-            }
-        }
-        throw Error("cannot find model card from view card");
-   }
-
-   private view_pile_from_model_pile(modelCollection: CardCollection): PileName {
-        if (modelCollection=== this.collections.deck()) {
-            return "deck";
-        }
-        if (modelCollection === this.collections.turned()) {
-            return "turned";
-        }
-        if (modelCollection === this.collections.hold(0)) {
-            return "hold0";
-        }
-        if (modelCollection === this.collections.hold(1)) {
-            return "hold1";
-        }
-        if (modelCollection === this.collections.hold(2)) {
-            return "hold2";
-        }
-        if (modelCollection === this.collections.hold(3)) {
-            return "hold3";
-        }
-        if (modelCollection === this.collections.hold(4)) {
-            return "hold4";
-        }
-        if (modelCollection === this.collections.hold(5)) {
-            return "hold5";
-        }
-        if (modelCollection === this.collections.hold(6)) {
-            return "hold6";
-        }
-        if (modelCollection === this.collections.score(0)) {
-            return "score0";
-        }
-        if (modelCollection === this.collections.score(1)) {
-            return "score1";
-        }
-        if (modelCollection === this.collections.score(2)) {
-            return "score2";
-        }
-        if (modelCollection === this.collections.score(3)) {
-            return "score3";
-        }
-    
-        
-        throw Error("cannot find view pile from model pile");
-   }
-
-   private all_hold_indices() : HoldIndex[] {
-        return [0, 1, 2, 3, 4, 5, 6];
-   }
-
-   private all_score_indices() : ScoreIndex[] {
-        return [0, 1, 2, 3];
     }
 
     private sync_view_with_model() {
@@ -186,7 +110,7 @@ export default class ModelViewDataSync {
 
     private make_hold_view_piles_from_model_piles(): ICardPile[] {
         const viewPiles: ICardPile[] = [];
-        for (const i of this.all_hold_indices()) {
+        for (const i of all_hold_indices()) {
             viewPiles.push(this.make_view_pile_from_model_pile(this.collections.hold(i), hold_name(i)));
         }
         return viewPiles;
@@ -211,51 +135,8 @@ export default class ModelViewDataSync {
         return {cards : viewCards};
     }
 
-    private model_collection_from_pile_name(name: PileName): CardCollection {
-        if (name === "deck") {
-            return this.collections.deck();
-        }
-        if (name === "turned") {
-            return this.collections.turned();
-        }
-        if (name === "hold0") {
-            return this.collections.hold(0);
-        }
-        if (name === "hold1") {
-            return this.collections.hold(1);
-        }
-        if (name === "hold2") {
-            return this.collections.hold(2);
-        }
-        if (name === "hold3") {
-            return this.collections.hold(3);
-        }
-        if (name === "hold4") {
-            return this.collections.hold(4);
-        }
-        if (name === "hold5") {
-            return this.collections.hold(5);
-        }
-        if (name === "hold6") {
-            return this.collections.hold(6);
-        }
-        if (name === "score0") {
-            return this.collections.score(0);
-        }
-        if (name === "score1") {
-            return this.collections.score(0);
-        }
-        if (name === "score2") {
-            return this.collections.score(0);
-        }
-        if (name === "score3") {
-            return this.collections.score(0);
-        }
-        throw Error("invalid pile name");
-    }
-
     private lay_out_table(): void {
-        for (const i of this.all_hold_indices()) {
+        for (const i of all_hold_indices()) {
             const faceUpCard = this.collections.deck().remove();
             const holdCardCollection = this.collections.hold(i);
             if (faceUpCard === null || holdCardCollection === null)  {

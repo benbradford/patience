@@ -18,8 +18,7 @@ export interface ITableData {
     deck: ICardPile;
     turned: ICardPile;
     score: ICardPile[];
-    hold: ICardPile[];
-    
+    hold: ICardPile[]; 
 }
 
 export function hold_name(index: HoldIndex): PileName {
@@ -43,4 +42,42 @@ export function score_name(index: ScoreIndex): PileName{
         case 3: return "score3";
     }
     throw Error("invalid score index");
+}
+
+function view_pile_from_view_card(card: ICard, tableData: ITableData): ICardPile {
+    switch (card.pileName) {
+        case "deck": return tableData.deck;
+        case "turned": return tableData.turned;
+        case "hold0": return tableData.hold[0];
+        case "hold1": return tableData.hold[1];
+        case "hold2": return tableData.hold[2];
+        case "hold3": return tableData.hold[3];
+        case "hold4": return tableData.hold[4];
+        case "hold5": return tableData.hold[5];
+        case "hold6": return tableData.hold[6];
+        case "score0": return tableData.score[0];
+        case "score1": return tableData.score[1];
+        case "score2": return tableData.score[2];
+        case "score3": return tableData.score[3];
+    }
+    throw Error("now view pile for view card");
+}
+
+export function collect_all_cards_above(card: ICard, tableData: ITableData): ICard[] {
+
+    const pile = view_pile_from_view_card(card, tableData);
+    
+    let fromIndex: number | undefined;
+    for (let i = 0; i < pile.cards.length; ++i) {
+        if (pile.cards[i] === card) {
+            fromIndex = i;
+            break;
+        }
+    }
+
+    if (fromIndex === undefined) {
+        throw Error("undefined fromIndex");
+    }
+
+    return pile.cards.slice(fromIndex, pile.cards.length);
 }
