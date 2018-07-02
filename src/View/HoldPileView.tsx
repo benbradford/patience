@@ -5,19 +5,22 @@ import {piled_style, front_style, cardWidth, cardLength} from './Renderer'
 
 export default class HoldPileView extends React.Component<any, any>{
     
+    private cardRefs = [React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>()];
+
+    private renderedFront = false;
     public render(): JSX.Element {     
-        
+        this.renderedFront = false;
         return (
             <div className="PileDiv">
-              {this.props.pile.cards.map( (card: ICard) => this.render_card(card))}
+              {this.props.pile.cards.map( (card: ICard, i: number) => this.render_card(card, i))}
              </div>
 
         );
     }
 
-    private render_card(card: ICard) {
+    private render_card(card: ICard, index: number) {
 
-        if (this.props.pile.cards.length === 0) {
+        if (this.props.pile.cards.length === 0 || (this.props.pile.cards.length === 1 && this.props.moving.cards.length > 0 && this.props.pile.cards[0] === this.props.moving.cards[0])) {
             const emptyStyle = {
                 width: cardWidth,
                 height: cardLength,
@@ -35,18 +38,45 @@ export default class HoldPileView extends React.Component<any, any>{
             )
         }
 
-        let s = piled_style(card);
+        if (this.renderedFront || (this.props.moving.cards.length > 0 && card.suit === this.props.moving.cards[0].suit && card.face === this.props.moving.cards[0].face)) {
+            this.renderedFront = true;
+            return ( <p/> );
+        }
 
-        if (card === this.props.pile.cards[this.props.pile.cards.length-1]) {
-            s = front_style(card);
+        let s = piled_style(card);
+        const callback = (event: React.MouseEvent<HTMLDivElement>) =>{ this.onClick(card, index, event); };
+
+        if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (this.props.moving.cards.length > 0 && index < this.props.pile.cards.length-1 && this.props.pile.cards[index+1] === this.props.moving.cards[0])) {
+             s = front_style(card);
         } 
 
         return (       
             <tr>
-                <section style={s}/> 
+                <section style={s} onMouseDown={callback} ref={this.cardRefs[index]}/> 
             </tr>
         );
         
+    }
+
+    private onClick = (card: ICard, index: number, event: React.MouseEvent<HTMLDivElement>): void => {
+        if (this.props.moving.cards.length > 0) {
+            return;
+        }
+
+        if (card.turned === false) {
+            return;
+        }
+
+        const r = this.cardRefs[index].current;
+        if (r === null) {
+            return;
+        }
+        const box = r.getBoundingClientRect();
+        const offsetX = (box.left - event.clientX);
+        const offsetY = (box.top - event.clientY);
+
+        this.props.onPileClick(card, offsetX, offsetY);
+    
     }
 
 }

@@ -4,6 +4,8 @@ import './Cards.css'
 
 export default class DeckView extends React.Component<any, any>{
     
+    private turnedRef = React.createRef<HTMLElement>();
+
     public render(): JSX.Element {     
         
         return (
@@ -54,7 +56,7 @@ export default class DeckView extends React.Component<any, any>{
    
         return (
            <section>
-              <section style={front_style(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
+              <section ref={this.turnedRef} style={front_style(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
            </section>  
         );
     }
@@ -63,12 +65,21 @@ export default class DeckView extends React.Component<any, any>{
         this.props.onDeckClick();
     }
 
-    private turnClick = (): void => {
-        if (this.props.turned.cards.length === 0) {
-            this.props.onDeckClick();
+    private turnClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+        if (this.props.moving.cards.length > 0) {
             return;
         }
-        this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1]);
+        if (this.props.turned.cards.length === 0) {
+            return;
+        }
+        if (this.turnedRef.current === null) {
+            return;
+        }
+        const box = this.turnedRef.current.getBoundingClientRect();
+        const offsetX = (box.left - event.clientX);
+        const offsetY = (box.top - event.clientY);
+
+        this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1], offsetX, offsetY);
     }
     
 }

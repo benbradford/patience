@@ -20,7 +20,9 @@ interface IGameData {
 export default class TableView extends React.Component<{}, IGameData>{
     
     private modelView = new ModelViewDataSync();
-
+    private lastMouseX = 0;
+    private lastMouseY = 0;
+    
     public componentDidMount() {
        this.update_state_no_moving();
     }
@@ -35,7 +37,7 @@ export default class TableView extends React.Component<{}, IGameData>{
                     
                     <DeckView deck={this.state.table.deck} turned={this.state.table.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onTurnClick={this.onTurnClick} /> 
                     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-                    <HoldPileViews hold={this.state.table.hold} />
+                    <HoldPileViews hold={this.state.table.hold} moving={this.state.moving} onPileClick={this.onPileClick} />
                     {this.render_moving()}
                 </div>
             </section>
@@ -56,9 +58,11 @@ export default class TableView extends React.Component<{}, IGameData>{
     }
 
     private drag_style() {
+        const x = this.lastMouseX + this.state.moving.moveX;
+        const y = this.lastMouseY + this.state.moving.moveY;
         return {
-            left: this.state.moving.moveX + "px",
-            top: this.state.moving.moveY + "px"
+            left: x + "px",
+            top: y + "px"
         };
     }
 
@@ -72,25 +76,34 @@ export default class TableView extends React.Component<{}, IGameData>{
         }
     }
 
-    private onTurnClick = (card: ICard) => {
-        // :TODO: move in x and y and offset
+    private onTurnClick = (card: ICard, offsetX : number, offsetY: number) => {
         const dests = this.modelView.valid_move_to_destinations(card);
         const data: IGameData = {
             table: this.state.table, 
-            moving: {cards: [card], destinations: dests, moveX: this.state.moving.moveX, moveY: this.state.moving.moveY}
+            moving: {cards: [card], destinations: dests, moveX: offsetX, moveY: offsetY}
         };
 
         this.setState(data);
-        /*if (data.length > 0) {
-            this.modelView.move_card_to(card, data[0]);
-        }*/
+
+    }
+
+    private onPileClick = (card: ICard, offsetX: number, offsetY: number) => {
+        const dests = this.modelView.valid_move_to_destinations(card);
+        const data: IGameData = {
+            table: this.state.table, 
+            moving: {cards: [card], destinations: dests, moveX: offsetX, moveY: offsetY}
+        };
+
+        this.setState(data);
     }
 
     private handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+        this.lastMouseX = event.clientX;
+        this.lastMouseY = event.clientY;
         if (this.state.moving.cards !== null) {
             const data: IGameData = {
                 table: this.state.table, 
-                moving: {cards: this.state.moving.cards, destinations: this.state.moving.destinations, moveX: event.clientX, moveY: event.clientY}
+                moving: {cards: this.state.moving.cards, destinations: this.state.moving.destinations, moveX: this.state.moving.moveX, moveY: this.state.moving.moveY}
             };
             this.setState(data);
         }
@@ -119,5 +132,4 @@ export default class TableView extends React.Component<{}, IGameData>{
 
         this.setState(data);
     }
-
 }

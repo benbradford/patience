@@ -16,7 +16,7 @@ export default class HoldPileViews extends React.Component<any, any>{
 
     private render_pile(pile: ICardPile, index: number) {
         return (  
-            <HoldPileView pile={pile} index={index} className="PileDiv" />
+            <HoldPileView pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onPileClick} />
         );
     }
 }
