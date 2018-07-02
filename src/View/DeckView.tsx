@@ -37,7 +37,7 @@ export default class DeckView extends React.Component<any, any>{
         }
         
         let indexToShow : number = 0;
-        if (this.props.moving.cards.length > 0 && this.props.moving.cards[0] === this.props.turned.cards[this.props.turned.cards.length-1]) {
+        if (this.props.moving.card === this.props.turned.cards[this.props.turned.cards.length-1]) {
             ++indexToShow;
         }
 
@@ -66,7 +66,7 @@ export default class DeckView extends React.Component<any, any>{
     }
 
     private turnClick = (event: React.MouseEvent<HTMLDivElement>): void => {
-        if (this.props.moving.cards.length > 0) {
+        if (this.props.moving.card !== null) {
             return;
         }
         if (this.props.turned.cards.length === 0) {
