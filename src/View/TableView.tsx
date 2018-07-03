@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {IModelViewData, ICardView, PileName} from '../ModelView/ViewData'
-import ModelViewDataSync from '../ModelView/ModelViewDataSync'
+import {IModelViewData, ICardView, PileName} from '../ModelView/ModelViewData'
+import SolitaireModelView from '../ModelView/SolitaireModelView'
 import PileViews from './PileViews'
-import {front_style, piled_style, cardWidthValue, cardLengthValue} from  './CardRenderer'
-import {collect_all_cards_above} from '../ModelView/ViewData'
+import {cardWidthValue, cardLengthValue} from  './CardRenderer'
+import CardDragView from './CardDragView'
 
 interface IMoveDestination {
     pile: PileName;
@@ -22,10 +22,8 @@ interface ITableData {
     moving: IMoveData;
 }
 
-
-export default class TableView extends React.Component<{}, ITableData>{
-    
-    private modelView = new ModelViewDataSync();
+export default class TableView extends React.Component<{}, ITableData> {
+    private modelView = new SolitaireModelView();
     private pileViews = React.createRef<PileViews>();
 
     private lastMouseX : number = 0;
@@ -41,46 +39,12 @@ export default class TableView extends React.Component<{}, ITableData>{
         }
         return (
             <section>
-                <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table"> 
-                    
+                <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />
-                    {this.render_moving()}
+                    <CardDragView card={this.state.moving.card} modelView={this.state.modelView} cardX={this.lastMouseX + this.state.moving.mouseOffsetX} cardY={this.lastMouseY + this.state.moving.mouseOffsetY}/>
                 </div>
             </section>
         );
-    }
-
-    private render_moving() {
-        if (this.state.moving.card === null) {
-            return ( <p/> );
-        }
-
-        const cards = collect_all_cards_above(this.state.moving.card, this.state.modelView);
-        
-        return (
-            <section style={this.drag_style()} className="Dragging">
-             <table>
-                {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === 0,  i === cards.length-1))}
-             </table>
-            </section>
-        );
-    }
-
-    private drag_style() {
-        const x = this.lastMouseX + this.state.moving.mouseOffsetX;
-        const y = this.lastMouseY + this.state.moving.mouseOffsetY;
-        return {
-            left: x + "px",
-            top: y + "px"
-        };
-    }
-
-    private render_moving_card(card: ICardView, isTarget: boolean, isTop: boolean) {
-
-        if (isTop) {
-            return ( <tr> <section style={front_style(card)} /> </tr> );
-        }
-        return ( <tr> <section style={piled_style(card)} /> </tr> );
     }
 
     private onDeckClick = () => {

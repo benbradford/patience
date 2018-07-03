@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Cards.css'
-import { IPileView, PileName, hold_index_from_pilename } from '../ModelView/ViewData';
+import { IPileView, PileName, hold_index_from_pilename } from '../ModelView/ModelViewData';
 import HoldPileView from './HoldPileView';
 import DeckView from './DeckView'
 

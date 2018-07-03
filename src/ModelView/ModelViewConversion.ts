@@ -1,5 +1,5 @@
 import SolitaireCollections from "../Model/SolitaireCollections";
-import {PileName, ICardView} from './ViewData'
+import {PileName, ICardView} from './ModelViewData'
 import CardCollection from '../Model/Cards/CardCollection';
 import {Card} from '../Model/Cards/Card'
 import {ScoreIndex, HoldIndex} from '../Model/SolitaireCollections'

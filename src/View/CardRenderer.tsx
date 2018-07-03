@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {ICardView, IPileView} from '../ModelView/ViewData'
+import {ICardView, IPileView} from '../ModelView/ModelViewData'
 import {Suit} from '../Model/Cards/Card'
 import {cardImages} from './CardImages'
 
