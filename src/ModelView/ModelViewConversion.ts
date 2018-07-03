@@ -1,5 +1,5 @@
 import SolitaireCollections from "../Model/SolitaireCollections";
-import {PileName, ICard} from './ViewData'
+import {PileName, ICardView} from './ViewData'
 import CardCollection from '../Model/Cards/CardCollection';
 import {Card} from '../Model/Cards/Card'
 import {ScoreIndex, HoldIndex} from '../Model/SolitaireCollections'
@@ -47,7 +47,7 @@ import {ScoreIndex, HoldIndex} from '../Model/SolitaireCollections'
     throw Error("invalid pile name");
 }
 
-export function model_card_from_view_card(viewCard: ICard, collections : SolitaireCollections) : Card {
+export function model_card_from_view_card(viewCard: ICardView, collections : SolitaireCollections) : Card {
     let found = collections.deck().find(viewCard.suit, viewCard.face);
     if (found !== null) {
         return found;

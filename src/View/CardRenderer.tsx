@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {ICard, ICardPile} from '../ModelView/ViewData'
+import {ICardView, IPileView} from '../ModelView/ViewData'
 import {Suit} from '../Model/Cards/Card'
 import {cardImages} from './CardImages'
 
@@ -9,7 +9,7 @@ export const cardWidth = cardWidthValue + "px";
 export const cardLength = " " + cardLengthValue + "px";
 const previewLength = " 30px";
 
-export function render_card(pile: ICardPile, card : ICard, mouseDown: (card: ICard)=>void): JSX.Element {
+export function render_card(pile: IPileView, card : ICardView, mouseDown: (card: ICardView)=>void): JSX.Element {
 
     const f = () => { mouseDown(card); };
 
@@ -26,7 +26,7 @@ export function render_card(pile: ICardPile, card : ICard, mouseDown: (card: ICa
     );
 }
 
-export function piled_style(card : ICard) {
+export function piled_style(card : ICardView) {
     const img = card_image(card);  
     return {
         width: cardWidth,
@@ -38,7 +38,7 @@ export function piled_style(card : ICard) {
       };     
 }
 
-export function front_style(card : ICard) {
+export function front_style(card : ICardView) {
     const img = card_image(card);  
     return {
         width: cardWidth,
@@ -50,7 +50,7 @@ export function front_style(card : ICard) {
       };     
 }
 
-function card_image(card : ICard) {
+function card_image(card : ICardView) {
     if (card.turned === false) {
         return cardImages[52];
     }

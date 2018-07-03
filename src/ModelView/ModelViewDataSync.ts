@@ -1,4 +1,4 @@
-import {ITableData, ICardPile, ICard, PileName, score_name, hold_name} from './ViewData'
+import {IModelViewData, IPileView, ICardView, PileName, score_name, hold_name} from './ViewData'
 import SolitaireCollections from '../Model/SolitaireCollections'
 import {ScoreIndex} from '../Model/SolitaireCollections'
 import CardInitialiser from '../Model/CardInitialiser'
@@ -15,7 +15,7 @@ import {model_collection_from_pile_name, model_card_from_view_card, all_hold_ind
 
 export default class ModelViewDataSync {
 
-    private tableData: ITableData;
+    private modelViewData: IModelViewData;
     private collections = new SolitaireCollections();
     private game: SolitaireGame;
     private moveCardCommand = new MoveCardCommand(this.collections);
@@ -34,7 +34,7 @@ export default class ModelViewDataSync {
         this.sync_view_with_model();
     }
 
-   public valid_move_to_destinations(card: ICard): PileName[] {
+   public valid_move_to_destinations(card: ICardView): PileName[] {
         const modelCard = model_card_from_view_card(card, this.collections);
         const destinations: PileName[] = [];
         for (const i of all_hold_indices()) {
@@ -53,7 +53,7 @@ export default class ModelViewDataSync {
         return destinations;
    }
 
-   public move_card_to(card: ICard, dest: PileName): boolean {
+   public move_card_to(card: ICardView, dest: PileName): boolean {
        const modelCard = model_collection_from_pile_name(card.pileName, this.collections).find(card.suit, card.face);
        if (modelCard === null) {
            return false;
@@ -74,8 +74,8 @@ export default class ModelViewDataSync {
        return false;
    }
    
-   public table_data(): ITableData {
-       return this.tableData;
+   public table_data(): IModelViewData {
+       return this.modelViewData;
    }
 
    private get_pile_if_valid_move_to(modelCard: Card, collection: CardCollection): PileName | null{
@@ -91,7 +91,7 @@ export default class ModelViewDataSync {
     }
 
     private sync_view_with_model() {
-        this.tableData = {
+        this.modelViewData = {
             deck: this.make_view_pile_from_model_pile(this.collections.deck(), "deck"),
             turned: this.make_view_pile_from_model_pile(this.collections.turned(), "turned"),
             score: this.make_score_view_piles_from_model_piles(),
@@ -99,8 +99,8 @@ export default class ModelViewDataSync {
         };
     }
 
-    private make_score_view_piles_from_model_piles(): ICardPile[] {
-        const viewPiles: ICardPile[] = [];
+    private make_score_view_piles_from_model_piles(): IPileView[] {
+        const viewPiles: IPileView[] = [];
         const valid : ScoreIndex[] = [0, 1, 2, 3];
         for (const i of valid) {
             viewPiles.push(this.make_view_pile_from_model_pile(this.collections.score(i), score_name(i)));
@@ -108,16 +108,19 @@ export default class ModelViewDataSync {
         return viewPiles;
     }
 
-    private make_hold_view_piles_from_model_piles(): ICardPile[] {
-        const viewPiles: ICardPile[] = [];
+    private make_hold_view_piles_from_model_piles(): IPileView[] {
+        const viewPiles: IPileView[] = [];
         for (const i of all_hold_indices()) {
             viewPiles.push(this.make_view_pile_from_model_pile(this.collections.hold(i), hold_name(i)));
+        }
+        if (viewPiles.length !==7) {
+            throw Error("incorrect number of piles");
         }
         return viewPiles;
     }
 
-    private make_view_pile_from_model_pile(collection: CardCollection, nameOfPile: PileName): ICardPile {  
-        const viewCards : ICard[] = [];
+    private make_view_pile_from_model_pile(collection: CardCollection, nameOfPile: PileName): IPileView {  
+        const viewCards : ICardView[] = [];
 
         for (let i = collection.size()-1; i >= 0; --i) {
             const modelCard = collection.peek(i);

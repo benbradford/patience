@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {cardWidth, cardLength, front_style} from './Renderer'
+import {cardWidth, cardLength, front_style} from  './CardRenderer'
 import './Cards.css'
 
 export default class DeckView extends React.Component<any, any>{

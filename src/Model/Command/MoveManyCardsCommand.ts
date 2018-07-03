@@ -50,6 +50,10 @@ export default class MoveManyCardsCommand implements ICardCommand {
         }
 
         this.move_all(action.collection1, action.collection2, action.card);
+        const cardToTurn = action.collection1.peek();
+        if (cardToTurn && cardToTurn.is_turned_up() === false) {
+            cardToTurn.turn();
+        }
         return true;
     }
 
@@ -59,6 +63,10 @@ export default class MoveManyCardsCommand implements ICardCommand {
         }
 
         this.move_all(action.collection2, action.collection1, action.card);
+        const cardToTurn = action.collection1.peek();
+        if (cardToTurn && cardToTurn.is_turned_up()) {
+            cardToTurn.turn();
+        }
         return true;
     }
 

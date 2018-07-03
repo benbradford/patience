@@ -1,11 +1,12 @@
 import * as React from 'react'
 import './Cards.css'
-import { ICardPile, PileName, hold_index_from_pilename } from '../ModelView/ViewData';
+import { IPileView, PileName, hold_index_from_pilename } from '../ModelView/ViewData';
 import HoldPileView from './HoldPileView';
+import DeckView from './DeckView'
 
-export default class HoldPileViews extends React.Component<any, any>{
+export default class PileViews extends React.Component<any, any>{
     
-    private pileRef : Array<React.RefObject<HoldPileView>> = [
+    private readonly pileRef : Array<React.RefObject<HoldPileView>> = [
         React.createRef<HoldPileView>() ,
         React.createRef<HoldPileView>() ,
         React.createRef<HoldPileView>() ,
@@ -16,10 +17,12 @@ export default class HoldPileViews extends React.Component<any, any>{
     ];
     
     public render(): JSX.Element {     
-        const piles : ICardPile[] = this.props.hold;
+        const piles : IPileView[] = this.props.hold;
         return (
             <section>
-                {piles.map((pile: ICardPile, index: number) => this.render_pile(pile, index))} 
+                <DeckView deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
+                    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+                {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
             </section>
         );
     }
@@ -36,13 +39,13 @@ export default class HoldPileViews extends React.Component<any, any>{
         return r.current.box();
     }
 
-    private render_pile(pile: ICardPile, index: number) {
+    private render_pile(pile: IPileView, index: number) {
         const r = this.pileRef[index];
         if (r === null) {
             return ( <p/> );
         }
         return (  
-            <HoldPileView ref={r} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onPileClick} />
+            <HoldPileView ref={r} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onStartDrag} />
         );
     }
 }

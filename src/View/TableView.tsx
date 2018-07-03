@@ -1,11 +1,9 @@
 import * as React from 'react'
-import {ITableData, ICard, PileName} from '../ModelView/ViewData'
+import {IModelViewData, ICardView, PileName} from '../ModelView/ViewData'
 import ModelViewDataSync from '../ModelView/ModelViewDataSync'
-import DeckView from './DeckView'
-import HoldPileViews from './HoldPileViews'
-import {front_style, piled_style, cardWidthValue, cardLengthValue} from './Renderer'
+import PileViews from './PileViews'
+import {front_style, piled_style, cardWidthValue, cardLengthValue} from  './CardRenderer'
 import {collect_all_cards_above} from '../ModelView/ViewData'
-import Mouse from './Mouse'
 
 interface IMoveDestination {
     pile: PileName;
@@ -13,21 +11,25 @@ interface IMoveDestination {
 }
 
 interface IMoveData {
-    card: ICard | null;
+    card: ICardView | null;
     destinations: IMoveDestination[];
     mouseOffsetX: number;
     mouseOffsetY: number;
 }
 
-interface IGameData {
-    table: ITableData;
+interface ITableData {
+    modelView: IModelViewData;
     moving: IMoveData;
 }
 
-export default class TableView extends React.Component<{}, IGameData>{
+
+export default class TableView extends React.Component<{}, ITableData>{
     
     private modelView = new ModelViewDataSync();
-    private holdPileViews = React.createRef<HoldPileViews>();
+    private pileViews = React.createRef<PileViews>();
+
+    private lastMouseX : number = 0;
+    private lastMouseY : number = 0;
 
     public componentDidMount() {
        this.update_state_no_moving();
@@ -35,15 +37,13 @@ export default class TableView extends React.Component<{}, IGameData>{
 
     public render(): JSX.Element {     
         if (this.state === null) {
-            return (<p/>);
+            return ( <p/> );
         }
         return (
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table"> 
                     
-                    <DeckView deck={this.state.table.deck} turned={this.state.table.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onTurnClick={this.onTurnClick} /> 
-                    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-                    <HoldPileViews ref={this.holdPileViews} hold={this.state.table.hold} moving={this.state.moving} onPileClick={this.onPileClick} />
+                    <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />
                     {this.render_moving()}
                 </div>
             </section>
@@ -55,27 +55,27 @@ export default class TableView extends React.Component<{}, IGameData>{
             return ( <p/> );
         }
 
-        const cards = collect_all_cards_above(this.state.moving.card, this.state.table);
+        const cards = collect_all_cards_above(this.state.moving.card, this.state.modelView);
         
         return (
             <section style={this.drag_style()} className="Dragging">
              <table>
-                {cards.map( (card: ICard, i: number) => this.render_moving_card(card, i === 0,  i === cards.length-1))}
+                {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === 0,  i === cards.length-1))}
              </table>
             </section>
         );
     }
 
     private drag_style() {
-        const x = Mouse.lastMouseX + this.state.moving.mouseOffsetX;
-        const y = Mouse.lastMouseY + this.state.moving.mouseOffsetY;
+        const x = this.lastMouseX + this.state.moving.mouseOffsetX;
+        const y = this.lastMouseY + this.state.moving.mouseOffsetY;
         return {
             left: x + "px",
             top: y + "px"
         };
     }
 
-    private render_moving_card(card: ICard, isTarget: boolean, isTop: boolean) {
+    private render_moving_card(card: ICardView, isTarget: boolean, isTop: boolean) {
 
         if (isTop) {
             return ( <tr> <section style={front_style(card)} /> </tr> );
@@ -89,11 +89,11 @@ export default class TableView extends React.Component<{}, IGameData>{
         }
     }
 
-    private move_destinations(card: ICard): IMoveDestination[] {
+    private move_destinations(card: ICardView): IMoveDestination[] {
         const destinationPiles = this.modelView.valid_move_to_destinations(card);
         const dests : IMoveDestination[] = [];
         for (const p of destinationPiles) {
-            const holdRef = this.holdPileViews.current;
+            const holdRef = this.pileViews.current;
             if (holdRef !== null) {
                 dests.push({pile: p, box: holdRef.box_for(p)});
             }            
@@ -101,30 +101,21 @@ export default class TableView extends React.Component<{}, IGameData>{
         return dests;
     }
 
-    private onTurnClick = (c: ICard, offsetX : number, offsetY: number) => {
+    private onStartDrag = (c: ICardView, offsetX : number, offsetY: number) => {
         const dests = this.move_destinations(c);
-        const data: IGameData = {
-            table: this.state.table, 
-            moving: {card: c, destinations: dests, mouseOffsetX: offsetX, mouseOffsetY: offsetY}
-        };
-        this.setState(data);
-    }
-
-    private onPileClick = (c: ICard, offsetX: number, offsetY: number) => {
-        const dests = this.move_destinations(c);
-        const data: IGameData = {
-            table: this.state.table, 
+        const data: ITableData = {
+            modelView: this.state.modelView, 
             moving: {card: c, destinations: dests, mouseOffsetX: offsetX, mouseOffsetY: offsetY}
         };
         this.setState(data);
     }
 
     private handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-        Mouse.lastMouseX = event.clientX;
-        Mouse.lastMouseY = event.clientY;
+        this.lastMouseX = event.clientX;
+        this.lastMouseY = event.clientY;
         if (this.state.moving.card !== null) {
-            const data: IGameData = {
-                table: this.state.table, 
+            const data: ITableData = {
+                modelView: this.state.modelView, 
                 moving: {
                     card: this.state.moving.card, 
                     destinations: this.state.moving.destinations, 
@@ -135,14 +126,12 @@ export default class TableView extends React.Component<{}, IGameData>{
             this.setState(data);
 
         }
-        
     }
     
     private handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+        this.lastMouseX = event.clientX;
+        this.lastMouseY = event.clientY;
 
-        Mouse.lastMouseX = event.clientX;
-        Mouse.lastMouseY = event.clientY;
-        
         const card = this.state.moving.card;
         if (card === null) {
             this.reset_drag();
@@ -157,12 +146,11 @@ export default class TableView extends React.Component<{}, IGameData>{
             
         }
         this.reset_drag();
-
     }
 
     private winning_pile() : PileName | null{
-        const dminX = Mouse.lastMouseX + this.state.moving.mouseOffsetX;
-        const dminY = Mouse.lastMouseY + this.state.moving.mouseOffsetY;
+        const dminX = this.lastMouseX + this.state.moving.mouseOffsetX;
+        const dminY = this.lastMouseY + this.state.moving.mouseOffsetY;
         const dmaxX = dminX + cardWidthValue;
         const dmaxY = dminY + cardLengthValue;
         
@@ -213,28 +201,11 @@ export default class TableView extends React.Component<{}, IGameData>{
     }
     
     private update_state_no_moving() {
-        const data: IGameData = {
-            table: this.modelView.table_data(), 
+        const data: ITableData = {
+            modelView: this.modelView.table_data(), 
             moving: {card: null, destinations: [], mouseOffsetX: 0, mouseOffsetY: 0}
         };
 
         this.setState(data);
     }
-/*
-    private set_pile_can_be_laid_to(card: ICard, rect: ClientRect) {
-         if (this.state.moving.destinations.findIndex(p=>p.pile===card.pileName) >=0 ) {
-            return;
-        }
-        
-        const minX = Mouse.lastMouseX + this.state.moving.mouseOffsetX;
-        const minY = Mouse.lastMouseY + this.state.moving.mouseOffsetY;
-        const maxX = minX + cardWithValue;
-        const maxY = minY + cardLengthValue;
-        if (rect.left > maxX || rect.left+cardWithValue < minX ||
-            rect.top > maxY || rect.top+cardLengthValue < minY) {
-                return;
-            }
-        this.currentTargets.push(card.pileName);
-    }
-    */
 }

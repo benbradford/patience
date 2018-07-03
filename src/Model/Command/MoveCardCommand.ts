@@ -63,6 +63,7 @@ export default class MoveCardCommand implements ICardCommand {
         }
         action.collection1.remove();
         action.collection2.push(action.card);
+        this.turn_card_if_appropriate(action);
         return true;
     }
 
@@ -72,6 +73,16 @@ export default class MoveCardCommand implements ICardCommand {
         }
         action.collection2.remove();
         action.collection1.push(action.card);
+        this.turn_card_if_appropriate(action);
         return true;
+    }
+
+    private turn_card_if_appropriate(action: CardAction) {
+        if (action.collection1 && this.collections.is_hold(action.collection1)) {
+            const cardToTurn = action.collection1.peek();
+            if (cardToTurn && cardToTurn.is_turned_up() === false) {
+                cardToTurn.turn();
+            }
+        }
     }
 }
