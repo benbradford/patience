@@ -34,7 +34,7 @@ export function hold_name(index: HoldIndex): PileName {
     throw Error("invalid hold index");
 }
 
-export function score_name(index: ScoreIndex): PileName{
+export function score_name(index: ScoreIndex): PileName {
     switch(index) {
         case 0: return "score0";
         case 1: return "score1";
@@ -42,6 +42,19 @@ export function score_name(index: ScoreIndex): PileName{
         case 3: return "score3";
     }
     throw Error("invalid score index");
+}
+
+export function hold_index_from_pilename(name: PileName): HoldIndex | null {
+    switch (name) {
+        case "hold0": return 0; 
+        case "hold1": return 1; 
+        case "hold2": return 2;
+        case "hold3": return 3;
+        case "hold4": return 4;
+        case "hold5": return 5;
+        case "hold6": return 6;
+    }
+    return null;
 }
 
 function view_pile_from_view_card(card: ICard, tableData: ITableData): ICardPile {

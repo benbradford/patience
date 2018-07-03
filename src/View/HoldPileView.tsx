@@ -14,8 +14,19 @@ export default class HoldPileView extends React.Component<any, any>{
             <div className="PileDiv">
               {this.props.pile.cards.map( (card: ICard, i: number) => this.render_card(card, i))}
              </div>
-
         );
+    }
+
+    public box(): ClientRect | null {
+        let index = this.props.pile.cards.length - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        const r = this.cardRefs[index].current;
+        if (r === null) {
+            return null;
+        }
+        return r.getBoundingClientRect();
     }
 
     private render_card(card: ICard, index: number) {
@@ -32,7 +43,7 @@ export default class HoldPileView extends React.Component<any, any>{
             return (
                 <section>
                  <div className="PileDiv">
-                    <section style={emptyStyle} />
+                    <section style={emptyStyle} ref={this.cardRefs[0]} />
                  </div>
                 </section>
             )

@@ -3,8 +3,10 @@ import {ICard, ICardPile} from '../ModelView/ViewData'
 import {Suit} from '../Model/Cards/Card'
 import {cardImages} from './CardImages'
 
-export const cardWidth = "120px";
-export const cardLength = " 160px";
+export const cardWidthValue = 120;
+export const cardLengthValue = 160;
+export const cardWidth = cardWidthValue + "px";
+export const cardLength = " " + cardLengthValue + "px";
 const previewLength = " 30px";
 
 export function render_card(pile: ICardPile, card : ICard, mouseDown: (card: ICard)=>void): JSX.Element {
