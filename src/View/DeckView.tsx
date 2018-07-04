@@ -14,19 +14,22 @@ export default class DeckView extends React.Component<any, any>{
                     {this.render_turned_card()}
                 </div>
                 <div className="PileDiv">
-                    {this.render_deck_card()}    
+                    {this.render_deck()}    
                 </div>
             </section>
         );
     }
 
-    private render_deck_card() {
+    private render_deck() {
         if (this.props.deck === null) {
             return ( <p/> );
         }
+        if (this.props.deck.cards.length === 0) {
+            return ( <section style={empty_style()} onMouseDown={this.deckClick}/> );  
+        }
         return (
             
-                 <section style={front_style(this.props.deck.cards[this.props.deck.cards.length-1])} onMouseDown={this.deckClick} />
+            <section style={front_style(this.props.deck.cards[this.props.deck.cards.length-1])} onMouseDown={this.deckClick} />
             
         );
     }

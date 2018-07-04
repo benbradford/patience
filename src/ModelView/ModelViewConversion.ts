@@ -36,13 +36,13 @@ import {ScoreIndex, HoldIndex} from '../Model/SolitaireCollections'
         return collections.score(0);
     }
     if (name === "score1") {
-        return collections.score(0);
+        return collections.score(1);
     }
     if (name === "score2") {
-        return collections.score(0);
+        return collections.score(2);
     }
     if (name === "score3") {
-        return collections.score(0);
+        return collections.score(3);
     }
     throw Error("invalid pile name");
 }

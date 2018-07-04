@@ -58,7 +58,15 @@ export default class SolitaireModelView {
             return false;
         }
         const toPile = model_collection_from_pile_name(dest, this.collections);
-        if (this.game.move(modelCard, toPile)) {
+
+        let moved = false;
+
+        if (modelCard.collection && modelCard.collection.peek() === modelCard) {
+            moved = this.game.move(modelCard, toPile);
+        } else {
+            moved = this.game.move_many(modelCard, toPile);
+        }
+        if (moved) {
                 this.dataSync.sync_view_with_model();
             return true;
         }
@@ -77,8 +85,15 @@ export default class SolitaireModelView {
         return  this.dataSync.model_view_data();
     }
 
-    private get_pile_if_valid_move_to(modelCard: Card, collection: CardCollection): PileName | null{
-            if (this.can_move_card_to(modelCard, collection)) {
+    private get_pile_if_valid_move_to(modelCard: Card, collection: CardCollection): PileName | null {
+            
+            let canMove = false;
+            if (modelCard.collection && modelCard.collection.peek() === modelCard) {
+                canMove = this.can_move_card_to(modelCard, collection);
+            } else {
+                canMove = this.can_move_many_cards_to(modelCard, collection);
+            }
+            if (canMove) {
                 return view_pile_from_model_pile(collection, this.collections);     
             }
             return null;
@@ -86,6 +101,10 @@ export default class SolitaireModelView {
 
     private can_move_card_to(card: Card, dest: CardCollection): boolean {      
         return this.moveCardCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
+    }
+
+    private can_move_many_cards_to(card: Card, dest: CardCollection): boolean {
+        return this.moveManyCardsCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
     }
 
     private lay_out_table(): void {
