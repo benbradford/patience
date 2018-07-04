@@ -40,7 +40,7 @@ export default class TableView extends React.Component<{}, ITableData> {
         return (
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
-                    <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />
+                    <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} score={this.state.modelView.score} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />
                     <CardDragView card={this.state.moving.card} modelView={this.state.modelView} cardX={this.lastMouseX + this.state.moving.mouseOffsetX} cardY={this.lastMouseY + this.state.moving.mouseOffsetY}/>
                 </div>
             </section>

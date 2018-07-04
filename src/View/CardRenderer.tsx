@@ -26,6 +26,26 @@ export function render_card(pile: IPileView, card : ICardView, mouseDown: (card:
     );
 }
 
+export function empty_style() {
+    return  {
+        width: cardWidth,
+        height: cardLength,
+        borderColor: "black",
+        border: "solid"
+    };
+}
+
+export function render_empty(cardRef: React.RefObject<HTMLElement>) {
+    
+    return (
+        <section>
+         <div className="PileDiv">
+            <section style={empty_style()} ref={cardRef} />
+         </div>
+        </section>
+    )
+}
+
 export function piled_style(card : ICardView) {
     const img = card_image(card);  
     return {

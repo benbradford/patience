@@ -57,6 +57,16 @@ export function hold_index_from_pilename(name: PileName): HoldIndex | null {
     return null;
 }
 
+export function score_index_from_pilename(name: PileName): ScoreIndex | null {
+    switch (name) {
+        case "score0": return 0; 
+        case "score1": return 1; 
+        case "score2": return 2;
+        case "score3": return 3;
+    }
+    return null;
+}
+
 function view_pile_from_view_card(card: ICardView, modelViewData: IModelViewData): IPileView {
     switch (card.pileName) {
         case "deck": return modelViewData.deck;

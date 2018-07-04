@@ -5,12 +5,12 @@ import CardCollection from '../Model/Cards/CardCollection';
 import {all_hold_indices} from './ModelViewConversion'
 
 export default class ModelViewDataSync {
-
     private modelViewData: IModelViewData;
-    private collections : SolitaireCollections;
+    private collections: SolitaireCollections;
 
     constructor(collections: SolitaireCollections) {
         this.collections = collections;
+        this.sync_view_with_model();
     }
 
     public sync_view_with_model() {

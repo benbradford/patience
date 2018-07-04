@@ -14,13 +14,12 @@ import {Card} from '../Model/Cards/Card'
 import ModelViewDataSync from './ModelViewDataSync'
 
 export default class SolitaireModelView {
-
     private collections = new SolitaireCollections();
     private game: SolitaireGame;
     private moveCardCommand = new MoveCardCommand(this.collections);
     private nextCardCommand = new NextCardCommand(this.collections);
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
-    private dataSync = new ModelViewDataSync(this.collections);
+    private dataSync: ModelViewDataSync;
 
     constructor () {
         this.game = new SolitaireGame(
@@ -31,7 +30,7 @@ export default class SolitaireModelView {
             this.moveManyCardsCommand);
 
         this.lay_out_table();
-        this.dataSync.sync_view_with_model();
+        this.dataSync = new ModelViewDataSync(this.collections);
     }
 
     public valid_move_to_destinations(card: ICardView): PileName[] {
@@ -85,8 +84,7 @@ export default class SolitaireModelView {
             return null;
     }
 
-    private can_move_card_to(card: Card, dest: CardCollection): boolean {     
-       
+    private can_move_card_to(card: Card, dest: CardCollection): boolean {      
         return this.moveCardCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
     }
 

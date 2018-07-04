@@ -1,7 +1,7 @@
 import * as React from 'react'
 import './Cards.css'
 import {ICardView} from '../ModelView/ModelViewData'
-import {piled_style, front_style, cardWidth, cardLength} from  './CardRenderer'
+import {piled_style, front_style, render_empty} from  './CardRenderer'
 
 export default class HoldPileView extends React.Component<any, any>{
     
@@ -32,7 +32,7 @@ export default class HoldPileView extends React.Component<any, any>{
     private render_card(card: ICardView, index: number) {
 
         if (this.props.pile.cards.length === 0 || (index === 0 && this.props.pile.cards[0] === this.props.moving.card)) {
-           return this.render_empty();
+           return render_empty(this.cardRefs[0]);
         }
 
         if (this.renderedFront || card === this.props.moving.card) {
@@ -53,24 +53,6 @@ export default class HoldPileView extends React.Component<any, any>{
             </tr>
         );
         
-    }
-
-    private render_empty() {
-        const emptyStyle = {
-            width: cardWidth,
-            height: cardLength,
-            borderColor: "black",
-            border: "solid"
-
-        };
-
-        return (
-            <section>
-             <div className="PileDiv">
-                <section style={emptyStyle} ref={this.cardRefs[0]} />
-             </div>
-            </section>
-        )
     }
 
     private onClick = (card: ICardView, index: number, event: React.MouseEvent<HTMLDivElement>): void => {

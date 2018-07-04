@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {cardWidth, cardLength, front_style} from  './CardRenderer'
+import {empty_style, front_style} from  './CardRenderer'
 import './Cards.css'
 
 export default class DeckView extends React.Component<any, any>{
@@ -41,17 +41,9 @@ export default class DeckView extends React.Component<any, any>{
             ++indexToShow;
         }
 
-        const emptyStyle = {
-            width: cardWidth,
-            height: cardLength,
-            borderColor: "black",
-            border: "solid"
-
-        };
-
         if (indexToShow >= this.props.turned.cards.length) {
 
-            return ( <section style={emptyStyle} /> );          
+            return ( <section style={empty_style()} /> );          
         }
    
         return (
