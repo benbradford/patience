@@ -1,7 +1,7 @@
 import * as React from 'react'
 import './Cards.css'
 import {front_style, render_empty} from  './CardRenderer'
-import {IPileView} from '../ModelView/ModelViewData'
+import {IPileView, ICardView} from '../ModelView/ModelViewData'
 import {ScoreIndex} from '../Model/SolitaireCollections' // :TODO: importing from model?
 
 export default class ScorePileViews extends React.Component<any, any>{
@@ -42,7 +42,24 @@ export default class ScorePileViews extends React.Component<any, any>{
         if (card === this.props.movingCard) {
             card = pile.cards[pile.cards.length-2];
         }
-        return ( <div className="PileDiv"> <section style={front_style(card)} ref={this.cardRefs[index]}  /> </div> );   
+        const callback = (event: React.MouseEvent<HTMLDivElement>) =>{ this.onClick(card, index, event); };
+        return ( <div className="PileDiv"> <section style={front_style(card)} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
+    }
+
+    private onClick = (card: ICardView, index: number, event: React.MouseEvent<HTMLDivElement>): void => {
+        if (this.props.movingCard!== null) {
+            return;
+        }
+
+        const cardRef = this.cardRefs[index].current;
+        if (cardRef === null) {
+            return;
+        }
+        const box = cardRef.getBoundingClientRect();
+        const offsetX = (box.left - event.clientX);
+        const offsetY = (box.top - event.clientY);
+
+        this.props.onScoreClick(card, offsetX, offsetY);
     }
 
 }
