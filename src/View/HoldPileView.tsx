@@ -37,11 +37,15 @@ export default class HoldPileView extends React.Component<any, any>{
     }
     private render_card(card: ICardView, index: number) {
 
-        if ((index === 0 && this.props.pile.cards[0] === this.props.moving.card)) {
-           return render_empty(this.cardRefs[0]);
+        if (this.renderedFront === true) {
+            return ( <p/> );
+        }
+        if (this.props.pile.cards[0] === this.props.moving.card) {
+            this.renderedFront = true;
+            return render_empty(this.cardRefs[0]);
         }
 
-        if (this.renderedFront || card === this.props.moving.card) {
+        if (card === this.props.moving.card) {
             this.renderedFront = true;
             return ( <p/> );
         }
