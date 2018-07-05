@@ -9,11 +9,12 @@ const emptyCard = [
 
 export const cardWidthValue = 120;
 export const cardLengthValue = 160;
+export const previewSize = cardLengthValue / 5;
 export const cardWidth = cardWidthValue + "px";
 export const cardLength = " " + cardLengthValue + "px";
 const cardBackgroundSize = (cardWidthValue + 4) + "px " + (cardLengthValue + 4) + "px";
 
-const previewLength = " " + (cardLengthValue/5) +"px";
+const previewLength = " " + (previewSize) +"px";
 
 function card_style(img: any, length: string) {  
     return {

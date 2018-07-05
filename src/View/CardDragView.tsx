@@ -8,7 +8,7 @@ export default class CardDragView extends React.Component<any, any>{
     
     public render(): JSX.Element {     
         
-        if (this.props.card === null) {
+        if (this.props.card === null || this.props.isDragged === false) {
             return ( <p/> );
         }
 
@@ -16,7 +16,7 @@ export default class CardDragView extends React.Component<any, any>{
         
         return (
             <section style={this.drag_style()} className="Dragging">
-             {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === cards.length-1))}
+             {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === 0, i === cards.length-1))}
             
             </section>
         );
@@ -29,12 +29,13 @@ export default class CardDragView extends React.Component<any, any>{
         };
     }
 
-    private render_moving_card(card: ICardView, isTop: boolean): JSX.Element  {
+    private render_moving_card(card: ICardView, isFirst: boolean, isTop: boolean): JSX.Element  {
 
         if (isTop) {
-            return ( <section style={front_style(card)} />);
+            
+            return ( <section style={front_style(card)}/>);
         }
-        return ( <section style={piled_style(card)} />  );
+        return ( <section style={piled_style(card)}/>  );
     }
 
 }

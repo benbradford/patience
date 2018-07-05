@@ -67,7 +67,7 @@ export function score_index_from_pilename(name: PileName): ScoreIndex | null {
     return null;
 }
 
-function view_pile_from_view_card(card: ICardView, modelViewData: IModelViewData): IPileView {
+export function view_pile_from_view_card(card: ICardView, modelViewData: IModelViewData): IPileView {
     switch (card.pileName) {
         case "deck": return modelViewData.deck;
         case "turned": return modelViewData.turned;
