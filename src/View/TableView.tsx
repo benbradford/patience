@@ -146,7 +146,7 @@ export default class TableView extends React.Component<{}, ITableData> {
             }
 
         } else {
-            this.revert_animation(card);
+            this.revert_animation();
         }
         
     }
@@ -203,7 +203,7 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     private handleMouseLeave = () => {
         if (this.state.moving.card && this.state.moving.isDragged === true) {
-            this.reset_drag();
+            this.revert_animation();
         }
     }
 
@@ -215,8 +215,9 @@ export default class TableView extends React.Component<{}, ITableData> {
         this.update_state_no_moving();
     }
 
-    private revert_animation(card: ICardView) {
-        if (this.dragFrom) {
+    private revert_animation() {
+        const card = this.state.moving.card;
+        if (card && this.dragFrom) {
             this.startAnimation(card, this.dragFrom, card.pileName);
         } else {
             this.reset_drag();
