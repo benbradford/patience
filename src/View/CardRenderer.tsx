@@ -7,9 +7,9 @@ const emptyCard = [
     require('../Asset/organic-tiles.png')
 ];
 
-export const cardWidthValue = 120;
-export const cardLengthValue = 160;
-export const previewSize = cardLengthValue / 5;
+export const cardWidthValue = 100;
+export const cardLengthValue = 140;
+export const previewSize = cardLengthValue / 6;
 export const cardWidth = cardWidthValue + "px";
 export const cardLength = " " + cardLengthValue + "px";
 const cardBackgroundSize = (cardWidthValue + 4) + "px " + (cardLengthValue + 4) + "px";

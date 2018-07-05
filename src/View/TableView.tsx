@@ -32,7 +32,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private lastMouseY : number = 0;
     private mouseOffsetX: number = 0;
     private mouseOffsetY: number = 0;
-
+    
     private dragFrom: ClientRect | null = null;
     
     private interval : NodeJS.Timer;
@@ -44,7 +44,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     
     public  componentWillUnmount() {
         clearInterval(this.interval);
-      }
+    }
 
     public render(): JSX.Element {     
         if (this.state === null) {
@@ -53,8 +53,8 @@ export default class TableView extends React.Component<{}, ITableData> {
         return (
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
-                    <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} score={this.state.modelView.score} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />
-                    <CardDragView ref={this.dragView} card={this.state.moving.card} isDragged={this.state.moving.isDragged} modelView={this.state.modelView} cardX={this.lastMouseX + this.mouseOffsetX} cardY={this.lastMouseY + this.mouseOffsetY}/>
+                    <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} score={this.state.modelView.score} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <CardDragView ref={this.dragView} card={this.state.moving.card} isDragged={this.state.moving.isDragged} modelView={this.state.modelView} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
                     <CardAnimationView ref={this.animationView} modelView={this.state.modelView} />
                 </div>
             </section>
@@ -93,8 +93,8 @@ export default class TableView extends React.Component<{}, ITableData> {
             return;
         }
         this.dragFrom = box;
-        this.mouseOffsetX = (box.left - this.lastMouseX);
-        this.mouseOffsetY= (box.top - this.lastMouseY);
+        this.mouseOffsetX = (box.left - this.lastMouseX) - 14;
+        this.mouseOffsetY= (box.top - this.lastMouseY) - 8;
         
         const dests = this.move_destinations(c);
         const data: ITableData = {
@@ -228,8 +228,8 @@ export default class TableView extends React.Component<{}, ITableData> {
         if (this.animationView.current && this.dragView.current) {
             this.state.moving.card = card;
             this.state.moving.isDragged = false;
-            const x = this.lastMouseX + this.mouseOffsetX;
-            const y = this.lastMouseY + this.mouseOffsetY;
+            const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
+            const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
            
             const destX = box.left;
             let destY = box.top;
@@ -240,7 +240,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                     destY +=  previewSize; 
                 }           
             }
-            this.animationView.current.start_animation(card, x, y, destX, destY, this.onAnimationEnd);
+            this.animationView.current.start_animation(card, x, y, destX + window.scrollX, destY + window.scrollY, this.onAnimationEnd);
         } else {
             this.reset_drag();
         }
@@ -251,14 +251,6 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
     
     private update_state_no_moving() {
-        if (this.state && this.state.moving && this.state.moving.card !== null && this.state.moving.isDragged === false) {
-            const movingData: ITableData = {
-                modelView: this.modelView.table_data(), 
-                moving: {card: this.state.moving.card, destinations: this.state.moving.destinations, isDragged: false}
-            };
-    
-            this.setState(movingData);
-        }
         const data: ITableData = {
             modelView: this.modelView.table_data(), 
             moving: {card: null, destinations: [], isDragged: false}

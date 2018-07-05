@@ -8,8 +8,7 @@
 
 .PileDiv {
     float:left;
-    width:130px;
-    min-width: 130px;
+    min-width: 110px;
     border: 1px;
     border-color:white;
     line-height: 0;
@@ -17,10 +16,11 @@
 
 .Dragging{
     position: absolute;
+    box-shadow: 14px 8px rgba(77, 83, 83, 0.8);
 }
 
 .BetweenScoreAndDeck {
-    padding-left:120px;
+    padding-left:100px;
     float:left;
     
 }
