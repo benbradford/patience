@@ -51,7 +51,7 @@ export default class HoldPileView extends React.Component<any, any>{
         }
 
         let s = piled_style(card);
-        const callback = (event: React.MouseEvent<HTMLDivElement>) =>{ this.onClick(card, index, event); };
+        const callback = () =>{ this.onClick(card, index); };
 
         if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (index < this.props.pile.cards.length-1 && this.props.pile.cards[index+1] === this.props.moving.card)) {
              s = front_style(card);
@@ -64,7 +64,7 @@ export default class HoldPileView extends React.Component<any, any>{
         
     }
 
-    private onClick = (card: ICardView, index: number, event: React.MouseEvent<HTMLDivElement>): void => {
+    private onClick = (card: ICardView, index: number): void => {
         if (this.props.moving.card !== null) {
             return;
         }
@@ -78,10 +78,8 @@ export default class HoldPileView extends React.Component<any, any>{
             return;
         }
         const box = r.getBoundingClientRect();
-        const offsetX = (box.left - event.clientX);
-        const offsetY = (box.top - event.clientY);
-
-        this.props.onPileClick(card, offsetX, offsetY);
+      
+        this.props.onPileClick(card, box);
     
     }
 

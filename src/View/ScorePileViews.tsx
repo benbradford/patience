@@ -42,11 +42,11 @@ export default class ScorePileViews extends React.Component<any, any>{
         if (card === this.props.movingCard) {
             card = pile.cards[pile.cards.length-2];
         }
-        const callback = (event: React.MouseEvent<HTMLDivElement>) =>{ this.onClick(card, index, event); };
+        const callback = () =>{ this.onClick(card, index); };
         return ( <div className="PileDiv"> <section style={front_style(card)} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
     }
 
-    private onClick = (card: ICardView, index: number, event: React.MouseEvent<HTMLDivElement>): void => {
+    private onClick = (card: ICardView, index: number): void => {
         if (this.props.movingCard!== null) {
             return;
         }
@@ -56,10 +56,8 @@ export default class ScorePileViews extends React.Component<any, any>{
             return;
         }
         const box = cardRef.getBoundingClientRect();
-        const offsetX = (box.left - event.clientX);
-        const offsetY = (box.top - event.clientY);
 
-        this.props.onScoreClick(card, offsetX, offsetY);
+        this.props.onScoreClick(card, box);
     }
 
 }

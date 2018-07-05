@@ -29,6 +29,8 @@ export default class TableView extends React.Component<{}, ITableData> {
     private lastMouseX : number = 0;
     private lastMouseY : number = 0;
 
+    private dragFrom: ClientRect | null = null;
+
     public componentDidMount() {
        this.update_state_no_moving();
     }
@@ -65,7 +67,10 @@ export default class TableView extends React.Component<{}, ITableData> {
         return dests;
     }
 
-    private onStartDrag = (c: ICardView, offsetX : number, offsetY: number) => {
+    private onStartDrag = (c: ICardView, box: ClientRect) => {
+        this.dragFrom = box;
+        const offsetX = (box.left - this.lastMouseX);
+        const offsetY = (box.top - this.lastMouseY);
         const dests = this.move_destinations(c);
         const data: ITableData = {
             modelView: this.state.modelView, 
@@ -122,35 +127,44 @@ export default class TableView extends React.Component<{}, ITableData> {
         let winningPile: PileName | null = null;
 
         for (const dest of this.state.moving.destinations) {
-            if (dest.box === null) {
-                continue;
-            }
-
-            if (dminX > dest.box.left + cardWidthValue || dmaxX < dest.box.left || dminY > dest.box.top + cardLengthValue || dmaxY < dest.box.top) {
-                continue;
-            }
-
-            let left = dminX;
-            let right = dest.box.left + cardWidthValue;
-            if (dest.box.left > dminX) {
-                left = dest.box.left;
-                right = dmaxX;
-            }
-
-            let top = dminY;
-            let bottom = dest.box.top + cardLengthValue;
-            if (dest.box.top > dminY) {
-                top = dest.box.top;
-                bottom = dmaxY;
-            }
-
-            const coverage = (right-left) * (bottom-top);
+            
+            const coverage = this.check_overlap(dest.box, dminX, dminY, dmaxX, dmaxY);
             if (coverage > highestCoverage) {
                 winningPile = dest.pile;
                 highestCoverage = coverage;
             }
         }
+        const returnCoverage = this.check_overlap(this.dragFrom, dminX, dminY, dmaxX, dmaxY);
+        if (returnCoverage > highestCoverage) {
+            return null;
+        }
         return winningPile;
+    }
+
+    private check_overlap(box: ClientRect | null, dminX: number, dminY: number, dmaxX: number, dmaxY: number): number {
+        if (box === null) {
+            return -1;
+        }
+
+        if (dminX > box.left + cardWidthValue || dmaxX < box.left || dminY > box.top + cardLengthValue || dmaxY < box.top) {
+            return -1;
+        }
+
+        let left = dminX;
+        let right = box.left + cardWidthValue;
+        if (box.left > dminX) {
+            left = box.left;
+            right = dmaxX;
+        }
+
+        let top = dminY;
+        let bottom = box.top + cardLengthValue;
+        if (box.top > dminY) {
+            top = box.top;
+            bottom = dmaxY;
+        }
+
+        return(right-left) * (bottom-top);
     }
 
     private handleMouseLeave = () => {
@@ -161,6 +175,7 @@ export default class TableView extends React.Component<{}, ITableData> {
         if (this.state.moving.card === null) {
             return;
         }
+        this.dragFrom = null;
         this.update_state_no_moving();
     }
     

@@ -60,7 +60,7 @@ export default class DeckView extends React.Component<any, any>{
         this.props.onDeckClick();
     }
 
-    private turnClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+    private turnClick = (): void => {
         if (this.props.moving.card !== null) {
             return;
         }
@@ -71,10 +71,8 @@ export default class DeckView extends React.Component<any, any>{
             return;
         }
         const box = this.turnedRef.current.getBoundingClientRect();
-        const offsetX = (box.left - event.clientX);
-        const offsetY = (box.top - event.clientY);
 
-        this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1], offsetX, offsetY);
+        this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1], box);
     }
     
 }
