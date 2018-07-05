@@ -75,8 +75,8 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 
     private handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-        this.lastMouseX = event.clientX;
-        this.lastMouseY = event.clientY;
+        this.lastMouseX = event.clientX + window.scrollX;
+        this.lastMouseY = event.clientY + window.scrollY;
         if (this.state.moving.card !== null) {
             const data: ITableData = {
                 modelView: this.state.modelView, 
