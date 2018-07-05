@@ -33,7 +33,7 @@ export default class HoldPileView extends React.Component<any, any>{
         if (this.props.pile.cards.length === 0 ) {
             return render_empty(this.cardRefs[0]);
         }
-        return (<div className="PileDiv"> {this.props.pile.cards.map( (card: ICardView, i: number) => this.render_card(card, i))} </div>);
+        return (<section className="PileDiv"> {this.props.pile.cards.map( (card: ICardView, i: number) => this.render_card(card, i))} </section>);
     }
     private render_card(card: ICardView, index: number) {
 
@@ -58,9 +58,8 @@ export default class HoldPileView extends React.Component<any, any>{
         } 
 
         return (       
-            <tr>
-                <section style={s} onMouseDown={callback} ref={this.cardRefs[index]}/> 
-            </tr>
+            <section style={s} onMouseDown={callback} ref={this.cardRefs[index]}/> 
+           
         );
         
     }

@@ -24,6 +24,7 @@ export default class PileViews extends React.Component<any, any>{
         return (
             <section>
                 <ScorePileViews ref={this.scoresRef} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.moving.card} onScoreClick={this.props.onStartDrag} />    
+                <section className="BetweenScoreAndDeck">&nbsp;</section>
                 <DeckView deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 

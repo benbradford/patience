@@ -16,7 +16,7 @@ export default class CardDragView extends React.Component<any, any>{
         
         return (
             <section style={this.drag_style()} className="Dragging">
-             <table>
+             <table className="noBorders">
                 {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === cards.length-1))}
              </table>
             </section>

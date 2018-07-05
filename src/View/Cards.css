@@ -1,30 +1,40 @@
 .Table {
-    width:100%;
-    height:100%;
-    background-color: rgb(226, 255, 255);
-    position: absolute;
-    vertical-align: 0px;
-    border-color: black;
-    border-spacing: 0px;
-    border: solid;
+    min-height:600px;
+    min-width:500px;
+    padding:60px;
+    background-image: url("../Asset/table.jpeg");
+    background-repeat: repeat;
 }
 
 .PileDiv {
     float:left;
     width:130px;
     min-width: 130px;
+    border: 1px;
+    border-color:white;
+    line-height: 0;
 }
 
 .Dragging{
     position: absolute;
 }
 
+.BetweenScoreAndDeck {
+    padding-left:120px;
+    float:left;
+    
+}
+
 .DragTable {
     border-collapse: collapse;
     border-spacing: 0;
-    padding:0;
-    margin:0;
-    vertical-align: 0px;
+    margin: 0;
+    padding: 0;
+    border: 1px;
+    border-color:white;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
 }
 
 .EmptyPile {
@@ -35,3 +45,11 @@
     padding: 0;
     margin: 0;
 }
+
+.noBorders {
+    margin: 0;
+    padding: 0;
+    border: 1px;
+    border-color:white;
+}
+
