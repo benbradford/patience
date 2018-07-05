@@ -16,9 +16,8 @@ export default class CardDragView extends React.Component<any, any>{
         
         return (
             <section style={this.drag_style()} className="Dragging">
-             <table className="noBorders">
-                {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === cards.length-1))}
-             </table>
+             {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === cards.length-1))}
+            
             </section>
         );
     }
@@ -33,9 +32,9 @@ export default class CardDragView extends React.Component<any, any>{
     private render_moving_card(card: ICardView, isTop: boolean): JSX.Element  {
 
         if (isTop) {
-            return ( <tr> <section style={front_style(card)} /> </tr> );
+            return ( <section style={front_style(card)} />);
         }
-        return ( <tr> <section style={piled_style(card)} /> </tr> );
+        return ( <section style={piled_style(card)} />  );
     }
 
 }

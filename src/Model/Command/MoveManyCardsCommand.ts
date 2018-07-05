@@ -2,7 +2,7 @@ import ICardCommand from '../Cards/ICardCommand'
 import {Card, Face} from '../Cards/Card'
 import CardAction from '../Cards/CardAction'
 import SolitaireCollections from '../SolitaireCollections'
-import CardCollection from 'src/Model/Cards/CardCollection';
+import CardCollection from '../Cards/CardCollection';
 
 export default class MoveManyCardsCommand implements ICardCommand {
 
