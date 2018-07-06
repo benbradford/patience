@@ -65,11 +65,7 @@ export default class HoldPileView extends React.Component<any, any>{
     }
 
     private onClick = (card: ICardView, index: number): void => {
-        if (this.props.moving.card !== null) {
-            return;
-        }
-
-        if (card.turned === false) {
+        if (this.props.moving.card !== null || card.turned === false) {
             return;
         }
 

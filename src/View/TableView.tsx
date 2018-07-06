@@ -26,8 +26,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private modelView = new SolitaireModelView();
     private pileViews = React.createRef<PileViews>();
     private animationView = React.createRef<CardAnimationView>();
-    private dragView = React.createRef<CardDragView>();
-
+   
     private lastMouseX : number = 0;
     private lastMouseY : number = 0;
     private mouseOffsetX: number = 0;
@@ -54,7 +53,7 @@ export default class TableView extends React.Component<{}, ITableData> {
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} score={this.state.modelView.score} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
-                    <CardDragView ref={this.dragView} card={this.state.moving.card} isDragged={this.state.moving.isDragged} modelView={this.state.modelView} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
+                    <CardDragView card={this.state.moving.card} isDragged={this.state.moving.isDragged} modelView={this.state.modelView} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
                     <CardAnimationView ref={this.animationView} modelView={this.state.modelView} />
                 </div>
             </section>
@@ -225,7 +224,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
     private startAnimation(card: ICardView, box: ClientRect, pile: PileName) {
         
-        if (this.animationView.current && this.dragView.current) {
+        if (this.animationView.current) {
             this.state.moving.card = card;
             this.state.moving.isDragged = false;
             const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;

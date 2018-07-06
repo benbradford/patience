@@ -61,12 +61,10 @@ export default class DeckView extends React.Component<any, any>{
     }
 
     private turnClick = (): void => {
-        if (this.props.moving.card !== null) {
+        if (this.props.moving.card !== null || this.props.turned.cards.length === 0) {
             return;
         }
-        if (this.props.turned.cards.length === 0) {
-            return;
-        }
+      
         if (this.turnedRef.current === null) {
             return;
         }
