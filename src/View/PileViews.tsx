@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Cards.css'
-import { IPileView, PileName, hold_index_from_pilename, score_index_from_pilename } from '../ModelView/ModelViewData';
+import { IPileView } from '../ModelView/Cards/ModelViewData';
 import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
@@ -32,23 +32,25 @@ export default class PileViews extends React.Component<any, any>{
         );
     }
 
-    public box_for(name: PileName): ClientRect | null{
-        const index = hold_index_from_pilename(name);
-        if (index !== null) {         
+    public box_for(pileIndex: number): ClientRect | null{
+        const index = pileIndex - 2;
+        if (index >=0 && index < 7) {
             const r = this.pileRef[index];
             if (r === null || r.current === null) {
-                
+                    
                 return null;
             }
             return r.current.box();
         }
-        const scoreIndex = score_index_from_pilename(name);
-        if (scoreIndex !== null) {
+            
+        const scoreIndex = pileIndex - 9;
+        if (scoreIndex >=0 && scoreIndex < 4) {
             const scores = this.scoresRef.current;
             if (scores) {
                 return scores.box(scoreIndex);
             }
         }
+        
         return null;
     }
 

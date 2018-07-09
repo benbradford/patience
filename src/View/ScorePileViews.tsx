@@ -1,8 +1,7 @@
 import * as React from 'react'
 import './Cards.css'
 import {front_style, render_empty} from  './CardRenderer'
-import {IPileView, ICardView} from '../ModelView/ModelViewData'
-import {ScoreIndex} from '../Model/SolitaireCollections' // :TODO: importing from model?
+import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
 
 export default class ScorePileViews extends React.Component<any, any>{
     
@@ -24,7 +23,7 @@ export default class ScorePileViews extends React.Component<any, any>{
        
     }
 
-    public box(index: ScoreIndex): ClientRect | null {
+    public box(index: number): ClientRect | null {
         
         const r = this.cardRefs[index].current;
         if (r === null) {

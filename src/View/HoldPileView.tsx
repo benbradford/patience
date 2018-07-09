@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Cards.css'
-import {ICardView} from '../ModelView/ModelViewData'
+import {ICardView} from '../ModelView/Cards/ModelViewData'
 import {piled_style, front_style, render_empty} from  './CardRenderer'
 
 export default class HoldPileView extends React.Component<any, any>{

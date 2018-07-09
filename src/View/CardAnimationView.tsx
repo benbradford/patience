@@ -1,7 +1,7 @@
 import * as React from 'react'
 import './Cards.css'
-import CardDragView from './CardDragView'
-import {ICardView} from '../ModelView/ModelViewData'
+import FloatingCardView from './FloatingCardView'
+import {ICardView} from '../ModelView/Cards/ModelViewData'
 
 export default class CardAnimationView extends React.Component<any, any>{
     
@@ -17,12 +17,12 @@ export default class CardAnimationView extends React.Component<any, any>{
     private onAnimEnd: ()=>void | null;
 
     public render(): JSX.Element {   
-        if (this.isAnimating === false) {
+        if (this.card === null || this.isAnimating === false) {
 
            return ( <p/> );
 
         }  
-        return ( <CardDragView card={this.card} isDragged={true} modelView={this.props.modelView} cardX={this.animX} cardY={this.animY}/> );
+        return ( <FloatingCardView card={this.card} enabled={true} modelViewDataSync={this.props.modelViewDataSync} cardX={this.animX} cardY={this.animY}/> );
     }
 
     public start_animation(card: ICardView, fromX: number, fromY: number, destX: number, destY: number, onAnimEnd: ()=>void) {
@@ -47,10 +47,13 @@ export default class CardAnimationView extends React.Component<any, any>{
         if (this.moveTime >= 10) {
             this.isAnimating = false;
             delta = 10;
-            this.onAnimEnd();
         }
         this.animX = this.fromX + (this.destX - this.fromX) * delta;
         this.animY = this.fromY + (this.destY - this.fromY) * delta;
+        if (this.isAnimating === false) {
+            this.onAnimEnd();
+            this.card = null;
+        }
     }
 
     public is_animating(): boolean {

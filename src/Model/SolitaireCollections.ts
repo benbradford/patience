@@ -20,12 +20,9 @@ enum SolitairePiles {
     Max
 }
 
-export type ScoreIndex = 0 | 1 | 2 | 3;
-export type HoldIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-
 export default class SolitaireCollections {
 
-    private table: CardTable<SolitairePiles.Max> = new CardTable(SolitairePiles.Max);
+    public table: CardTable = new CardTable(SolitairePiles.Max);
 
     public deck(): CardCollection {
         const collection = this.table.collection(SolitairePiles.Deck as number);
@@ -37,20 +34,20 @@ export default class SolitaireCollections {
         return collection;
     }
 
-    public hold(index: HoldIndex): CardCollection {
+    public hold(index: number): CardCollection {
         const adjustedIndex = SolitairePiles.Hold0 + index; 
         const collection = this.table.collection(adjustedIndex);
         return collection;
     }
 
-    public score(index: ScoreIndex): CardCollection {
+    public score(index: number): CardCollection {
         const adjustedIndex = SolitairePiles.Score0 + index;
         const collection = this.table.collection(adjustedIndex);
         return collection;
     }
 
     public is_hold(collection: CardCollection): boolean {
-        const valid : HoldIndex[] = [0, 1, 2, 3, 4, 5, 6, 7];
+        const valid : number[] = [0, 1, 2, 3, 4, 5, 6, 7];
         for (const i of valid) {
             if (collection === this.hold(i)) {
                 return true;
@@ -60,7 +57,7 @@ export default class SolitaireCollections {
     }
 
     public is_score(collection: CardCollection): boolean {
-        const valid : ScoreIndex[] = [0, 1, 2, 3];
+        const valid : number[] = [0, 1, 2, 3];
         for (const i of valid) {
             if (collection === this.score(i)) {
                 return true;

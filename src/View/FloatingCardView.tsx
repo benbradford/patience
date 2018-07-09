@@ -1,18 +1,17 @@
 import * as React from 'react'
 import './Cards.css'
 import {front_style, piled_style, } from  './CardRenderer'
-import {collect_all_cards_above} from '../ModelView/ModelViewData'
-import {ICardView} from '../ModelView/ModelViewData'
+import {ICardView} from '../ModelView/Cards/ModelViewData'
 
-export default class CardDragView extends React.Component<any, any>{
+export default class FloatingCardView extends React.Component<any, any>{
     
     public render(): JSX.Element {     
         
-        if (this.props.card === null || this.props.isDragged === false) {
+        if (this.props.card === null || this.props.enabled === false) {
             return ( <p/> );
         }
 
-        const cards = collect_all_cards_above(this.props.card, this.props.modelView);
+        const cards = this.props.modelViewDataSync.collect_all_cards_above(this.props.card);
         
         return (
             <section style={this.drag_style()} className="Dragging">

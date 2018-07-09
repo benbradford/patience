@@ -1,19 +1,18 @@
 import * as React from 'react'
-import {IModelViewData, ICardView, PileName, view_pile_from_view_card, hold_index_from_pilename} from '../ModelView/ModelViewData'
+import {IModelViewData, ICardView} from '../ModelView/Cards/ModelViewData'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import PileViews from './PileViews'
 import {cardWidthValue, cardLengthValue, previewSize} from  './CardRenderer'
-import CardDragView from './CardDragView'
+import FloatingCardView from './FloatingCardView'
 import CardAnimationView from './CardAnimationView'
 
 export interface IMoveDestination {
-    pile: PileName;
+    pileIndex: number;
     box: ClientRect | null; 
 }
 
 interface IMoveData {
     card: ICardView | null;
-    destinations: IMoveDestination[];
     isDragged: boolean;
 }
 
@@ -35,7 +34,8 @@ export default class TableView extends React.Component<{}, ITableData> {
     private dragFrom: ClientRect | null = null;
     
     private interval : NodeJS.Timer;
-    
+    private destinations: IMoveDestination[];
+
     public componentDidMount() {
        this.update_state_no_moving();
        this.interval = setInterval(() => this.update(), 10);
@@ -52,9 +52,9 @@ export default class TableView extends React.Component<{}, ITableData> {
         return (
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
-                    <PileViews ref={this.pileViews} deck={this.state.modelView.deck} hold={this.state.modelView.hold} turned={this.state.modelView.turned} moving={this.state.moving} score={this.state.modelView.score} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
-                    <CardDragView card={this.state.moving.card} isDragged={this.state.moving.isDragged} modelView={this.state.modelView} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
-                    <CardAnimationView ref={this.animationView} modelView={this.state.modelView} />
+                    <PileViews ref={this.pileViews} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} moving={this.state.moving} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <FloatingCardView card={this.state.moving.card} enabled={this.state.moving.isDragged} modelViewDataSync={this.modelView.data_sync()} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
+                    <CardAnimationView ref={this.animationView} modelViewDataSync={this.modelView.data_sync()} />
                 </div>
             </section>
         );
@@ -78,10 +78,10 @@ export default class TableView extends React.Component<{}, ITableData> {
     private move_destinations(card: ICardView): IMoveDestination[] {
         const destinationPiles = this.modelView.valid_move_to_destinations(card);
         const dests : IMoveDestination[] = [];
+        const holdRef = this.pileViews.current;
         for (const p of destinationPiles) {
-            const holdRef = this.pileViews.current;
             if (holdRef !== null) {
-                dests.push({pile: p, box: holdRef.box_for(p)});
+                dests.push({pileIndex: p, box: holdRef.box_for(p)});
             }            
         }
         return dests;
@@ -95,10 +95,10 @@ export default class TableView extends React.Component<{}, ITableData> {
         this.mouseOffsetX = (box.left - this.lastMouseX) - 14;
         this.mouseOffsetY= (box.top - this.lastMouseY) - 8;
         
-        const dests = this.move_destinations(c);
+        this.destinations = this.move_destinations(c);
         const data: ITableData = {
             modelView: this.state.modelView, 
-            moving: {card: c, destinations: dests, isDragged: true}
+            moving: {card: c, isDragged: true}
         };
         this.setState(data);
     }
@@ -112,7 +112,6 @@ export default class TableView extends React.Component<{}, ITableData> {
                 modelView: this.state.modelView, 
                 moving: {
                     card: this.state.moving.card, 
-                    destinations: this.state.moving.destinations,
                     isDragged: true
                 }
             };
@@ -137,9 +136,10 @@ export default class TableView extends React.Component<{}, ITableData> {
         const winning = this.winning_pile();
         if (winning ) {
             
-            this.modelView.move_card_to(card, winning.pile );
+            this.modelView.move_card_to(card, winning.pileIndex );
+            // :NOTE: card is now invalid - need to resync it with data sync?
             if (winning.box) {
-                this.startAnimation(card, winning.box, winning.pile);
+                this.startAnimation(card, winning.box, winning.pileIndex);
             } else {
                 this.reset_drag();
             }
@@ -159,7 +159,7 @@ export default class TableView extends React.Component<{}, ITableData> {
         let highestCoverage = 0;
         let winningPile: IMoveDestination | null = null;
 
-        for (const dest of this.state.moving.destinations) {
+        for (const dest of this.destinations) {
             
             const coverage = this.check_overlap(dest.box, dminX, dminY, dmaxX, dmaxY);
             if (coverage > highestCoverage) {
@@ -217,13 +217,14 @@ export default class TableView extends React.Component<{}, ITableData> {
     private revert_animation() {
         const card = this.state.moving.card;
         if (card && this.dragFrom) {
-            this.startAnimation(card, this.dragFrom, card.pileName);
+            this.startAnimation(card, this.dragFrom, card.pileIndex);
         } else {
             this.reset_drag();
         }
     }
-    private startAnimation(card: ICardView, box: ClientRect, pile: PileName) {
+    private startAnimation(card: ICardView, box: ClientRect, pileIndex: number) {
         
+        card.pileIndex = pileIndex;
         if (this.animationView.current) {
             this.state.moving.card = card;
             this.state.moving.isDragged = false;
@@ -233,8 +234,8 @@ export default class TableView extends React.Component<{}, ITableData> {
             const destX = box.left;
             let destY = box.top;
             
-            if (hold_index_from_pilename(pile)) {
-                const destPile = view_pile_from_view_card(card, this.state.modelView);
+            if (pileIndex > 1 && pileIndex < 9) {
+                const destPile = this.modelView.hold()[pileIndex - 2];
                 if (destPile.cards.length > 0) {
                     destY +=  previewSize; 
                 }           
@@ -252,7 +253,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private update_state_no_moving() {
         const data: ITableData = {
             modelView: this.modelView.table_data(), 
-            moving: {card: null, destinations: [], isDragged: false}
+            moving: {card: null, isDragged: false}
         };
 
         this.setState(data);
