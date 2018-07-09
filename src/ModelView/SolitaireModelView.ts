@@ -32,6 +32,7 @@ export default class SolitaireModelView {
         this.dataSync = new ModelViewDataSync(this.collections.table);
     }
 
+    // :TODO: be nice to not have to expose this
     public data_sync() : ModelViewDataSync {
         return this.dataSync;
     }
@@ -54,27 +55,21 @@ export default class SolitaireModelView {
 
     public score(): IPileView[] {
         const piles: IPileView[]= [];
-        for (let i = 9; i < 13; ++i) {
+        for (let i = 10; i <= 13; ++i) {
             piles.push(this.dataSync.view_pile(i));
         }
         return piles;
     }
 
     public valid_move_to_destinations(card: ICardView): number[] {
-            const modelCard = this.dataSync.model_card(card);
-            const destinations: number[] = [];
-            for (let i = 0; i < 7; ++i) {
-                if (this.is_valid_move_to(modelCard, this.collections.hold(i))) {
-                    destinations.push(i + 2);
-                }
+        const modelCard = this.dataSync.model_card(card);
+        const destinations: number[] = [];
+        for (let i = 0; i < this.dataSync.model_view_data().piles.length; ++i) {
+            if (this.is_valid_move_to(modelCard, this.collections.table.collection(i))) {
+                destinations.push(i);
             }
-
-            for (let i = 0; i < 4; ++i) {
-                 if (this.is_valid_move_to(modelCard, this.collections.score(i))) {
-                    destinations.push(i + 9);
-                }
-            }
-            return destinations;
+        }
+        return destinations;
     }
 
     public move_card_to(card: ICardView, destIndex: number): boolean {
@@ -96,6 +91,29 @@ export default class SolitaireModelView {
             return true;
         }
         return false;
+    }
+
+    public view_card(card: ICardView, pileIndex: number): ICardView {
+        
+        let pile: IPileView | null = null;
+        if (pileIndex === 0) {
+            pile = this.deck();
+        } else if (pileIndex === 1) {
+            pile = this.turned();
+        } else if (pileIndex < 9) {
+            pile = this.hold()[pileIndex-2];
+        } else if (pileIndex < 14) {
+            pile = this.score()[pileIndex - 10];
+        }
+        if (pile) {
+            for (const c of pile.cards) {
+                if (c.suit === card.suit && c.face === card.face) {
+                    return c;
+                }
+            }
+        }
+        throw Error("cannot get view card");
+        
     }
 
     public next_card(): boolean {

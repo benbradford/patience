@@ -1,5 +1,4 @@
 import * as React from 'react'
-import {empty_style, front_style} from  './CardRenderer'
 import './Cards.css'
 
 export default class DeckView extends React.Component<any, any>{
@@ -25,11 +24,11 @@ export default class DeckView extends React.Component<any, any>{
             return ( <p/> );
         }
         if (this.props.deck.cards.length === 0) {
-            return ( <section style={empty_style()} onMouseDown={this.deckClick}/> );  
+            return ( <section style={this.props.cardStyles.empty()} onMouseDown={this.deckClick}/> );  
         }
         return (
             
-            <section style={front_style(this.props.deck.cards[this.props.deck.cards.length-1])} onMouseDown={this.deckClick} />
+            <section style={this.props.cardStyles.front(this.props.deck.cards[this.props.deck.cards.length-1])} onMouseDown={this.deckClick} />
             
         );
     }
@@ -46,12 +45,12 @@ export default class DeckView extends React.Component<any, any>{
 
         if (indexToShow >= this.props.turned.cards.length) {
 
-            return ( <section style={empty_style()} /> );          
+            return ( <section style={this.props.cardStyles.empty()} /> );          
         }
    
         return (
            <section>
-              <section ref={this.turnedRef} style={front_style(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
+              <section ref={this.turnedRef} style={this.props.cardStyles.front(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
            </section>  
         );
     }

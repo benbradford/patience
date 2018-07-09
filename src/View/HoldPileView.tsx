@@ -1,13 +1,27 @@
 import * as React from 'react'
 import './Cards.css'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
-import {piled_style, front_style, render_empty} from  './CardRenderer'
 
 export default class HoldPileView extends React.Component<any, any>{
     
-    private readonly cardRefs: Array<React.RefObject<HTMLElement>> = [React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>(), React.createRef<HTMLElement>()];
+    private readonly cardRefs: Array<React.RefObject<HTMLElement>> = [
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(), 
+        React.createRef<HTMLElement>(),
+        React.createRef<HTMLElement>()
+    ];
 
     private renderedFront = false;
+    
     public render(): JSX.Element {     
         this.renderedFront = false;
         return (
@@ -31,7 +45,7 @@ export default class HoldPileView extends React.Component<any, any>{
 
     private render_cards() {
         if (this.props.pile.cards.length === 0 ) {
-            return render_empty(this.cardRefs[0]);
+            return this.render_empty(this.cardRefs[0]);
         }
         return (<section className="PileDiv"> {this.props.pile.cards.map( (card: ICardView, i: number) => this.render_card(card, i))} </section>);
     }
@@ -42,7 +56,7 @@ export default class HoldPileView extends React.Component<any, any>{
         }
         if (this.props.pile.cards[0] === this.props.moving.card) {
             this.renderedFront = true;
-            return render_empty(this.cardRefs[0]);
+            return this.render_empty(this.cardRefs[0]);
         }
 
         if (card === this.props.moving.card) {
@@ -50,18 +64,27 @@ export default class HoldPileView extends React.Component<any, any>{
             return ( <p/> );
         }
 
-        let s = piled_style(card);
+        let s = this.props.cardStyles.piled(card);
         const callback = () =>{ this.onClick(card, index); };
 
         if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (index < this.props.pile.cards.length-1 && this.props.pile.cards[index+1] === this.props.moving.card)) {
-             s = front_style(card);
+             s = this.props.cardStyles.front(card);
         } 
 
         return (       
             <section style={s} onMouseDown={callback} ref={this.cardRefs[index]}/> 
            
-        );
-        
+        );   
+    }
+
+    private render_empty(cardRef: React.RefObject<HTMLElement>) {  
+        return (
+            <section>
+             <div className="PileDiv">
+                <section style={this.props.cardStyles.empty()} ref={cardRef} />
+             </div>
+            </section>
+        )
     }
 
     private onClick = (card: ICardView, index: number): void => {

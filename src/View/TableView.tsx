@@ -2,11 +2,11 @@ import * as React from 'react'
 import {IModelViewData, ICardView} from '../ModelView/Cards/ModelViewData'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import PileViews from './PileViews'
-import {cardWidthValue, cardLengthValue, previewSize} from  './CardRenderer'
 import FloatingCardView from './FloatingCardView'
 import CardAnimationView from './CardAnimationView'
+import DefaultCardStyles from './DefaultCardStyles'
 
-export interface IMoveDestination {
+interface IMoveDestination {
     pileIndex: number;
     box: ClientRect | null; 
 }
@@ -25,7 +25,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private modelView = new SolitaireModelView();
     private pileViews = React.createRef<PileViews>();
     private animationView = React.createRef<CardAnimationView>();
-   
+    private cardStyles: DefaultCardStyles = new DefaultCardStyles();
     private lastMouseX : number = 0;
     private lastMouseY : number = 0;
     private mouseOffsetX: number = 0;
@@ -52,9 +52,9 @@ export default class TableView extends React.Component<{}, ITableData> {
         return (
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
-                    <PileViews ref={this.pileViews} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} moving={this.state.moving} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
-                    <FloatingCardView card={this.state.moving.card} enabled={this.state.moving.isDragged} modelViewDataSync={this.modelView.data_sync()} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
-                    <CardAnimationView ref={this.animationView} modelViewDataSync={this.modelView.data_sync()} />
+                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} moving={this.state.moving} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <FloatingCardView cardStyles={this.cardStyles} card={this.state.moving.card} enabled={this.state.moving.isDragged} modelViewDataSync={this.modelView.data_sync()} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
+                    <CardAnimationView ref={this.animationView} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
                 </div>
             </section>
         );
@@ -116,7 +116,6 @@ export default class TableView extends React.Component<{}, ITableData> {
                 }
             };
             this.setState(data);
-
         }
     }
     
@@ -126,7 +125,7 @@ export default class TableView extends React.Component<{}, ITableData> {
         if (this.state.moving.isDragged === false) {
             return;
         }
-        const card = this.state.moving.card;
+        let card = this.state.moving.card;
         if (card === null) {
             this.reset_drag();
 
@@ -137,8 +136,8 @@ export default class TableView extends React.Component<{}, ITableData> {
         if (winning ) {
             
             this.modelView.move_card_to(card, winning.pileIndex );
-            // :NOTE: card is now invalid - need to resync it with data sync?
-            if (winning.box) {
+            card = this.modelView.view_card(card, winning.pileIndex);
+            if (winning.box && card) {
                 this.startAnimation(card, winning.box, winning.pileIndex);
             } else {
                 this.reset_drag();
@@ -147,14 +146,13 @@ export default class TableView extends React.Component<{}, ITableData> {
         } else {
             this.revert_animation();
         }
-        
     }
 
     private winning_pile() : IMoveDestination | null {
         const dminX = this.lastMouseX + this.mouseOffsetX;
         const dminY = this.lastMouseY + this.mouseOffsetY;
-        const dmaxX = dminX + cardWidthValue;
-        const dmaxY = dminY + cardLengthValue;
+        const dmaxX = dminX + this.cardStyles.cardWidthValue;
+        const dmaxY = dminY + this.cardStyles.cardLengthValue;
         
         let highestCoverage = 0;
         let winningPile: IMoveDestination | null = null;
@@ -179,19 +177,19 @@ export default class TableView extends React.Component<{}, ITableData> {
             return -1;
         }
 
-        if (dminX > box.left + cardWidthValue || dmaxX < box.left || dminY > box.top + cardLengthValue || dmaxY < box.top) {
+        if (dminX > box.left + this.cardStyles.cardWidthValue || dmaxX < box.left || dminY > box.top + this.cardStyles.cardLengthValue || dmaxY < box.top) {
             return -1;
         }
 
         let left = dminX;
-        let right = box.left + cardWidthValue;
+        let right = box.left + this.cardStyles.cardWidthValue;
         if (box.left > dminX) {
             left = box.left;
             right = dmaxX;
         }
 
         let top = dminY;
-        let bottom = box.top + cardLengthValue;
+        let bottom = box.top + this.cardStyles.cardLengthValue;
         if (box.top > dminY) {
             top = box.top;
             bottom = dmaxY;
@@ -224,7 +222,6 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
     private startAnimation(card: ICardView, box: ClientRect, pileIndex: number) {
         
-        card.pileIndex = pileIndex;
         if (this.animationView.current) {
             this.state.moving.card = card;
             this.state.moving.isDragged = false;
@@ -237,7 +234,7 @@ export default class TableView extends React.Component<{}, ITableData> {
             if (pileIndex > 1 && pileIndex < 9) {
                 const destPile = this.modelView.hold()[pileIndex - 2];
                 if (destPile.cards.length > 0) {
-                    destY +=  previewSize; 
+                    destY +=  this.cardStyles.previewSize; 
                 }           
             }
             this.animationView.current.start_animation(card, x, y, destX + window.scrollX, destY + window.scrollY, this.onAnimationEnd);

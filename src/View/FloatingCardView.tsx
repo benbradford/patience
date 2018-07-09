@@ -1,6 +1,5 @@
 import * as React from 'react'
 import './Cards.css'
-import {front_style, piled_style, } from  './CardRenderer'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
 
 export default class FloatingCardView extends React.Component<any, any>{
@@ -32,9 +31,9 @@ export default class FloatingCardView extends React.Component<any, any>{
 
         if (isTop) {
             
-            return ( <section style={front_style(card)}/>);
+            return ( <section style={this.props.cardStyles.front(card)}/>);
         }
-        return ( <section style={piled_style(card)}/>  );
+        return ( <section style={this.props.cardStyles.piled(card)}/>  );
     }
 
 }

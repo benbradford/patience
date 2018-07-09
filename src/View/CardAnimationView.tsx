@@ -22,7 +22,7 @@ export default class CardAnimationView extends React.Component<any, any>{
            return ( <p/> );
 
         }  
-        return ( <FloatingCardView card={this.card} enabled={true} modelViewDataSync={this.props.modelViewDataSync} cardX={this.animX} cardY={this.animY}/> );
+        return ( <FloatingCardView cardStyles={this.props.cardStyles} card={this.card} enabled={true} modelViewDataSync={this.props.modelViewDataSync} cardX={this.animX} cardY={this.animY}/> );
     }
 
     public start_animation(card: ICardView, fromX: number, fromY: number, destX: number, destY: number, onAnimEnd: ()=>void) {

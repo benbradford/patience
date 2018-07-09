@@ -23,16 +23,16 @@ export default class PileViews extends React.Component<any, any>{
         const piles : IPileView[] = this.props.hold;
         return (
             <section>
-                <ScorePileViews ref={this.scoresRef} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.moving.card} onScoreClick={this.props.onStartDrag} />    
+                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.moving.card} onScoreClick={this.props.onStartDrag} />    
                 <section className="BetweenScoreAndDeck">&nbsp;</section>
-                <DeckView deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
+                <DeckView cardStyles={this.props.cardStyles} deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
             </section>
         );
     }
 
-    public box_for(pileIndex: number): ClientRect | null{
+    public box_for(pileIndex: number): ClientRect | null {
         const index = pileIndex - 2;
         if (index >=0 && index < 7) {
             const r = this.pileRef[index];
@@ -43,7 +43,7 @@ export default class PileViews extends React.Component<any, any>{
             return r.current.box();
         }
             
-        const scoreIndex = pileIndex - 9;
+        const scoreIndex = pileIndex - 10;
         if (scoreIndex >=0 && scoreIndex < 4) {
             const scores = this.scoresRef.current;
             if (scores) {
@@ -60,7 +60,7 @@ export default class PileViews extends React.Component<any, any>{
             return ( <p/> );
         }
         return (  
-            <HoldPileView ref={r} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onStartDrag} />
+            <HoldPileView ref={r} cardStyles={this.props.cardStyles} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onStartDrag} />
         );
     }
 }

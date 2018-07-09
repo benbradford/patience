@@ -1,6 +1,5 @@
 import * as React from 'react'
 import './Cards.css'
-import {front_style, render_empty} from  './CardRenderer'
 import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
 
 export default class ScorePileViews extends React.Component<any, any>{
@@ -12,19 +11,16 @@ export default class ScorePileViews extends React.Component<any, any>{
         React.createRef<HTMLElement>()
     ];
 
-    public render(): JSX.Element {     
-        
+    public render(): JSX.Element {       
         return (
             <section>
                 <div className="PileDiv" />
                 {this.props.score.map( (pile: IPileView, index: number) => this.render_card(pile, index))}
             </section>
-        );
-       
+        );  
     }
 
-    public box(index: number): ClientRect | null {
-        
+    public box(index: number): ClientRect | null {   
         const r = this.cardRefs[index].current;
         if (r === null) {
             return null;
@@ -34,7 +30,7 @@ export default class ScorePileViews extends React.Component<any, any>{
    
     private render_card(pile: IPileView, index: number): JSX.Element  {
         if (pile.cards.length === 0 || (pile.cards.length === 1 && pile.cards[0] === this.props.movingCard)) {
-            return render_empty(this.cardRefs[index])
+            return this.render_empty(this.cardRefs[index])
         }
 
         let card = pile.cards[pile.cards.length-1];
@@ -42,7 +38,17 @@ export default class ScorePileViews extends React.Component<any, any>{
             card = pile.cards[pile.cards.length-2];
         }
         const callback = () =>{ this.onClick(card, index); };
-        return ( <div className="PileDiv"> <section style={front_style(card)} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
+        return ( <div className="PileDiv"> <section style={this.props.cardStyles.front(card)} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
+    }
+
+    private render_empty(cardRef: React.RefObject<HTMLElement>) {  
+        return (
+            <section>
+             <div className="PileDiv">
+                <section style={this.props.cardStyles.empty()} ref={cardRef} />
+             </div>
+            </section>
+        )
     }
 
     private onClick = (card: ICardView, index: number): void => {

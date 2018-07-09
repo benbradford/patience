@@ -30,6 +30,7 @@ export default class ModelViewDataSync {
         return this.modelViewData.piles[viewPileIndex];
     }
 
+    // :TODO: this function is in the wrong place - where should it go?
     public collect_all_cards_above(card: ICardView): ICardView[] {
         let fromIndex: number | undefined;
         const pile = this.view_pile(card.pileIndex);
@@ -41,7 +42,7 @@ export default class ModelViewDataSync {
         }
     
         if (fromIndex === undefined) {
-            return [];
+            throw Error("cannot get from index")
         }
     
         return pile.cards.slice(fromIndex, pile.cards.length);
