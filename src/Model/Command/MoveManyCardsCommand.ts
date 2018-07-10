@@ -1,36 +1,37 @@
-import ICardCommand from '../Cards/ICardCommand'
+import CardCommand from '../Cards/CardCommand'
 import {Card, Face} from '../Cards/Card'
-import CardAction from '../Cards/CardAction'
 import SolitaireCollections from '../SolitaireCollections'
+import IMoveCardActionParameters from './IMoveCardActionParameters'
 import CardCollection from '../Cards/CardCollection';
 
-export default class MoveManyCardsCommand implements ICardCommand {
+export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionParameters>  {
 
     private collections: SolitaireCollections;
 
     constructor(collections: SolitaireCollections) {
+        super();
         this.collections = collections;
     }
 
-    public can_execute(action: CardAction): boolean {
-        if (!action.collection1 || !action.collection2 || !action.card) {
+    public on_can_execute(action: IMoveCardActionParameters): boolean {
+        if (!action.from || !action.to || !action.card) {
             return false;
         }
-        if (!(this.collections.is_hold(action.collection1) && this.collections.is_hold(action.collection2))) {
+        if (!(this.collections.is_hold(action.from) && this.collections.is_hold(action.to))) {
             return false;
         }
-        if (action.collection1.contains(action.card) === false) {
+        if (action.from.contains(action.card) === false) {
             return false;
         }
         if (action.card.is_turned_up() === false) {
             return false;
         }
-        if (action.collection1 === action.collection2) {
+        if (action.from === action.to) {
             return false;
         }
-        const dest = action.collection2.peek();
+        const dest = action.to.peek();
         if (!dest) {
-            if (this.collections.is_hold(action.collection2) && action.card.face !== Face.king) {
+            if (this.collections.is_hold(action.to) && action.card.face !== Face.king) {
                 return false;
             }
         } else {
@@ -44,26 +45,26 @@ export default class MoveManyCardsCommand implements ICardCommand {
         return true;
     }
 
-    public execute(action: CardAction): boolean {
-        if (!action.collection1 || !action.collection2 || !action.card) {
+    public on_execute(action: IMoveCardActionParameters): boolean {
+        if (!action.from || !action.to || !action.card) {
             return false;
         }
 
-        this.move_all(action.collection1, action.collection2, action.card);
-        const cardToTurn = action.collection1.peek();
+        this.move_all(action.from, action.to, action.card);
+        const cardToTurn = action.from.peek();
         if (cardToTurn && cardToTurn.is_turned_up() === false) {
             cardToTurn.turn();
         }
         return true;
     }
 
-    public undo(action: CardAction): boolean {
-        if (!action.collection1 || !action.collection2 || !action.card) {
+    public on_undo(action: IMoveCardActionParameters): boolean {
+        if (!action.from || !action.to || !action.card) {
             return false;
         }
 
-        this.move_all(action.collection2, action.collection1, action.card);
-        const cardToTurn = action.collection1.peek();
+        this.move_all(action.to, action.from, action.card);
+        const cardToTurn = action.from.peek();
         if (cardToTurn && cardToTurn.is_turned_up()) {
             cardToTurn.turn();
         }

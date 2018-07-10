@@ -1,49 +1,47 @@
-import ICardCommand from '../Cards/ICardCommand'
-import CardAction from '../Cards/CardAction'
+import CardCommand from '../Cards/CardCommand'
 import SolitaireCollections from '../SolitaireCollections'
 import {Face} from '../Cards/Card'
+import IMoveCardActionParameters from './IMoveCardActionParameters'
+import CardCollection from '../Cards/CardCollection';
 
-export default class MoveCardCommand implements ICardCommand {
+export default class MoveCardCommand extends CardCommand<IMoveCardActionParameters> {
 
     private collections: SolitaireCollections;
 
     constructor(collections: SolitaireCollections) {
+        super();
         this.collections = collections;
     }
 
-    public can_execute(action: CardAction): boolean {
-        if (!action.collection1 || !action.collection2 || !action.card) {
-            return false;
-        }
-
-        if (action.collection1.peek() !== action.card) {
+    public on_can_execute(action: IMoveCardActionParameters): boolean {
+        if (action.from.peek() !== action.card) {
             return false;
         }
         if (!action.card.is_turned_up()) {
             return false;
         }
-        if (action.collection1 === action.collection2) {
+        if (action.from === action.to) {
             return false;
         }
-        const dest = action.collection2.peek();
+        const dest = action.to.peek();
 
         if (!dest) {
-            if (this.collections.is_hold(action.collection2) && action.card.face !== Face.king) {
+            if (this.collections.is_hold(action.to) && action.card.face !== Face.king) {
                 return false;
             }
-            if (this.collections.is_score(action.collection2) && action.card.face !== Face.ace) {
+            if (this.collections.is_score(action.to) && action.card.face !== Face.ace) {
                 return false;
             }
         }
         else {
-            if (this.collections.is_hold(action.collection2)) {
+            if (this.collections.is_hold(action.to)) {
                 if (dest.colour === action.card.colour) {
                     return false;
                 }
                 if (dest.face !== action.card.face+1) {
                     return false;
                 }
-            } else if (this.collections.is_score(action.collection2)) {
+            } else if (this.collections.is_score(action.to)) {
                 if (dest.suit !== action.card.suit) {
                     return false;
                 }
@@ -57,29 +55,23 @@ export default class MoveCardCommand implements ICardCommand {
         return true;
     }
 
-    public execute(action: CardAction): boolean {
-        if (!action.collection1 || !action.collection2 || !action.card) {
-            return false;
-        }
-        action.collection1.remove();
-        action.collection2.push(action.card);
-        this.turn_card_if_appropriate(action);
+    public on_execute(action: IMoveCardActionParameters): boolean {
+        action.from.remove();
+        action.to.push(action.card);
+        this.turn_card_if_appropriate(action.from);
         return true;
     }
 
-    public undo(action: CardAction): boolean {
-        if (!action.collection1 || !action.collection2 || !action.card) {
-            return false;
-        }
-        action.collection2.remove();
-        action.collection1.push(action.card);
-        this.turn_card_if_appropriate(action);
+    public on_undo(action: IMoveCardActionParameters): boolean {
+        action.to.remove();
+        action.from.push(action.card);
+        this.turn_card_if_appropriate(action.from);
         return true;
     }
 
-    private turn_card_if_appropriate(action: CardAction) {
-        if (action.collection1 && this.collections.is_hold(action.collection1)) {
-            const cardToTurn = action.collection1.peek();
+    private turn_card_if_appropriate(from: CardCollection) {
+        if (from && this.collections.is_hold(from)) {
+            const cardToTurn = from.peek();
             if (cardToTurn && cardToTurn.is_turned_up() === false) {
                 cardToTurn.turn();
             }

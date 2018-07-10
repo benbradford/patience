@@ -8,7 +8,6 @@ import NextCardCommand from '../Model/Command/NextCardCommand'
 import DeckMaker from '../Model/Cards/DeckMaker';
 import CardShuffler from '../Model/Cards/CardShuffler';
 import SolitaireGame from '../Model/SolitaireGame';
-import CardAction from '../Model/Cards/CardAction';
 import {Card} from '../Model/Cards/Card'
 import ModelViewDataSync from './Cards/ModelViewDataSync'
 
@@ -137,12 +136,12 @@ export default class SolitaireModelView {
         }        
     }
 
-    private can_move_card_to(card: Card, dest: CardCollection): boolean {      
-        return this.moveCardCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
+    private can_move_card_to(c: Card, d: CardCollection): boolean {
+         return this.moveCardCommand.can_execute({card: c, from: c.collection, to: d});
     }
 
-    private can_move_many_cards_to(card: Card, dest: CardCollection): boolean {
-        return this.moveManyCardsCommand.can_execute(new CardAction(this.moveCardCommand, card, card.collection, dest));
+    private can_move_many_cards_to(c: Card, d: CardCollection): boolean {
+        return this.moveManyCardsCommand.can_execute({card: c, from: c.collection, to: d});
     }
 
     private lay_out_table(): void {

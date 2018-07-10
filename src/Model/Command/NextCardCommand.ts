@@ -1,28 +1,26 @@
-import ICardCommand from '../Cards/ICardCommand'
-import CardAction from '../Cards/CardAction'
+import CardCommand from '../Cards/CardCommand'
 import SolitaireCollections from '../SolitaireCollections'
 import CardCollection from '../Cards/CardCollection'
+import IEmptyActionParameters from './IEmptyActionParameters'
 
-export default class NextCardCommand implements ICardCommand {
+export default class NextCardCommand extends CardCommand<IEmptyActionParameters> {
 
     private collections: SolitaireCollections;
 
     constructor(collections: SolitaireCollections) {
+        super();
         this.collections = collections;
     }
 
-    public can_execute(action: CardAction): boolean {
-        if (this.collections.deck().is_empty() && this.collections.turned().is_empty()) {
-            return false;
-        }
-        return true;
+    public on_can_execute(action: IEmptyActionParameters): boolean {
+        return !(this.collections.deck().is_empty() && this.collections.turned().is_empty());
     }
-    public execute(action: CardAction): boolean {
+    public on_execute(action: IEmptyActionParameters): boolean {
         const pile1 = this.collections.deck();
         const pile2 = this.collections.turned();
         return this.exchange(pile1, pile2);
     }
-    public undo(action: CardAction): boolean {
+    public on_undo(action: IEmptyActionParameters): boolean {
         const pile1 = this.collections.turned();
         const pile2 = this.collections.deck();
         return this.exchange(pile1, pile2);

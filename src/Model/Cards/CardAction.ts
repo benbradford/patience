@@ -1,17 +1,13 @@
-import {Card} from './Card'
-import CardCollection from './CardCollection'
+
 import ICardCommand from './ICardCommand'
+import ICardActionParameters from './ICardActionParameters';
 
 export default class CardAction {
-    public card: Card | undefined;
-    public collection1: CardCollection | undefined;
-    public collection2: CardCollection | undefined;
-    public command: ICardCommand;
+    public readonly command: ICardCommand;
+    public readonly params: ICardActionParameters;
 
-    constructor(command: ICardCommand, card?: Card, collection1?: CardCollection, collection2?: CardCollection) {
+    constructor(command: ICardCommand, params: ICardActionParameters) {
         this.command = command;
-        this.card = card;
-        this.collection1 = collection1;
-        this.collection2 = collection2;
+        this.params = params;
     }
 }

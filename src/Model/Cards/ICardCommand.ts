@@ -1,8 +1,8 @@
-import CardAction from './CardAction'
+import ICardActionParameters from './ICardActionParameters'
 
 export default interface ICardCommand {
 
-    can_execute(action: CardAction): boolean;
-    execute(action: CardAction): boolean;
-    undo(action: CardAction): boolean;
+    can_execute(action: ICardActionParameters): boolean;
+    execute(action: ICardActionParameters): boolean;
+    undo(action: ICardActionParameters): boolean;
 }

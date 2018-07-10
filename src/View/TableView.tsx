@@ -32,10 +32,10 @@ export default class TableView extends React.Component<{}, ITableData> {
     private mouseOffsetY: number = 0;
     
     private dragFrom: ClientRect | null = null;
-    
-    private interval : NodeJS.Timer;
     private destinations: IMoveDestination[];
 
+    private interval : NodeJS.Timer;
+    
     public componentDidMount() {
        this.update_state_no_moving();
        this.interval = setInterval(() => this.update(), 10);

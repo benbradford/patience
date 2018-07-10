@@ -6,11 +6,11 @@ export default class CardActionExecutor {
     private undone: CardAction[] = [];
 
     public attempt(action: CardAction) : boolean {
-        if (action.command.can_execute(action) === false) {
+        if (action.command.can_execute(action.params) === false) {
             return false;
         }
         
-        const result = action.command.execute(action);
+        const result = action.command.execute(action.params);
         
         if (result) {
             this.executed.push(action);
@@ -36,7 +36,7 @@ export default class CardActionExecutor {
             return false;
         }
         this.undone.push(action);
-        return action.command.undo(action);
+        return action.command.undo(action.params);
     }
 
     public redo(): boolean {
@@ -50,7 +50,7 @@ export default class CardActionExecutor {
         if (action.command.can_execute(action) === false) {
             return false;
         }
-        const result = action.command.execute(action);
+        const result = action.command.execute(action.params);
         if (result === false) {
             return false;
         }

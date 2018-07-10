@@ -1,4 +1,4 @@
-import NextCardCommand from '../NextCardCommand'
+/*import NextCardCommand from '../NextCardCommand'
 import {Card, Face, Suit} from '../../Cards/Card'
 import SolitaireCollections from '../../SolitaireCollections';
 import CardAction from '../../Cards/CardAction';
@@ -202,3 +202,4 @@ it('WHEN using deck with 3 cards THEN can turn to turned deck and undo again',()
 
     has_top_card_equal_to(collections.turned(), card3);
 });
+*/

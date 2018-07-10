@@ -33,16 +33,16 @@ export default class SolitaireGame {
         this.cardExecutor = new CardActionExecutor();
     }
 
-    public move(card: Card, to: CardCollection): boolean {
-        return this.cardExecutor.attempt(new CardAction(this.moveCard, card, card.collection, to));
+    public move(c: Card, t: CardCollection): boolean {
+        return this.cardExecutor.attempt(new CardAction(this.moveCard, {card: c, from: c.collection, to: t}));
     }
 
     public next() : boolean {
-        return this.cardExecutor.attempt(new CardAction(this.nextCard));
+        return this.cardExecutor.attempt(new CardAction(this.nextCard, {}));
     }
 
-    public move_many(card: Card, to: CardCollection): boolean {
-        return this.cardExecutor.attempt(new CardAction(this.moveMany, card, card.collection, to));
+    public move_many(c: Card, t: CardCollection): boolean {
+        return this.cardExecutor.attempt(new CardAction(this.moveMany, {card: c, from: c.collection, to: t}));
     }
 
     public card_executor() : CardActionExecutor {
