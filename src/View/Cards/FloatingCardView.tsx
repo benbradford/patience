@@ -1,6 +1,6 @@
 import * as React from 'react'
-import './Cards.css'
-import {ICardView} from '../ModelView/Cards/ModelViewData'
+import '../Cards.css'
+import {ICardView} from '../../ModelView/Cards/ModelViewData'
 
 export default class FloatingCardView extends React.Component<any, any>{
     

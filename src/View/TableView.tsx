@@ -2,9 +2,10 @@ import * as React from 'react'
 import {IModelViewData, ICardView} from '../ModelView/Cards/ModelViewData'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import PileViews from './PileViews'
-import FloatingCardView from './FloatingCardView'
-import CardAnimationView from './CardAnimationView'
+import FloatingCardView from './Cards/FloatingCardView'
+import CardAnimationView from './Cards/CardAnimationView'
 import DefaultCardStyles from './DefaultCardStyles'
+import SimpleLerpCardAnimator from './Cards/Animation/SimpleLerpCardAnimator'
 
 interface IMoveDestination {
     pileIndex: number;
@@ -237,7 +238,8 @@ export default class TableView extends React.Component<{}, ITableData> {
                     destY +=  this.cardStyles.previewSize; 
                 }           
             }
-            this.animationView.current.start_animation(card, x, y, destX + window.scrollX, destY + window.scrollY, this.onAnimationEnd);
+            const animator = new SimpleLerpCardAnimator({cardX:x, cardY:y}, destX + window.scrollX, destY + window.scrollY);
+            this.animationView.current.start_animation(card, animator, this.onAnimationEnd);
         } else {
             this.reset_drag();
         }
