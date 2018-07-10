@@ -1,7 +1,6 @@
-/*import MoveCardCommand from '../MoveCardCommand'
+import MoveCardCommand from '../MoveCardCommand'
 import {Card, Face, Suit} from '../../Cards/Card'
 import SolitaireCollections from '../../SolitaireCollections';
-import CardAction from '../../Cards/CardAction';
 
 it('WHEN card is turned down, THEN cannot move', () => {
     const collections = new SolitaireCollections();
@@ -13,7 +12,7 @@ it('WHEN card is turned down, THEN cannot move', () => {
     expect(collections.hold(0));
     const hold = collections.hold(0);
 
-    const action = new CardAction(command, card1, collections.turned(), hold);
+    const action = {card: card1, from: collections.turned(), to: hold};
     expect(command.can_execute(action)).toBeFalsy();
 });
 
@@ -27,7 +26,7 @@ it('WHEN hold is empty, THEN can move king', () => {
     expect(collections.hold(0));
     const hold = collections.hold(0);
 
-    const action = new CardAction(command, card1, collections.turned(), hold);
+    const action =  {card: card1, from: collections.turned(), to: hold};
 
     expect(card1.face).toEqual(Face.king);
     expect(command.can_execute(action)).toEqual(true);
@@ -53,8 +52,8 @@ it('WHEN moving card that is not on top, THEN do not move ', () => {
     const command = new MoveCardCommand(collections);
     const score = collections.score(3);
 
-    const aceAction = new CardAction(command, ace, collections.turned(), score);
-    expect(aceAction.command.can_execute(aceAction)).toBeFalsy();
+    const aceAction = {card: ace, from: collections.turned(), to: score};
+    expect(command.can_execute(aceAction)).toBeFalsy();
 });
 
 it('WHEN score is empty, THEN can only move ace', () => {
@@ -68,17 +67,17 @@ it('WHEN score is empty, THEN can only move ace', () => {
     const command = new MoveCardCommand(collections);
     const score = collections.score(1);
 
-    const kingAction = new CardAction(command, king, collections.turned(), score);
-    const aceAction = new CardAction(command, ace, collections.turned(), score);
+    const kingAction = {card: king, from: collections.turned(), to: score};
+    const aceAction = {card: ace, from: collections.turned(), to: score};
 
-    expect(aceAction.command.can_execute(aceAction)).toBeTruthy();
-    expect(aceAction.command.execute(aceAction)).toBeTruthy();
-    expect(aceAction.command.undo(aceAction)).toBeTruthy();
+    expect(command.can_execute(aceAction)).toBeTruthy();
+    expect(command.execute(aceAction)).toBeTruthy();
+    expect(command.undo(aceAction)).toBeTruthy();
     expect(score.is_empty()).toBeTruthy();
     expect(collections.turned().peek()).toEqual(ace);
 
     collections.turned().remove();
-    expect(kingAction.command.can_execute(kingAction)).toBeFalsy();
+    expect(command.can_execute(kingAction)).toBeFalsy();
     expect(score.is_empty()).toBeTruthy();
     expect(collections.turned().peek()).toEqual(king);
 });
@@ -96,7 +95,7 @@ it('GIVEN hold with card, WHEN turned top has a card which can be laid, THEN wil
     expect(card2.collection).toEqual(collections.turned());
 
     const command = new MoveCardCommand(collections);
-    const action = new CardAction(command, card2, collections.turned(), hold);
+    const action = {card: card2, from: collections.turned(), to: hold};
 
     expect(command.can_execute(action)).toEqual(true);
     expect(command.execute(action)).toEqual(true);
@@ -122,7 +121,7 @@ it('GIVEN hold with card, WHEN turned top has a card which can not be laid, THEN
     expect(card2.collection).toEqual(collections.turned());
 
     const command = new MoveCardCommand(collections);
-    const action = new CardAction(command, card2, collections.turned(), hold);
+    const action = {card: card2, from: collections.turned(), to: hold};
 
     expect(command.can_execute(action)).toBeFalsy();
 });
@@ -138,20 +137,20 @@ it('GIVEN score pile with an ace WHEN adding a two of a different suit THEN cann
 
     collections.turned().push(ace);
 
-    const aceAction = new CardAction(command, ace, collections.turned(), score);
-    const twoAction = new CardAction(command, two, collections.turned(), score);
-    const twoDifferentAction = new CardAction(command, twoDifferent, collections.turned(), score);
+    const aceAction = {card: ace, from: collections.turned(), to: score};
+    const twoAction =  {card: two, from: collections.turned(), to: score};
+    const twoDifferentAction = {card: twoDifferent, from: collections.turned(), to: score};
 
-    expect(aceAction.command.can_execute(aceAction)).toBeTruthy();
-    aceAction.command.execute(aceAction);
+    expect(command.can_execute(aceAction)).toBeTruthy();
+    command.execute(aceAction);
 
     collections.turned().push(two);
-    expect(aceAction.command.can_execute(twoAction)).toBeTruthy();
-    aceAction.command.execute(twoAction);
+    expect(command.can_execute(twoAction)).toBeTruthy();
+    command.execute(twoAction);
     expect(score.peek()).toEqual(two);
     score.remove();
 
     expect(score.peek()).toEqual(ace);
 
-    expect(twoDifferentAction.command.can_execute(twoDifferentAction)).toBeFalsy();
-});*/
+    expect(command.can_execute(twoDifferentAction)).toBeFalsy();
+});

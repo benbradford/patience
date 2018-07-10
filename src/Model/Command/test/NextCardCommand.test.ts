@@ -1,4 +1,4 @@
-/*import NextCardCommand from '../NextCardCommand'
+import NextCardCommand from '../NextCardCommand'
 import {Card, Face, Suit} from '../../Cards/Card'
 import SolitaireCollections from '../../SolitaireCollections';
 import CardAction from '../../Cards/CardAction';
@@ -37,7 +37,7 @@ function has_top_card_equal_to(collection: CardCollection, card: Card) {
 it('WHEN deck is empty THEN cannot turn', () => {
     const collections = new SolitaireCollections();
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = new CardAction(command, {});
     expect(command.can_execute(action)).toBeFalsy();
     expect(command.execute(action)).toBeFalsy();
     expect(command.undo(action)).toBeFalsy();
@@ -54,7 +54,7 @@ it('WHEN desk has cards, THEN can turn forever', () => {
     collections.deck().push(card3);
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = new CardAction(command, {});
 
     for (let i = 0; i < 10; ++i) {
         expect(command.can_execute(action)).toBeTruthy();
@@ -73,7 +73,7 @@ it('GIVEN deck has no cards WHEN turned does have cards, THEN can turn forever',
     collections.turned().push(card3);
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = new CardAction(command, {});
 
     for (let i = 0; i < 10; ++i) {
         expect(command.can_execute(action)).toBeTruthy();
@@ -92,7 +92,7 @@ it('WHEN desk has cards, THEN can undo forever', () => {
     collections.deck().push(card3);
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = {};
 
     for (let i = 0; i < 10; ++i) {
         expect(command.can_execute(action));
@@ -111,7 +111,7 @@ it('GIVEN deck has no cards WHEN turned does have cards, THEN can undo forever',
     collections.turned().push(card3);
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = {};
 
     for (let i = 0; i < 10; ++i) {
         expect(command.can_execute(action)).toBeTruthy();
@@ -130,7 +130,7 @@ it('WHEN desk has cards, THEN can undo and execute randomly forever', () => {
     collections.deck().push(card3);
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = {};
 
     for (let i = 0; i < 10; ++i) {
         expect(command.can_execute(action)).toBeTruthy();
@@ -148,7 +148,7 @@ it('WHEN using deck with 1 card THEN can turn to turned deck and undo again',() 
     collections.deck().push(new Card(Suit.clubs, Face.ace));
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = {};
     expect(command.can_execute(action));
     expect(command.execute(action));
     
@@ -173,7 +173,7 @@ it('WHEN using deck with 3 cards THEN can turn to turned deck and undo again',()
     collections.deck().push(card3);
 
     const command = new NextCardCommand(collections);
-    const action = new CardAction(command);
+    const action = {};
     expect(command.can_execute(action)).toBeTruthy();
     expect(command.execute(action)).toBeTruthy();
     
@@ -202,4 +202,3 @@ it('WHEN using deck with 3 cards THEN can turn to turned deck and undo again',()
 
     has_top_card_equal_to(collections.turned(), card3);
 });
-*/

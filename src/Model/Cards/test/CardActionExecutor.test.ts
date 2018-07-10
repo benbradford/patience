@@ -1,12 +1,11 @@
-
-/*import CardActionExecutor from '../CardActionExecutor'
+import CardActionExecutor from '../CardActionExecutor'
 import FakeCardCommand from './FakeCardCommand'
 import CardAction from '../CardAction'
 
 it('GIVEN command that will execute WHEN executing THEN does execute and cannot redo', () => {
     const command : FakeCardCommand = new FakeCardCommand();
     const ex = new CardActionExecutor();
-    const action = new CardAction(command);
+    const action = new CardAction(command,{});
     
     ex.attempt(action);
 
@@ -18,7 +17,7 @@ it('GIVEN command that will execute WHEN executing THEN does execute and cannot 
 it('GIVEN command that will not execute WHEN executing THEN does not execute and cannot undo or redo', () => {
     const command : FakeCardCommand = new FakeCardCommand();
     const ex = new CardActionExecutor();
-    const action = new CardAction(command);
+    const action = new CardAction(command, {});
     
     command.shouldExecute = false;
     ex.attempt(action);
@@ -31,7 +30,7 @@ it('GIVEN command that will not execute WHEN executing THEN does not execute and
 it('GIVEN command that will execute WHEN executing several times THEN does execute and can be undone', () => {
     const command : FakeCardCommand = new FakeCardCommand();
     const ex = new CardActionExecutor();
-    const action = new CardAction(command);
+    const action = new CardAction(command, {});
     
     for (let i = 0; i < 10; ++i) {
         ex.attempt(action);
@@ -55,7 +54,7 @@ it('GIVEN command that will execute WHEN executing several times THEN does execu
 it('GIVEN some undos WHEN adding a new execute THEN cannot redo', () => {
     const command : FakeCardCommand = new FakeCardCommand();
     const ex = new CardActionExecutor();
-    const action = new CardAction(command);
+    const action = new CardAction(command, {});
     
     for (let i = 0; i < 10; ++i) {
         ex.attempt(action);
@@ -63,7 +62,7 @@ it('GIVEN some undos WHEN adding a new execute THEN cannot redo', () => {
     }
 
     let undone = 10;
-    while (undone > 5 {
+    while (undone > 5) {
         ex.undo();
         --undone;
         expect(command.value()).toEqual(undone);
@@ -72,5 +71,3 @@ it('GIVEN some undos WHEN adding a new execute THEN cannot redo', () => {
     ex.attempt(action);
     expect(ex.can_redo()).toBeFalsy();
 })
-
-*/

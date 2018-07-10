@@ -1,5 +1,5 @@
 import ICardCommand from '../ICardCommand'
-import CardAction from '../CardAction'
+import ICardActionParameters from '../ICardActionParameters'
 
 export default class FakeCardCommand implements ICardCommand {
 
@@ -7,18 +7,18 @@ export default class FakeCardCommand implements ICardCommand {
     public shouldUndo = true;
 
     private v : number = 0;
-    public can_execute(action: CardAction): boolean {
+    public can_execute(action: ICardActionParameters): boolean {
         
         return this.shouldExecute;
     }
-    public execute(action: CardAction): boolean {
+    public execute(action: ICardActionParameters): boolean {
         if (this.shouldExecute === false) {
             return false;
         }
         ++this.v;
         return true;
     }
-    public undo(action: CardAction): boolean {
+    public undo(action: ICardActionParameters): boolean {
         if (this.shouldUndo === false) {
             return false;
         }
