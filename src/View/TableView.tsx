@@ -36,6 +36,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private destinations: IMoveDestination[];
 
     private interval : NodeJS.Timer;
+   // private isAutoCompleting: boolean = false;
     
     public componentDidMount() {
        this.update_state_no_moving();
@@ -69,7 +70,18 @@ export default class TableView extends React.Component<{}, ITableData> {
             }
         }
     }
+/*
+    private auto_complete_button() {
+        if (this.modelView.can_auto_complete() === false) {
+            return ( <p/> );
+        }
+        return ( <button onClick={this.onAutoCompleteClick}>AutoComplete</button> );
+    }
 
+    private onAutoCompleteClick = () => {
+        this.isAutoCompleting = true;
+    }
+*/
     private onDeckClick = () => {
         if (this.modelView.next_card() && this.state.moving.card === null) {
             this.update_state_no_moving();
@@ -136,7 +148,7 @@ export default class TableView extends React.Component<{}, ITableData> {
         const winning = this.winning_pile();
         if (winning ) {
             
-            this.modelView.move_card_to(card, winning.pileIndex );
+            this.modelView.move_card_to(card, winning.pileIndex ); // have this return an animation action?
             card = this.modelView.view_card(card, winning.pileIndex);
             if (winning.box && card) {
                 this.startAnimation(card, winning.box, winning.pileIndex);

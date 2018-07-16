@@ -1,15 +1,11 @@
 import * as React from 'react'
 import './Cards.css'
 import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
+import {make_refs} from './Cards/ReactUtil'
 
 export default class ScorePileViews extends React.Component<any, any>{
     
-    private readonly cardRefs: Array<React.RefObject<HTMLElement>> = [
-        React.createRef<HTMLElement>(),
-        React.createRef<HTMLElement>(),
-        React.createRef<HTMLElement>(),
-        React.createRef<HTMLElement>()
-    ];
+    private readonly cardRefs = make_refs<HTMLElement>(4);
 
     public render(): JSX.Element {       
         return (
@@ -38,14 +34,14 @@ export default class ScorePileViews extends React.Component<any, any>{
             card = pile.cards[pile.cards.length-2];
         }
         const callback = () =>{ this.onClick(card, index); };
-        return ( <div className="PileDiv"> <section style={this.props.cardStyles.front(card)} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
+        return ( <div className="PileDiv"> <section style={this.props.cardStyles.front(card)} key={index} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
     }
 
     private render_empty(cardRef: React.RefObject<HTMLElement>) {  
         return (
             <section>
              <div className="PileDiv">
-                <section style={this.props.cardStyles.empty()} ref={cardRef} />
+                <section style={this.props.cardStyles.empty()} key={0} ref={cardRef} />
              </div>
             </section>
         )

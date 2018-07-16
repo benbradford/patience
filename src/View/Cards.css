@@ -2,8 +2,9 @@
     min-height:600px;
     min-width:1200px;
     padding:60px;
-    background-image: url("../Asset/table.jpeg");
-    background-repeat: repeat;
+    background-image: url("../Asset/wood_table2.jpg");
+    background-repeat: no-repeat;
+    background-size: 900px 900px;
 }
 
 .PileDiv {

@@ -7,4 +7,5 @@ export default interface IMoveCardActionParameters extends ICardActionParameters
     card: Card;
     from: CardCollection;
     to: CardCollection;
+    turnNextInFrom: boolean;
 }

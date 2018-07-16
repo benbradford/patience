@@ -54,6 +54,7 @@ export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionPar
         const cardToTurn = action.from.peek();
         if (cardToTurn && cardToTurn.is_turned_up() === false) {
             cardToTurn.turn();
+            action.turnNextInFrom = true;
         }
         return true;
     }
@@ -64,9 +65,11 @@ export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionPar
         }
 
         this.move_all(action.to, action.from, action.card);
-        const cardToTurn = action.from.peek();
-        if (cardToTurn && cardToTurn.is_turned_up()) {
-            cardToTurn.turn();
+        if (action.turnNextInFrom) {
+            const card = action.from.peek(1);
+            if (card) {
+                card.turn();
+            }
         }
         return true;
     }

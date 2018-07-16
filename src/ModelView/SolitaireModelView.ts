@@ -10,6 +10,8 @@ import CardShuffler from '../Model/Cards/CardShuffler';
 import SolitaireGame from '../Model/SolitaireGame';
 import {Card} from '../Model/Cards/Card'
 import ModelViewDataSync from './Cards/ModelViewDataSync'
+import SolitaireSolver from '../Model/SolitaireSolver'
+// import AutoCompleteStepper from './AutoCompleteStepper';
 
 export default class SolitaireModelView {
     private collections = new SolitaireCollections();
@@ -17,6 +19,7 @@ export default class SolitaireModelView {
     private moveCardCommand = new MoveCardCommand(this.collections);
     private nextCardCommand = new NextCardCommand(this.collections);
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
+    // private autoCompleteStepper= new AutoCompleteStepper(this.collections);
     private dataSync: ModelViewDataSync;
 
     constructor () {
@@ -122,7 +125,11 @@ export default class SolitaireModelView {
         }
         return false;
     }
-    
+/*
+    public auto_complete_step(): boolean {
+        return this.autoCompleteStepper.can_autocomplete();
+    }
+    */
     public table_data(): IModelViewData {
         return  this.dataSync.model_view_data();
     }
@@ -167,5 +174,8 @@ export default class SolitaireModelView {
                 holdCardCollection.push(card);
             }
         }
+
+        const solver = new SolitaireSolver(this.collections,this.moveCardCommand, this.moveCardCommand, this.nextCardCommand);
+        solver.solve();
     }
 }

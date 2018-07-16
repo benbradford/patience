@@ -6,7 +6,7 @@ export default abstract class CardCommand<CardActionType extends ICardActionPara
     public can_execute(action: ICardActionParameters): boolean {
         const concrete = action as CardActionType;
         if (concrete === null) {
-            return false;
+            throw Error("incorrect params from this command");
         }
         return this.on_can_execute(concrete);
     }
@@ -14,7 +14,7 @@ export default abstract class CardCommand<CardActionType extends ICardActionPara
     public execute(action: ICardActionParameters): boolean {
         const concrete = action as CardActionType;
         if (concrete === null) {
-            return false;
+            throw Error("incorrect params from this command");
         }
         return this.on_execute(concrete);
     }
@@ -22,7 +22,7 @@ export default abstract class CardCommand<CardActionType extends ICardActionPara
     public undo(action: ICardActionParameters): boolean {
         const concrete = action as CardActionType;
         if (concrete === null) {
-            return false;
+            throw Error("incorrect params from this command");
         }
         return this.on_undo(concrete);
     }

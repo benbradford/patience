@@ -4,18 +4,11 @@ import { IPileView } from '../ModelView/Cards/ModelViewData';
 import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
+import {make_refs} from './Cards/ReactUtil'
 
 export default class PileViews extends React.Component<any, any>{
     
-    private readonly pileRef : Array<React.RefObject<HoldPileView>> = [
-        React.createRef<HoldPileView>() ,
-        React.createRef<HoldPileView>() ,
-        React.createRef<HoldPileView>() ,
-        React.createRef<HoldPileView>() ,
-        React.createRef<HoldPileView>() ,
-        React.createRef<HoldPileView>() ,
-        React.createRef<HoldPileView>()       
-    ];
+    private readonly pileRef = make_refs<HoldPileView>(7);
 
     private readonly scoresRef = React.createRef<ScorePileViews>(); 
     
@@ -60,7 +53,7 @@ export default class PileViews extends React.Component<any, any>{
             return ( <p/> );
         }
         return (  
-            <HoldPileView ref={r} cardStyles={this.props.cardStyles} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onStartDrag} />
+            <HoldPileView key={index} ref={r} cardStyles={this.props.cardStyles} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onStartDrag} />
         );
     }
 }

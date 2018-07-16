@@ -34,7 +34,7 @@ export default class SolitaireGame {
     }
 
     public move(c: Card, t: CardCollection): boolean {
-        return this.cardExecutor.attempt(new CardAction(this.moveCard, {card: c, from: c.collection, to: t}));
+        return this.cardExecutor.attempt(new CardAction(this.moveCard, {card: c, from: c.collection, to: t, turnNextInFrom: false}));
     }
 
     public next() : boolean {
@@ -42,7 +42,7 @@ export default class SolitaireGame {
     }
 
     public move_many(c: Card, t: CardCollection): boolean {
-        return this.cardExecutor.attempt(new CardAction(this.moveMany, {card: c, from: c.collection, to: t}));
+        return this.cardExecutor.attempt(new CardAction(this.moveMany, {card: c, from: c.collection, to: t, turnNextInFrom: false}));
     }
 
     public card_executor() : CardActionExecutor {

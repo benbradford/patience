@@ -1,24 +1,11 @@
 import * as React from 'react'
 import './Cards.css'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
+import {make_refs} from './Cards/ReactUtil'
 
 export default class HoldPileView extends React.Component<any, any>{
     
-    private readonly cardRefs: Array<React.RefObject<HTMLElement>> = [
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(), 
-        React.createRef<HTMLElement>(),
-        React.createRef<HTMLElement>()
-    ];
+    private readonly cardRefs = make_refs<HTMLElement>(13);
 
     private renderedFront = false;
     
@@ -72,7 +59,7 @@ export default class HoldPileView extends React.Component<any, any>{
         } 
 
         return (       
-            <section style={s} onMouseDown={callback} ref={this.cardRefs[index]}/> 
+            <section style={s} onMouseDown={callback} key={index} ref={this.cardRefs[index]}/> 
            
         );   
     }

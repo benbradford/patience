@@ -18,7 +18,7 @@ export default class ModelViewDataSync {
         };
     }
 
-    public model_view_data(): IModelViewData {
+    public model_view_data(): Readonly<IModelViewData> {
         return this.modelViewData;
     }
 

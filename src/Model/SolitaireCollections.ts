@@ -65,4 +65,11 @@ export default class SolitaireCollections {
         }
         return false;
     }
+
+    public is_winning_state() {
+        return this.deck().is_empty() && this.turned().is_empty() &&
+            this.hold(0).is_empty() && this.hold(1).is_empty() && this.hold(2).is_empty() &&
+            this.hold(3).is_empty() && this.hold(4).is_empty() && this.hold(5).is_empty() && this.hold(6).is_empty() &&
+            this.score(0).size() === 13 && this.score(1).size() === 13 && this.score(2).size() === 13 && this.score(3).size() === 13;
+    }
 }
