@@ -1,8 +1,8 @@
-import { ICardView, IPileView } from "./Cards/ModelViewData";
+import { ICardView } from "./Cards/ModelViewData";
 
 export default interface IAnimationAction {
     card: ICardView;
-    destPile: IPileView;
+    startPileIndex: number;
     destPileIndex: number;
     turn: boolean;
 }

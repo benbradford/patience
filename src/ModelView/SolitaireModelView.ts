@@ -129,12 +129,12 @@ export default class SolitaireModelView {
 
     private to_animation_action(result: ICardActionResult): IAnimationAction {
         
-        const index = this.dataSync.pile_index(result.move.to);
-        const pile = this.dataSync.view_pile(index);
+        const destIndex = this.dataSync.pile_index(result.move.to);
+        const startIndex = this.dataSync.pile_index(result.move.from);
         return {
-            card: this.dataSync.view_card(result.move.card, index),
-            destPile: pile,
-            destPileIndex: index,
+            card: this.dataSync.view_card(result.move.card, destIndex),
+            startPileIndex: startIndex,
+            destPileIndex: destIndex,
             turn: result.flip.length > 0
         };
     }

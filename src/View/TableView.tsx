@@ -112,10 +112,11 @@ export default class TableView extends React.Component<{}, ITableData> {
         
         const result = this.modelView.undo();
         if (result && this.pileViews.current) {
-            // const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
-            // const boxTo = this.pileViews.current.box_for(result.destPileIndex);
-            // this.start_animation(result.card, box, result.destPileIndex, x, y, result.turn);
-            this.update_state_no_moving();
+             const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
+            const boxTo = this.pileViews.current.box_for(result.destPileIndex);
+            if (boxFrom && boxTo) {
+                this.start_animation(result.card, boxTo, result.destPileIndex, boxFrom.left, boxFrom.top, result.turn);
+            }
         }
     
     }
