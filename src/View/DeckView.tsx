@@ -3,8 +3,6 @@ import './Cards.css'
 
 export default class DeckView extends React.Component<any, any>{
     
-    private turnedRef = React.createRef<HTMLElement>();
-
     public render(): JSX.Element {     
         
         return (
@@ -24,11 +22,11 @@ export default class DeckView extends React.Component<any, any>{
             return ( <p/> );
         }
         if (this.props.deck.cards.length === 0) {
-            return ( <section style={this.props.cardStyles.empty()} onMouseDown={this.deckClick}/> );  
+            return ( <section style={this.props.cardStyles.empty()} ref={this.props.deckRef} onMouseDown={this.deckClick}/> );  
         }
         return (
             
-            <section style={this.props.cardStyles.front(this.props.deck.cards[this.props.deck.cards.length-1])} onMouseDown={this.deckClick} />
+            <section style={this.props.cardStyles.front(this.props.deck.cards[this.props.deck.cards.length-1])} ref={this.props.deckRef} onMouseDown={this.deckClick} />
             
         );
     }
@@ -45,12 +43,12 @@ export default class DeckView extends React.Component<any, any>{
 
         if (indexToShow >= this.props.turned.cards.length) {
 
-            return ( <section style={this.props.cardStyles.empty()} /> );          
+            return ( <section style={this.props.cardStyles.empty()} ref={this.props.turnedRef} /> );          
         }
    
         return (
            <section>
-              <section ref={this.turnedRef} style={this.props.cardStyles.front(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
+              <section ref={this.props.turnedRef} style={this.props.cardStyles.front(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
            </section>  
         );
     }
@@ -64,10 +62,10 @@ export default class DeckView extends React.Component<any, any>{
             return;
         }
       
-        if (this.turnedRef.current === null) {
+        if (this.props.turnedRef.current === null) {
             return;
         }
-        const box = this.turnedRef.current.getBoundingClientRect();
+        const box = this.props.turnedRef.current.getBoundingClientRect();
 
         this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1], box);
     }

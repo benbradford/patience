@@ -1,5 +1,8 @@
 import ICardCommand from '../ICardCommand'
 import ICardActionParameters from '../ICardActionParameters'
+import {ICardActionResult} from '../ICardActionResult'
+import CardCollection from '../CardCollection';
+import {Card, Face, Suit} from '../Card'
 
 export default class FakeCardCommand implements ICardCommand {
 
@@ -11,22 +14,26 @@ export default class FakeCardCommand implements ICardCommand {
         
         return this.shouldExecute;
     }
-    public execute(action: ICardActionParameters): boolean {
+    public execute(action: ICardActionParameters): ICardActionResult | null {
         if (this.shouldExecute === false) {
-            return false;
+            return null;
         }
         ++this.v;
-        return true;
+        return {move: this.dummy_move(), flip: []};
     }
-    public undo(action: ICardActionParameters): boolean {
+    public undo(action: ICardActionParameters): ICardActionResult | null {
         if (this.shouldUndo === false) {
-            return false;
+            return null;
         }
         --this.v;
-        return true;
+        return {move: this.dummy_move(), flip: []};
     }
 
     public value() { 
         return this.v;
+    }
+
+    private dummy_move() {
+        return {card: new Card(Suit.hearts, Face.ace), from: new CardCollection(), to: new CardCollection()};
     }
 }

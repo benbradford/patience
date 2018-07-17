@@ -9,8 +9,9 @@ import {make_refs} from './Cards/ReactUtil'
 export default class PileViews extends React.Component<any, any>{
     
     private readonly pileRef = make_refs<HoldPileView>(7);
-
     private readonly scoresRef = React.createRef<ScorePileViews>(); 
+    private readonly turnedRef = React.createRef<HTMLElement>();
+    private readonly deckRef = React.createRef<HTMLElement>();
     
     public render(): JSX.Element {     
         const piles : IPileView[] = this.props.hold;
@@ -18,7 +19,7 @@ export default class PileViews extends React.Component<any, any>{
             <section>
                 <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.moving.card} onScoreClick={this.props.onStartDrag} />    
                 <section className="BetweenScoreAndDeck">&nbsp;</section>
-                <DeckView cardStyles={this.props.cardStyles} deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
+                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
             </section>
@@ -26,6 +27,13 @@ export default class PileViews extends React.Component<any, any>{
     }
 
     public box_for(pileIndex: number): ClientRect | null {
+        if (pileIndex === 0 && this.deckRef.current) {
+            return this.deckRef.current.getBoundingClientRect();
+        }
+        if (pileIndex === 1 && this.turnedRef.current) {
+            // turned pile
+            return this.turnedRef.current.getBoundingClientRect();
+        }
         const index = pileIndex - 2;
         if (index >=0 && index < 7) {
             const r = this.pileRef[index];

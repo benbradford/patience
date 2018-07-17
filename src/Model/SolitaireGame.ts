@@ -8,6 +8,7 @@ import MoveManyCardsCommand from './Command/MoveManyCardsCommand'
 import NextCardCommand from './Command/NextCardCommand'
 import CardAction from '../Model/Cards/CardAction';
 import CardActionExecutor from '../Model/Cards/CardActionExecutor';
+import {ICardActionResult} from '../Model/Cards/ICardActionResult'
 
 export default class SolitaireGame {
 
@@ -33,15 +34,15 @@ export default class SolitaireGame {
         this.cardExecutor = new CardActionExecutor();
     }
 
-    public move(c: Card, t: CardCollection): boolean {
+    public move(c: Card, t: CardCollection): ICardActionResult | null {
         return this.cardExecutor.attempt(new CardAction(this.moveCard, {card: c, from: c.collection, to: t, turnNextInFrom: false}));
     }
 
-    public next() : boolean {
+    public next(): ICardActionResult | null {
         return this.cardExecutor.attempt(new CardAction(this.nextCard, {}));
     }
 
-    public move_many(c: Card, t: CardCollection): boolean {
+    public move_many(c: Card, t: CardCollection): ICardActionResult | null {
         return this.cardExecutor.attempt(new CardAction(this.moveMany, {card: c, from: c.collection, to: t, turnNextInFrom: false}));
     }
 

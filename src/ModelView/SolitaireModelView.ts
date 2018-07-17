@@ -11,6 +11,8 @@ import SolitaireGame from '../Model/SolitaireGame';
 import {Card} from '../Model/Cards/Card'
 import ModelViewDataSync from './Cards/ModelViewDataSync'
 import SolitaireSolver from '../Model/SolitaireSolver'
+import {ICardActionResult} from '../Model/Cards/ICardActionResult'
+import IAnimationAction from './IAnimationAction'
 // import AutoCompleteStepper from './AutoCompleteStepper';
 
 export default class SolitaireModelView {
@@ -74,14 +76,14 @@ export default class SolitaireModelView {
         return destinations;
     }
 
-    public move_card_to(card: ICardView, destIndex: number): boolean {
+    public move_card_to(card: ICardView, destIndex: number): IAnimationAction | null {
         const modelCard = this.dataSync.model_pile(card.pileIndex).find(card.suit, card.face);
         if (modelCard === null) {
-            return false;
+            return null;
         }
         const toPile = this.dataSync.model_pile(destIndex);
 
-        let moved = false;
+        let moved : ICardActionResult | null= null;
 
         if (modelCard.collection && modelCard.collection.peek() === modelCard) {
             moved = this.game.move(modelCard, toPile);
@@ -90,40 +92,18 @@ export default class SolitaireModelView {
         }
         if (moved) {
             this.dataSync.sync_view_with_model();
-            return true;
+            return this.to_animation_action(moved);
         }
-        return false;
+        return null;
     }
 
-    public view_card(card: ICardView, pileIndex: number): ICardView {
-        
-        let pile: IPileView | null = null;
-        if (pileIndex === 0) {
-            pile = this.deck();
-        } else if (pileIndex === 1) {
-            pile = this.turned();
-        } else if (pileIndex < 9) {
-            pile = this.hold()[pileIndex-2];
-        } else if (pileIndex < 14) {
-            pile = this.score()[pileIndex - 10];
+    public next_card(): IAnimationAction | null {
+        const result = this.game.next();
+        if (result) {
+            this.dataSync.sync_view_with_model();
+            return this.to_animation_action(result);
         }
-        if (pile) {
-            for (const c of pile.cards) {
-                if (c.suit === card.suit && c.face === card.face) {
-                    return c;
-                }
-            }
-        }
-        throw Error("cannot get view card");
-        
-    }
-
-    public next_card(): boolean {
-        if (this.game.next()) {
-                this.dataSync.sync_view_with_model();
-            return true;
-        }
-        return false;
+        return null;
     }
 /*
     public auto_complete_step(): boolean {
@@ -132,6 +112,18 @@ export default class SolitaireModelView {
     */
     public table_data(): IModelViewData {
         return  this.dataSync.model_view_data();
+    }
+
+    private to_animation_action(result: ICardActionResult): IAnimationAction {
+        
+        const index = this.dataSync.pile_index(result.move.to);
+        const pile = this.dataSync.view_pile(index);
+        return {
+            card: this.dataSync.view_card(result.move.card, index),
+            destPile: pile,
+            destPileIndex: index,
+            turn: result.flip.length > 0
+        };
     }
 
     private is_valid_move_to(modelCard: Card, collection: CardCollection): boolean{

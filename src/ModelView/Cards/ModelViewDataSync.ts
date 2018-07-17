@@ -57,6 +57,28 @@ export default class ModelViewDataSync {
         throw Error("cannot get model card from view card");
     }
 
+    public view_card(card: Card, pileIndex: number): ICardView {
+        
+        const collection = this.modelViewData.piles[pileIndex];
+        for (const c of collection.cards) {
+            if (c.suit === card.suit && c.face === card.face) {
+                return c;
+            }
+        }
+        
+        throw Error("cannot get view card");
+        
+    }
+
+    public pile_index(pile: CardCollection): number {
+        for (let i = 0; i < this.collections.max(); ++i) {
+            if (pile === this.collections.collection(i)) {
+                return i;
+            }
+        }
+        throw Error("cannot find pile");
+    }
+
     private make_view_piles(): IPileView[] {
         const piles: IPileView[] = [];
         for (let i = 0; i < this.collections.max(); ++i) {

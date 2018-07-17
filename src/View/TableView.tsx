@@ -83,8 +83,23 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 */
     private onDeckClick = () => {
-        if (this.modelView.next_card() && this.state.moving.card === null) {
-            this.update_state_no_moving();
+
+        // :TODO: need to start_animation, but need box rect and to know where to 
+        // what about when replacing deck?
+        if (this.state.moving.card === null) {
+            const result = this.modelView.next_card();
+            const currentPileViews = this.pileViews.current;
+            if (result && currentPileViews) {
+                if (result.destPileIndex === 0) {
+                    this.update_state_no_moving();
+                } else {
+                    const pileBox = currentPileViews.box_for(1);
+                    const fromBox = currentPileViews.box_for(0);
+                    if (pileBox && fromBox) {
+                        this.start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX, fromBox.top + window.scrollY);
+                    }
+                }
+            }
         }
     }
 
@@ -138,7 +153,7 @@ export default class TableView extends React.Component<{}, ITableData> {
         if (this.state.moving.isDragged === false) {
             return;
         }
-        let card = this.state.moving.card;
+        const card = this.state.moving.card;
         if (card === null) {
             this.reset_drag();
 
@@ -148,10 +163,12 @@ export default class TableView extends React.Component<{}, ITableData> {
         const winning = this.winning_pile();
         if (winning ) {
             
-            this.modelView.move_card_to(card, winning.pileIndex ); // have this return an animation action?
-            card = this.modelView.view_card(card, winning.pileIndex);
-            if (winning.box && card) {
-                this.startAnimation(card, winning.box, winning.pileIndex);
+            const anim = this.modelView.move_card_to(card, winning.pileIndex ); // have this return an animation action?
+            if (winning.box && anim) {
+                const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
+                const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
+           
+                this.start_animation(anim.card, winning.box, anim.destPileIndex, x, y);
             } else {
                 this.reset_drag();
             }
@@ -228,19 +245,20 @@ export default class TableView extends React.Component<{}, ITableData> {
     private revert_animation() {
         const card = this.state.moving.card;
         if (card && this.dragFrom) {
-            this.startAnimation(card, this.dragFrom, card.pileIndex);
+            const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
+            const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
+           
+            this.start_animation(card, this.dragFrom, card.pileIndex, x, y);
         } else {
             this.reset_drag();
         }
     }
-    private startAnimation(card: ICardView, box: ClientRect, pileIndex: number) {
+    private start_animation(card: ICardView, box: ClientRect, pileIndex: number, fromX: number, fromY: number) {
         
         if (this.animationView.current) {
             this.state.moving.card = card;
             this.state.moving.isDragged = false;
-            const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
-            const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
-           
+            
             const destX = box.left;
             let destY = box.top;
             
@@ -250,7 +268,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                     destY +=  this.cardStyles.previewSize; 
                 }           
             }
-            const animator = new SimpleLerpCardAnimator({cardX:x, cardY:y}, destX + window.scrollX, destY + window.scrollY);
+            const animator = new SimpleLerpCardAnimator({cardX:fromX, cardY:fromY}, destX + window.scrollX, destY + window.scrollY);
             this.animationView.current.start_animation(card, animator, this.onAnimationEnd);
         } else {
             this.reset_drag();

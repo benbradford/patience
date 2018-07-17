@@ -2,6 +2,8 @@ import CardCommand from '../Cards/CardCommand'
 import SolitaireCollections from '../SolitaireCollections'
 import {Face} from '../Cards/Card'
 import IMoveCardActionParameters from './IMoveCardActionParameters'
+import { Card } from '../Cards/Card';
+import {ICardActionResult} from '../Cards/ICardActionResult'
 
 export default class MoveCardCommand extends CardCommand<IMoveCardActionParameters> {
 
@@ -54,32 +56,40 @@ export default class MoveCardCommand extends CardCommand<IMoveCardActionParamete
         return true;
     }
 
-    public on_execute(action: IMoveCardActionParameters): boolean {
+    public on_execute(action: IMoveCardActionParameters): ICardActionResult | null  {
         action.from.remove();
         action.to.push(action.card);
-        this.turn_card_if_appropriate(action);
-        return true;
+        const turnedCard = this.turn_card_if_appropriate(action);
+        const turnedCards: Card[] = [];
+        if (turnedCard) {
+            turnedCards.push(turnedCard);
+        }
+        return {move:action, flip: turnedCards};
     }
 
-    public on_undo(action: IMoveCardActionParameters): boolean {
+    public on_undo(action: IMoveCardActionParameters): ICardActionResult | null  {
         action.to.remove();
         action.from.push(action.card);
+        const turnedCards: Card[] = [];
         if (action.turnNextInFrom) {
             const card = action.from.peek(1);
             if (card) {
                 card.turn();
+                turnedCards.push(card);
             }
         }
-        return true;
+        return {move: {card: action.card, from: action.to, to: action.from}, flip:turnedCards};
     }
 
-    private turn_card_if_appropriate(action: IMoveCardActionParameters) {
+    private turn_card_if_appropriate(action: IMoveCardActionParameters): Card | null {
         if (action.from && this.collections.is_hold(action.from)) {
             const cardToTurn = action.from.peek();
             if (cardToTurn && cardToTurn.is_turned_up() === false) {
                 action.turnNextInFrom = true;
                 cardToTurn.turn();
+                return cardToTurn;
             }
         }
+        return null;
     }
 }

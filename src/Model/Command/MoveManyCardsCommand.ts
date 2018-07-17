@@ -3,6 +3,7 @@ import {Card, Face} from '../Cards/Card'
 import SolitaireCollections from '../SolitaireCollections'
 import IMoveCardActionParameters from './IMoveCardActionParameters'
 import CardCollection from '../Cards/CardCollection';
+import {ICardActionResult} from '../Cards/ICardActionResult'
 
 export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionParameters>  {
 
@@ -45,33 +46,37 @@ export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionPar
         return true;
     }
 
-    public on_execute(action: IMoveCardActionParameters): boolean {
+    public on_execute(action: IMoveCardActionParameters): ICardActionResult | null  {
         if (!action.from || !action.to || !action.card) {
-            return false;
+            return null;
         }
 
         this.move_all(action.from, action.to, action.card);
         const cardToTurn = action.from.peek();
+        const turnedCards: Card[] = [];
         if (cardToTurn && cardToTurn.is_turned_up() === false) {
             cardToTurn.turn();
             action.turnNextInFrom = true;
+            turnedCards.push(cardToTurn);
         }
-        return true;
+        return {move: action, flip:turnedCards};
     }
 
-    public on_undo(action: IMoveCardActionParameters): boolean {
+    public on_undo(action: IMoveCardActionParameters): ICardActionResult | null  {
         if (!action.from || !action.to || !action.card) {
-            return false;
+            return null;
         }
 
         this.move_all(action.to, action.from, action.card);
+        const turnedCards: Card[] = [];
         if (action.turnNextInFrom) {
             const card = action.from.peek(1);
             if (card) {
                 card.turn();
+                turnedCards.push(card);
             }
         }
-        return true;
+        return {move: {card: action.card, from: action.to, to: action.from}, flip:turnedCards};
     }
 
     private move_all(from : CardCollection, to: CardCollection, target: Card) {

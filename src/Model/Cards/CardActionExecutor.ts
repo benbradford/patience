@@ -1,13 +1,14 @@
 import CardAction from './CardAction'
+import {ICardActionResult} from './ICardActionResult'
 
 export default class CardActionExecutor {
 
     private executed: CardAction[] = [];
     private undone: CardAction[] = [];
 
-    public attempt(action: CardAction) : boolean {
+    public attempt(action: CardAction): ICardActionResult | null {
         if (action.command.can_execute(action.params) === false) {
-            return false;
+            return null;
         }
         
         const result = action.command.execute(action.params);
@@ -27,36 +28,36 @@ export default class CardActionExecutor {
         return this.executed.length > 0;
     }
 
-    public undo(): boolean {
+    public undo(): ICardActionResult | null {
         if (this.can_undo() === false) {
-            return false;
+            return null;
         }
         const action = this.executed.pop();
         if (!action) {
-            return false;
+            return null;
         }
         this.undone.push(action);
         return action.command.undo(action.params);
     }
 
-    public redo(): boolean {
+    public redo(): ICardActionResult | null {
         if (this.can_redo() === false) {
-            return false;
+            return null;
         }
         const action = this.undone[this.undone.length-1];
         if (!action) {
-            return false;
+            return null;
         }
         if (action.command.can_execute(action) === false) {
-            return false;
+            return null;
         }
         const result = action.command.execute(action.params);
-        if (result === false) {
-            return false;
+        if (result === null) {
+            return null;
         }
         this.undone.pop();     
         this.executed.push(action);
-        return true;
+        return result;
     }
 
     private clear_undone() {

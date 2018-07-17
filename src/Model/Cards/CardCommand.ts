@@ -1,5 +1,6 @@
 import ICardCommand from './ICardCommand'
 import ICardActionParameters from './ICardActionParameters'
+import { ICardActionResult } from './ICardActionResult';
 
 export default abstract class CardCommand<CardActionType extends ICardActionParameters> implements ICardCommand{
 
@@ -11,7 +12,7 @@ export default abstract class CardCommand<CardActionType extends ICardActionPara
         return this.on_can_execute(concrete);
     }
 
-    public execute(action: ICardActionParameters): boolean {
+    public execute(action: ICardActionParameters): ICardActionResult | null {
         const concrete = action as CardActionType;
         if (concrete === null) {
             throw Error("incorrect params from this command");
@@ -19,7 +20,7 @@ export default abstract class CardCommand<CardActionType extends ICardActionPara
         return this.on_execute(concrete);
     }
     
-    public undo(action: ICardActionParameters): boolean {
+    public undo(action: ICardActionParameters): ICardActionResult | null {
         const concrete = action as CardActionType;
         if (concrete === null) {
             throw Error("incorrect params from this command");
@@ -28,6 +29,6 @@ export default abstract class CardCommand<CardActionType extends ICardActionPara
     }
 
     protected abstract on_can_execute(action: CardActionType): boolean;
-    protected abstract on_execute(action: CardActionType): boolean;
-    protected abstract on_undo(action: CardActionType): boolean;
+    protected abstract on_execute(action: CardActionType): ICardActionResult | null;
+    protected abstract on_undo(action: CardActionType): ICardActionResult | null;
 }
