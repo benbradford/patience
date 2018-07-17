@@ -57,6 +57,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                     <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} moving={this.state.moving} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
                     <FloatingCardView cardStyles={this.cardStyles} card={this.state.moving.card} enabled={this.state.moving.isDragged} modelViewDataSync={this.modelView.data_sync()} cardX={this.lastMouseX + this.mouseOffsetX + window.scrollX} cardY={this.lastMouseY + this.mouseOffsetY + window.scrollY}/>
                     <CardAnimationView ref={this.animationView} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
+                    {this.render_undo()}
                 </div>
             </section>
         );
@@ -84,8 +85,6 @@ export default class TableView extends React.Component<{}, ITableData> {
 */
     private onDeckClick = () => {
 
-        // :TODO: need to start_animation, but need box rect and to know where to 
-        // what about when replacing deck?
         if (this.state.moving.card === null) {
             const result = this.modelView.next_card();
             const currentPileViews = this.pileViews.current;
@@ -101,6 +100,24 @@ export default class TableView extends React.Component<{}, ITableData> {
                 }
             }
         }
+    }
+
+    private render_undo() {
+        
+        return ( <p> <br/><br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                <button disabled={!this.modelView.can_undo()} onClick={this.onClickUndo}> UNDO </button>  </p>);
+    }
+
+    private onClickUndo =() => {
+        
+        const result = this.modelView.undo();
+        if (result && this.pileViews.current) {
+            // const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
+            // const boxTo = this.pileViews.current.box_for(result.destPileIndex);
+            // this.start_animation(result.card, box, result.destPileIndex, x, y, result.turn);
+            this.update_state_no_moving();
+        }
+    
     }
 
     private move_destinations(card: ICardView): IMoveDestination[] {

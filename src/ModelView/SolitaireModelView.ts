@@ -65,6 +65,19 @@ export default class SolitaireModelView {
         return piles;
     }
 
+    public can_undo(): boolean {
+        return this.game.can_undo();
+    }
+
+    public undo(): IAnimationAction | null {
+        const result = this.game.undo();
+        if (result) {
+            this.dataSync.sync_view_with_model();
+            return this.to_animation_action(result);
+        }
+        return null;
+    }
+
     public valid_move_to_destinations(card: ICardView): number[] {
         const modelCard = this.dataSync.model_card(card);
         const destinations: number[] = [];

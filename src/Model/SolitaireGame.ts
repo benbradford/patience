@@ -50,4 +50,11 @@ export default class SolitaireGame {
         return this.cardExecutor;
     }
 
+    public can_undo(): boolean {
+        return this.cardExecutor.can_undo();
+    }
+
+    public undo(): ICardActionResult | null {
+        return this.cardExecutor.undo();
+    }
 }
