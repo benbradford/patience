@@ -169,5 +169,8 @@ export default class SolitaireModelView {
 
         const solver = new SolitaireSolver(this.collections,this.moveCardCommand, this.moveCardCommand, this.nextCardCommand);
         solver.solve();
+        if (solver.winning_sequence().length > 0) {
+            throw Error("solved!");
+        }
     }
 }

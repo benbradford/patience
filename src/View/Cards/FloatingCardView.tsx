@@ -24,6 +24,7 @@ export default class FloatingCardView extends React.Component<any, any>{
         return {
             left: this.props.cardX + "px",
             top: this.props.cardY + "px",
+            transform: "scale(" + this.props.scaleX + ", 1)"
         };
     }
 

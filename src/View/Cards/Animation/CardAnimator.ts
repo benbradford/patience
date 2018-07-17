@@ -32,4 +32,8 @@ export default abstract class CardAnimator {
         this.data.cardX = x;
         this.data.cardY = y;
     }
+
+    protected set_card_scale(x: number) {
+        this.data.scaleX = x;
+    }
 }

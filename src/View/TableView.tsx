@@ -96,7 +96,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                     const pileBox = currentPileViews.box_for(1);
                     const fromBox = currentPileViews.box_for(0);
                     if (pileBox && fromBox) {
-                        this.start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX, fromBox.top + window.scrollY);
+                        this.start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2, fromBox.top + window.scrollY, true, 0.5);
                     }
                 }
             }
@@ -168,7 +168,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                 const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
                 const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
            
-                this.start_animation(anim.card, winning.box, anim.destPileIndex, x, y);
+                this.start_animation(anim.card, winning.box, anim.destPileIndex, x, y, false);
             } else {
                 this.reset_drag();
             }
@@ -248,12 +248,12 @@ export default class TableView extends React.Component<{}, ITableData> {
             const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
             const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
            
-            this.start_animation(card, this.dragFrom, card.pileIndex, x, y);
+            this.start_animation(card, this.dragFrom, card.pileIndex, x, y, false);
         } else {
             this.reset_drag();
         }
     }
-    private start_animation(card: ICardView, box: ClientRect, pileIndex: number, fromX: number, fromY: number) {
+    private start_animation(card: ICardView, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number = 1) {
         
         if (this.animationView.current) {
             this.state.moving.card = card;
@@ -268,7 +268,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                     destY +=  this.cardStyles.previewSize; 
                 }           
             }
-            const animator = new SimpleLerpCardAnimator({cardX:fromX, cardY:fromY}, destX + window.scrollX, destY + window.scrollY);
+            const animator = new SimpleLerpCardAnimator({cardX:fromX, cardY:fromY, scaleX:1}, destX + window.scrollX, destY + window.scrollY, turn, speed);
             this.animationView.current.start_animation(card, animator, this.onAnimationEnd);
         } else {
             this.reset_drag();

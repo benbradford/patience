@@ -1,4 +1,7 @@
-change execute /undo / redo to return an animationAction, use this to drive animations
+
+
+// turn deck back ? - quite hard
+// animate turning card when moved from pile - hard with undo too
 undo
 auto-complete
 animate pickup?
