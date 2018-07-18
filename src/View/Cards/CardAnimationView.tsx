@@ -16,7 +16,6 @@ export default class CardAnimationView extends React.Component<any, any>{
         if (this.card === null || this.animator === null) {
 
            return ( <p/> );
-
         }  
         return ( <FloatingCardView cardStyles={this.props.cardStyles} card={this.card} enabled={true} modelViewDataSync={this.props.modelViewDataSync} cardX={this.animator.card_data().cardX} cardY={this.animator.card_data().cardY} scaleX={this.animator.card_data().scaleX}/> );
     }

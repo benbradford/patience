@@ -1,8 +1,6 @@
+improve start_animation to be more general
+allow queues of animations
 
-
-// turn deck back ? - quite hard
-// animate turning card when moved from pile - hard with undo too
-undo
 auto-complete
 animate pickup?
 change shadow to style so can animate shadow

@@ -11,6 +11,7 @@ export default class DefaultCardStyles implements ICardStyles {
     public readonly cardWidthValue = 100;
     public readonly cardLengthValue = 140;
     public readonly previewSize = this.cardLengthValue / 6;
+    
     public readonly cardWidth = this.cardWidthValue + "px";
     public readonly cardLength = " " + this.cardLengthValue + "px";
     public readonly cardBackgroundSize = (this.cardWidthValue + 4) + "px " + (this.cardLengthValue + 4) + "px";

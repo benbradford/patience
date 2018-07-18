@@ -17,9 +17,9 @@ export default class PileViews extends React.Component<any, any>{
         const piles : IPileView[] = this.props.hold;
         return (
             <section>
-                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.moving.card} onScoreClick={this.props.onStartDrag} />    
+                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.movingCard} onScoreClick={this.props.onStartDrag} />    
                 <section className="BetweenScoreAndDeck">&nbsp;</section>
-                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} deck={this.props.deck} turned={this.props.turned} moving={this.props.moving} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
+                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} deck={this.props.deck} turned={this.props.turned} movingCard={this.props.movingCard} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
             </section>
@@ -61,7 +61,7 @@ export default class PileViews extends React.Component<any, any>{
             return ( <p/> );
         }
         return (  
-            <HoldPileView key={index} ref={r} cardStyles={this.props.cardStyles} pile={pile} index={index} className="PileDiv" moving={this.props.moving} onPileClick={this.props.onStartDrag} />
+            <HoldPileView key={index} ref={r} cardStyles={this.props.cardStyles} pile={pile} index={index} className="PileDiv" movingCard={this.props.movingCard} onPileClick={this.props.onStartDrag} />
         );
     }
 }

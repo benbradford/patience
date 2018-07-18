@@ -41,12 +41,12 @@ export default class HoldPileView extends React.Component<any, any>{
         if (this.renderedFront === true) {
             return ( <p/> );
         }
-        if (this.props.pile.cards[0] === this.props.moving.card) {
+        if (this.props.movingCard && this.props.pile.cards[0] === this.props.movingCard) {
             this.renderedFront = true;
             return this.render_empty(this.cardRefs[0]);
         }
 
-        if (card === this.props.moving.card) {
+        if (card === this.props.movingCard) {
             this.renderedFront = true;
             return ( <p/> );
         }
@@ -54,7 +54,7 @@ export default class HoldPileView extends React.Component<any, any>{
         let s = this.props.cardStyles.piled(card);
         const callback = () =>{ this.onClick(card, index); };
 
-        if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (index < this.props.pile.cards.length-1 && this.props.pile.cards[index+1] === this.props.moving.card)) {
+        if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (index < this.props.pile.cards.length-1 && this.props.pile.cards[index+1] === this.props.movingCard)) {
              s = this.props.cardStyles.front(card);
         } 
 
@@ -75,7 +75,7 @@ export default class HoldPileView extends React.Component<any, any>{
     }
 
     private onClick = (card: ICardView, index: number): void => {
-        if (this.props.moving.card !== null || card.turned === false) {
+        if (this.props.movingCard !== null || card.turned === false) {
             return;
         }
 

@@ -6,7 +6,7 @@ export default class FloatingCardView extends React.Component<any, any>{
     
     public render(): JSX.Element {     
         
-        if (this.props.card === null || this.props.enabled === false) {
+        if (this.props.enabled === false) {
             return ( <p/> );
         }
 

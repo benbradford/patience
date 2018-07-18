@@ -25,7 +25,7 @@ export default class ScorePileViews extends React.Component<any, any>{
     }
    
     private render_card(pile: IPileView, index: number): JSX.Element  {
-        if (pile.cards.length === 0 || (pile.cards.length === 1 && pile.cards[0] === this.props.movingCard)) {
+        if (pile.cards.length === 0 || (pile.cards.length === 1 && this.props.movingCard && pile.cards[0] === this.props.movingCard)) {
             return this.render_empty(this.cardRefs[index])
         }
 

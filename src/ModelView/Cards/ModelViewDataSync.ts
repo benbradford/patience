@@ -1,7 +1,7 @@
 import {IModelViewData, IPileView, ICardView} from './ModelViewData'
 import CardCollection from '../../Model/Cards/CardCollection';
 import CardTable from '../../Model/Cards/CardTable';
-import {Card} from '../../Model/Cards/Card'
+import {Card, Suit, Face} from '../../Model/Cards/Card'
 
 export default class ModelViewDataSync {
     private modelViewData: IModelViewData;
@@ -68,6 +68,17 @@ export default class ModelViewDataSync {
         
         throw Error("cannot get view card");
         
+    }
+
+    public find_view_card(suit: Suit, face: Face) {
+        for (const p of this.modelViewData.piles) {
+            for (const c of p.cards) {
+                if (c.suit === suit && c.face === face) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 
     public pile_index(pile: CardCollection): number {
