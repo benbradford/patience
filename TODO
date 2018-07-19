@@ -1,3 +1,5 @@
+
+polish: consider making card turn animation seperate
 improve start_animation to be more general
 allow queues of animations
 

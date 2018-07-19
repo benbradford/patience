@@ -60,6 +60,6 @@ export default class NextCardCommand extends CardCommand<IEmptyActionParameters>
         if (turnedCard === null) {
             return null;
         }
-        return {move: {card: turnedCard, from: f, to: t}, flip: [turnedCard]};
+        return {move: {card: turnedCard, from: f, to: t}, flip: turnedCard};
     }
 }

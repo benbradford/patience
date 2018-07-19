@@ -135,7 +135,7 @@ export default class SolitaireModelView {
             card: this.dataSync.view_card(result.move.card, destIndex),
             startPileIndex: startIndex,
             destPileIndex: destIndex,
-            turn: result.flip.length > 0
+            turn: result.flip !== null
         };
     }
 

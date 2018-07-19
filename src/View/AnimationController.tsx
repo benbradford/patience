@@ -4,7 +4,7 @@ import ICardStyles from './ICardStyles'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
 import CardAnimationView from './Cards/CardAnimationView'
 import SimpleLerpCardAnimator from './Cards/Animation/SimpleLerpCardAnimator'
-import CardProxy from '../ModelView/CardProxy'
+import CardProxy from '../ModelView/Cards/CardProxy'
 
 export default class AnimationController {
 
@@ -29,8 +29,6 @@ export default class AnimationController {
     public start_animation(card: ICardView, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number = 1) {
         
         if (this.animationView.current) {
-            // this.state.moving.card = card;
-            // this.dragFrom = null;
             this.movingCard.set(card)
             const destX = box.left;
             let destY = box.top;

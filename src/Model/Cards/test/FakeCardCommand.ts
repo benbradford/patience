@@ -19,14 +19,14 @@ export default class FakeCardCommand implements ICardCommand {
             return null;
         }
         ++this.v;
-        return {move: this.dummy_move(), flip: []};
+        return {move: this.dummy_move(), flip: null};
     }
     public undo(action: ICardActionParameters): ICardActionResult | null {
         if (this.shouldUndo === false) {
             return null;
         }
         --this.v;
-        return {move: this.dummy_move(), flip: []};
+        return {move: this.dummy_move(), flip: null};
     }
 
     public value() { 

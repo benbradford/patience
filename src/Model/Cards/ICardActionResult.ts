@@ -8,6 +8,6 @@ export interface ICardMovementActionResult {
 }
 
 export interface ICardActionResult {
-    flip: Card[];
+    flip: Card | null;
     move: ICardMovementActionResult;
 }

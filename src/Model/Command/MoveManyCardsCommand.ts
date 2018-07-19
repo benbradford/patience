@@ -53,13 +53,13 @@ export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionPar
 
         this.move_all(action.from, action.to, action.card);
         const cardToTurn = action.from.peek();
-        const turnedCards: Card[] = [];
+        let turnedCard: Card | null = null;
         if (cardToTurn && cardToTurn.is_turned_up() === false) {
             cardToTurn.turn();
             action.turnNextInFrom = true;
-            turnedCards.push(cardToTurn);
+            turnedCard = cardToTurn;
         }
-        return {move: action, flip:turnedCards};
+        return {move: action, flip:turnedCard};
     }
 
     public on_undo(action: IMoveCardActionParameters): ICardActionResult | null  {
@@ -67,16 +67,17 @@ export default class MoveManyCardsCommand extends CardCommand<IMoveCardActionPar
             return null;
         }
 
-        this.move_all(action.to, action.from, action.card);
-        const turnedCards: Card[] = [];
+        let turnedCard: Card | null = null;
         if (action.turnNextInFrom) {
-            const card = action.from.peek(1);
-            if (card) {
-                card.turn();
-                turnedCards.push(card);
+            turnedCard = action.from.peek();
+            if (turnedCard) {
+                turnedCard.turn();
             }
         }
-        return {move: {card: action.card, from: action.to, to: action.from}, flip:turnedCards};
+        
+        this.move_all(action.to, action.from, action.card);
+        
+        return {move: {card: action.card, from: action.to, to: action.from}, flip:turnedCard};
     }
 
     private move_all(from : CardCollection, to: CardCollection, target: Card) {

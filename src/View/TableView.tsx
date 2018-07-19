@@ -43,10 +43,11 @@ export default class TableView extends React.Component<{}, ITableData> {
         return (
             <section>
                 <div onMouseMove={this.dragController.handleMouseMove} onMouseUp={this.dragController.handleMouseUp} onMouseLeave={this.dragController.handleMouseLeave} className="Table">   
-                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} movingCard={this.dragController.floating_card()} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.dragController.onStartDrag} />                 
-                    <FloatingCardView cardStyles={this.cardStyles} card={this.dragController.floating_card()} enabled={this.dragController.is_dragged()} modelViewDataSync={this.modelView.data_sync()} cardX={this.dragController.lastMouseX + this.dragController.mouseOffsetX + window.scrollX} cardY={this.dragController.lastMouseY + this.dragController.mouseOffsetY + window.scrollY}/>
-                    <CardAnimationView ref={this.animationView} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
                     {this.render_undo()}
+                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} movingCard={this.dragController.floating_card()} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.dragController.onStartDrag} />                 
+                    <FloatingCardView cardStyles={this.cardStyles} card={this.dragController.floating_card()} enabled={this.dragController.is_dragged()} modelViewDataSync={this.modelView.data_sync()} cardX={this.dragController.dragged_card_offset_x()} cardY={this.dragController.dragged_card_offset_y()}/>
+                    <CardAnimationView ref={this.animationView} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
+                    
                 </div>
             </section>
         );
@@ -62,7 +63,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 
     private onDeckClick = () => {
-        if (this.dragController.is_dragged() === false) {
+        if (this.dragController.floating_card() === null) {
             const result = this.modelView.next_card();
             const currentPileViews = this.pileViews.current;
             if (result && currentPileViews) {
@@ -72,7 +73,7 @@ export default class TableView extends React.Component<{}, ITableData> {
                     const pileBox = currentPileViews.box_for(1);
                     const fromBox = currentPileViews.box_for(0);
                     if (pileBox && fromBox) {
-                        this.dragController.animationController.start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2, fromBox.top + window.scrollY, true, 0.5);
+                        this.dragController.animation_controller().start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2, fromBox.top + window.scrollY, true, 0.5);
                     }
                 }
             }
@@ -80,8 +81,11 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 
     private render_undo() {  
-        return ( <p> <br/><br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-                <button disabled={!this.modelView.can_undo()} onClick={this.onClickUndo}> UNDO </button>  </p>);
+        return ( <p> <button disabled={!this.should_enable_undo_button()} onClick={this.onClickUndo}> UNDO </button>  </p>);
+    }
+
+    private should_enable_undo_button() {
+        return this.modelView.can_undo() && this.dragController.floating_card() === null;
     }
 
     private onClickUndo =() => {   
@@ -90,7 +94,7 @@ export default class TableView extends React.Component<{}, ITableData> {
              const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
             const boxTo = this.pileViews.current.box_for(result.destPileIndex);
             if (boxFrom && boxTo) {
-                this.dragController.animationController.start_animation(result.card, boxTo, result.destPileIndex, boxFrom.left, boxFrom.top, result.turn);
+                this.dragController.animation_controller().start_animation(result.card, boxTo, result.destPileIndex, boxFrom.left, boxFrom.top, result.turn);
             }
         }
     }

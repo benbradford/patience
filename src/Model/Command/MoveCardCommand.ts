@@ -60,25 +60,21 @@ export default class MoveCardCommand extends CardCommand<IMoveCardActionParamete
         action.from.remove();
         action.to.push(action.card);
         const turnedCard = this.turn_card_if_appropriate(action);
-        const turnedCards: Card[] = [];
-        if (turnedCard) {
-            turnedCards.push(turnedCard);
-        }
-        return {move:action, flip: turnedCards};
+       
+        return {move:action, flip: turnedCard};
     }
 
     public on_undo(action: IMoveCardActionParameters): ICardActionResult | null  {
         action.to.remove();
         action.from.push(action.card);
-        const turnedCards: Card[] = [];
+        let turnedCard: Card | null = null;
         if (action.turnNextInFrom) {
-            const card = action.from.peek(1);
-            if (card) {
-                card.turn();
-                turnedCards.push(card);
+            turnedCard = action.from.peek(1);
+            if (turnedCard) {
+                turnedCard.turn();
             }
         }
-        return {move: {card: action.card, from: action.to, to: action.from}, flip:turnedCards};
+        return {move: {card: action.card, from: action.to, to: action.from}, flip:turnedCard};
     }
 
     private turn_card_if_appropriate(action: IMoveCardActionParameters): Card | null {

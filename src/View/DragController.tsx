@@ -4,8 +4,9 @@ import ICardStyles from './ICardStyles'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
 import AnimationController from './AnimationController'
 import PileViews from './PileViews'
-import CardProxy from '../ModelView/CardProxy'
+import CardProxy from '../ModelView/Cards/CardProxy'
 import CardAnimationView from './Cards/CardAnimationView'
+import MouseController from './Cards/MouseController'
 
 interface IMoveDestination {
     pileIndex: number;
@@ -14,12 +15,9 @@ interface IMoveDestination {
 
 export default class DragController {
 
-    public lastMouseX : number = 0;
-    public lastMouseY : number = 0;
-    public mouseOffsetX: number = 0;
-    public mouseOffsetY: number = 0;
-    public animationController: AnimationController;
-   
+    private animationController: AnimationController;
+    private mouseOffsetX: number = 0;
+    private mouseOffsetY: number = 0;
     private modelView: SolitaireModelView;
     private cardStyles: ICardStyles;
     private pileViews: React.RefObject<PileViews>;
@@ -39,6 +37,18 @@ export default class DragController {
         this.draggedCard = new CardProxy(this.modelView.data_sync());
     }
 
+    public animation_controller(): AnimationController {
+        return this.animationController;
+    }
+
+    public dragged_card_offset_x() {
+        return MouseController.lastMouseX + this.mouseOffsetX + window.scrollX;
+    }
+
+    public dragged_card_offset_y() {
+        return MouseController.lastMouseY + this.mouseOffsetY + window.scrollY
+    }
+
     public floating_card() {
         if (this.is_dragged()) {
             return this.draggedCard.current();
@@ -47,8 +57,8 @@ export default class DragController {
     }
 
     public handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-        this.lastMouseX = event.clientX + window.scrollX;
-        this.lastMouseY = event.clientY + window.scrollY;
+        MouseController.lastMouseX = event.clientX + window.scrollX;
+        MouseController.lastMouseY = event.clientY + window.scrollY;
         
         if (this.is_dragged() === true) {
             this.updateState();
@@ -56,8 +66,8 @@ export default class DragController {
     }
     
     public handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
-        this.lastMouseX = event.clientX + window.scrollX;
-        this.lastMouseY = event.clientY + window.scrollY;
+        MouseController.lastMouseX = event.clientX + window.scrollX;
+        MouseController.lastMouseY = event.clientY + window.scrollY;
         if (this.is_dragged() === false) {
             return;
         }
@@ -73,22 +83,22 @@ export default class DragController {
             
             const anim = this.modelView.move_card_to(card, winning.pileIndex ); // have this return an animation action?
             if (winning.box && anim) {
-                const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
-                const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
+                const x = this.dragged_card_offset_x();
+                const y = this.dragged_card_offset_y();
            
                 this.animationController.start_animation(anim.card, winning.box, anim.destPileIndex, x, y, false);
             } 
             this.resetDrag();
 
         } else {
-            this.revert_animation();
+            this.cancel();
         }
         
     }
 
     public handleMouseLeave = () => {
         if (this.draggedCard.has_card() && this.is_dragged() === true) {
-            this.revert_animation();
+            this.cancel();
         }
     }
 
@@ -97,8 +107,8 @@ export default class DragController {
             return;
         }
         this.dragFrom = box;
-        this.mouseOffsetX = (box.left - this.lastMouseX) - 14;
-        this.mouseOffsetY= (box.top - this.lastMouseY) - 8;
+        this.mouseOffsetX = (box.left - MouseController.lastMouseX) - 14;
+        this.mouseOffsetY= (box.top - MouseController.lastMouseY) - 8;
         this.draggedCard.set(c);
         this.destinations = this.move_destinations(c);
         this.updateState();
@@ -128,8 +138,8 @@ export default class DragController {
     }
 
     private winning_pile() : IMoveDestination | null {
-        const dminX = this.lastMouseX + this.mouseOffsetX;
-        const dminY = this.lastMouseY + this.mouseOffsetY;
+        const dminX = MouseController.lastMouseX + this.mouseOffsetX;
+        const dminY = MouseController.lastMouseY + this.mouseOffsetY;
         const dmaxX = dminX + this.cardStyles.cardWidthValue;
         const dmaxY = dminY + this.cardStyles.cardLengthValue;
         
@@ -156,19 +166,19 @@ export default class DragController {
             return -1;
         }
 
-        if (dminX > box.left + this.cardStyles.cardWidthValue || dmaxX < box.left || dminY > box.top + this.cardStyles.cardLengthValue || dmaxY < box.top) {
+        if (dminX > box.right || dmaxX < box.left || dminY > box.bottom || dmaxY < box.top) {
             return -1;
         }
 
         let left = dminX;
-        let right = box.left + this.cardStyles.cardWidthValue;
+        let right = box.right;
         if (box.left > dminX) {
             left = box.left;
             right = dmaxX;
         }
 
         let top = dminY;
-        let bottom = box.top + this.cardStyles.cardLengthValue;
+        let bottom = box.bottom;
         if (box.top > dminY) {
             top = box.top;
             bottom = dmaxY;
@@ -177,11 +187,11 @@ export default class DragController {
         return(right-left) * (bottom-top);
     }
 
-    private revert_animation() {
+    private cancel() {
         const card = this.draggedCard.current();
         if (card && this.dragFrom) {
-            const x = this.lastMouseX + this.mouseOffsetX + window.scrollX;
-            const y = this.lastMouseY + this.mouseOffsetY + window.scrollY;
+            const x = this.dragged_card_offset_x();
+            const y = this.dragged_card_offset_y();
            
             this.animationController.start_animation(card, this.dragFrom, card.pileIndex, x, y, false);
         }  

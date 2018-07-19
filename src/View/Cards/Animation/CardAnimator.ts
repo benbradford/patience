@@ -6,20 +6,11 @@ export enum CardAnimatorTickResult {
 }
 
 export default abstract class CardAnimator {
-
-    protected readonly destX: number;
-    protected readonly destY: number;
-    protected readonly fromX: number;
-    protected readonly fromY: number;
-
+ 
     private data: ICardAnimationData;
 
-    constructor(data: ICardAnimationData, fromX: number, fromY: number, destX: number, destY: number) {
+    constructor(data: ICardAnimationData) {
         this.data = data;
-        this.fromX = fromX;
-        this.fromY = fromY;
-        this.destX = destX;
-        this.destY = destY;
     }
 
     public card_data(): Readonly<ICardAnimationData> {
