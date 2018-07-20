@@ -13,6 +13,7 @@ import {make_card_box} from './Cards/ReactUtil'
 import StateFactory from './States/StateFactory'
 import DragToEvaluator from './DragToEvaluator';
 import CardBox from '../ModelView/Cards/CardBox'
+import FloatingCard from '../ModelView/Cards/FloatingCard'
 
 interface ITableData {
     modelView: IModelViewData;
@@ -25,7 +26,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private cardStyles: DefaultCardStyles = new DefaultCardStyles();
     private floatingCards = new FloatingCards();
     private tickManager = new CardTickManager();
-    private animationController = new AnimationController(this.modelView, this.cardStyles);
+    private animationController: AnimationController;
     private stateMachine = new CardsGameViewStateMachine();
     private stateFactory: StateFactory;
 
@@ -33,8 +34,9 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     constructor(props: any, context: any) {
         super(props, context);
+        this.animationController = new AnimationController(this.modelView, this.cardStyles, this.updateState);
         this.tickManager.add(this.animationController);
-        const drag = new DragToEvaluator(this.cardStyles,  this.box_for, this.modelView);
+        const drag = new DragToEvaluator(this.cardStyles,  this.boxFor, this.modelView);
         this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this.modelView,drag, this.animationController);
 
         this.stateMachine.move_to(this.stateFactory.make_idle_state());
@@ -57,7 +59,7 @@ export default class TableView extends React.Component<{}, ITableData> {
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     {this.render_undo()}
-                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} movingCard={this.floatingCards} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} modelView={this.modelView} floatingCards={this.floatingCards} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
                     <FloatingCardsView floatingCards={this.floatingCards} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
                     
                 </div>
@@ -69,9 +71,12 @@ export default class TableView extends React.Component<{}, ITableData> {
         this.tickManager.tick();
     }
 
-    private box_for(pileIndex: number): CardBox | null {
+    private boxFor = (pileIndex: number): CardBox | null => {
         if (this.pileViews.current) {
-            return this.pileViews.current.box_for(pileIndex);
+            const box = this.pileViews.current.box_for(pileIndex);
+            if (box) {
+                return make_card_box(box);
+            }
         }
         return null;
     }
@@ -87,19 +92,24 @@ export default class TableView extends React.Component<{}, ITableData> {
                     const pileBox = currentPileViews.box_for(1);
                     const fromBox = currentPileViews.box_for(0);
                     if (pileBox && fromBox) {
-                        this.animationController.start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2, fromBox.top + window.scrollY, true, 0.5);
+                        const x = fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2;
+                        const y = fromBox.top + window.scrollY;
+                        const floatingCard = new FloatingCard(result.card, x, y, 1, this.modelView.data_sync());
+                        this.floatingCards.add(floatingCard);
+                        const state = this.stateFactory.make_anim_state(floatingCard, pileBox, 1, x, y, true, 0.5);
+                        this.stateMachine.move_to(state);
                     }
                 }
             }
         }
     }
 
-    public onStartDrag = (c: ICardView, box: ClientRect) => {
+    private onStartDrag = (c: ICardView, box: ClientRect) => {
         const cardBox = make_card_box(box);
         this.stateMachine.current().on_start_drag(c, cardBox);
     }
 
-    public handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    private handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
         MouseController.lastMouseX = event.clientX + window.scrollX;
         MouseController.lastMouseY = event.clientY + window.scrollY;
         if (this.stateMachine.current().on_mouse_move(MouseController.lastMouseX, MouseController.lastMouseY)) {
@@ -107,13 +117,13 @@ export default class TableView extends React.Component<{}, ITableData> {
         }     
     }
     
-    public handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+    private handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
         MouseController.lastMouseX = event.clientX + window.scrollX;
         MouseController.lastMouseY = event.clientY + window.scrollY;
         this.stateMachine.current().on_mouse_up(MouseController.lastMouseX, MouseController.lastMouseY);
     }
 
-    public handleMouseLeave = () => {
+    private handleMouseLeave = () => {
         this.stateMachine.current().on_mouse_leave();
     }
 
@@ -131,7 +141,12 @@ export default class TableView extends React.Component<{}, ITableData> {
              const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
             const boxTo = this.pileViews.current.box_for(result.destPileIndex);
             if (boxFrom && boxTo) {
-                this.animationController.start_animation(result.card, boxTo, result.destPileIndex, boxFrom.left, boxFrom.top, result.turn);
+                const x = boxFrom.left;
+                const y = boxFrom.top;
+                const floatingCard = new FloatingCard(result.card, x, y, 1, this.modelView.data_sync());
+                this.floatingCards.add(floatingCard);
+                const state = this.stateFactory.make_anim_state(floatingCard, boxTo, result.destPileIndex, x, y, result.turn, 0.5);     
+                this.stateMachine.move_to(state);
             }
         }
     }

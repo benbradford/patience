@@ -28,15 +28,15 @@ export default class DragState extends CardsGameViewState {
 
         super(machine);
         this.modelView = modelView;
+        this.stateFactory = stateFactory;
+        this.dragToEvaluator = dragToEvaluator;    
         this.mouseOffsetX = (box.left - MouseController.lastMouseX) - 14;
         this.mouseOffsetY= (box.top - MouseController.lastMouseY) - 8;
         this.dragFrom = box;
         this.floatingCard = new FloatingCard(c, this.dragged_card_offset_x(), this.dragged_card_offset_y(), 1, modelView.data_sync());
         floatingCards.add(this.floatingCard);
 
-        this.dragFrom = box;
-        this.dragToEvaluator.set_valid_destinations(c);
-        
+        this.dragToEvaluator.set_valid_destinations(c);      
     }
 
     public on_mouse_move(x: number, y: number): boolean { 
@@ -61,11 +61,13 @@ export default class DragState extends CardsGameViewState {
             
             const anim = this.modelView.move_card_to(card, winning.pileIndex ); // have this return an animation action?
             if (winning.box && anim) {
-                const x = this.dragged_card_offset_x();
-                const y = this.dragged_card_offset_y();
+                const xOffset = this.dragged_card_offset_x();
+                const yOffset = this.dragged_card_offset_y();
            
-                this.animationController.start_animation(anim.card, winning.box, anim.destPileIndex, x, y, false);
-                
+                // this.animationController.start_animation(anim.card, winning.box, anim.destPileIndex, x, y, false);
+                const state = this.stateFactory.make_anim_state(this.floatingCard, winning.box, anim.destPileIndex, xOffset, yOffset, false, 1 );
+                this.state_machine().move_to(state);
+                return;
             } 
         } 
         this.cancel();
@@ -90,7 +92,8 @@ export default class DragState extends CardsGameViewState {
             const x = this.dragged_card_offset_x();
             const y = this.dragged_card_offset_y();
            
-            this.animationController.start_animation(card, this.dragFrom, card.pileIndex, x, y, false);
+            const state = this.stateFactory.make_anim_state(this.floatingCard, this.dragFrom, card.pileIndex, x, y, false, 1 );
+            this.state_machine().move_to(state);
         } else {
             throw new Error("cannot cancel drag");
         }  

@@ -2,8 +2,19 @@ import * as React from 'react'
 import './Cards.css'
 import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
 import {make_refs} from './Cards/ReactUtil'
+import SolitaireModelView from '../ModelView/SolitaireModelView'
+import FloatingCards from '../ModelView/Cards/FloatingCards'
+import ICardStyles from './ICardStyles';
 
-export default class ScorePileViews extends React.Component<any, any>{
+interface IScorePileViews {
+    ref: React.RefObject<ScorePileViews>;
+    cardStyles: ICardStyles; 
+    modelView: SolitaireModelView; 
+    floatingCards: FloatingCards;
+    onStartDrag: (c: ICardView, box: ClientRect) => void;
+}
+
+export default class ScorePileViews extends React.Component<IScorePileViews, any>{
     
     private readonly cardRefs = make_refs<HTMLElement>(4);
 
@@ -11,7 +22,7 @@ export default class ScorePileViews extends React.Component<any, any>{
         return (
             <section>
                 <div className="PileDiv" />
-                {this.props.score.map( (pile: IPileView, index: number) => this.render_card(pile, index))}
+                {this.props.modelView.score().map( (pile: IPileView, index: number) => this.render_card(pile, index))}
             </section>
         );  
     }
@@ -25,12 +36,12 @@ export default class ScorePileViews extends React.Component<any, any>{
     }
    
     private render_card(pile: IPileView, index: number): JSX.Element  {
-        if (pile.cards.length === 0 || (pile.cards.length === 1 && this.props.movingCard && pile.cards[0] === this.props.movingCard)) {
+        if (pile.cards.length === 0 || (pile.cards.length === 1 && this.props.floatingCards.find(pile.cards[0]))) {
             return this.render_empty(this.cardRefs[index])
         }
 
         let card = pile.cards[pile.cards.length-1];
-        if (card === this.props.movingCard) {
+        if (this.props.floatingCards.find(card)) {
             card = pile.cards[pile.cards.length-2];
         }
         const callback = () =>{ this.onClick(card, index); };
@@ -48,7 +59,7 @@ export default class ScorePileViews extends React.Component<any, any>{
     }
 
     private onClick = (card: ICardView, index: number): void => {
-        if (this.props.movingCard!== null) {
+        if (this.props.floatingCards.has_any()) {
             return;
         }
 
@@ -58,7 +69,7 @@ export default class ScorePileViews extends React.Component<any, any>{
         }
         const box = cardRef.getBoundingClientRect();
 
-        this.props.onScoreClick(card, box);
+        this.props.onStartDrag(card, box);
     }
 
 }

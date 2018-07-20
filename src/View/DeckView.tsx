@@ -1,7 +1,22 @@
 import * as React from 'react'
 import './Cards.css'
+import SolitaireModelView from '../ModelView/SolitaireModelView'
+import FloatingCards from '../ModelView/Cards/FloatingCards'
+import ICardStyles from './ICardStyles';
+import {ICardView} from '../ModelView/Cards/ModelViewData'
 
-export default class DeckView extends React.Component<any, any>{
+interface IDeckProps {
+    cardStyles: ICardStyles;
+    deckRef: any;
+    turnedRef: any;
+    key: any;
+    modelView: SolitaireModelView;
+    floatingCards: FloatingCards;
+    onDeckClick: () => void;
+    onStartDrag: (c: ICardView, box: ClientRect) => void;
+}
+
+export default class DeckView extends React.Component<IDeckProps, any>{
     
     public render(): JSX.Element {     
         
@@ -18,37 +33,34 @@ export default class DeckView extends React.Component<any, any>{
     }
 
     private render_deck() {
-        if (this.props.deck === null) {
-            return ( <p/> );
-        }
-        if (this.props.deck.cards.length === 0) {
+
+        const deck = this.props.modelView.deck();
+        if (deck.cards.length === 0) {
             return ( <section style={this.props.cardStyles.empty()} ref={this.props.deckRef} onMouseDown={this.deckClick}/> );  
         }
         return (
             
-            <section style={this.props.cardStyles.front(this.props.deck.cards[this.props.deck.cards.length-1])} ref={this.props.deckRef} onMouseDown={this.deckClick} />
+            <section style={this.props.cardStyles.front(deck.cards[deck.cards.length-1])} ref={this.props.deckRef} onMouseDown={this.deckClick} />
             
         );
     }
 
     private render_turned_card() {
-        if (this.props.turned === null) {
-            return ( <p/> );
-        }
-        
+        const turned = this.props.modelView.turned();
+
         let indexToShow : number = 0;
-        if (this.props.movingCard === this.props.turned.cards[this.props.turned.cards.length-1]) {
+        if (this.props.floatingCards.find(turned.cards[turned.cards.length-1])) {
             ++indexToShow;
         }
 
-        if (indexToShow >= this.props.turned.cards.length) {
+        if (indexToShow >= turned.cards.length) {
 
             return ( <section style={this.props.cardStyles.empty()} ref={this.props.turnedRef} /> );          
         }
    
         return (
            <section>
-              <section ref={this.props.turnedRef} style={this.props.cardStyles.front(this.props.turned.cards[this.props.turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
+              <section ref={this.props.turnedRef} style={this.props.cardStyles.front(turned.cards[turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
            </section>  
         );
     }
@@ -58,7 +70,9 @@ export default class DeckView extends React.Component<any, any>{
     }
 
     private turnClick = (): void => {
-        if (this.props.movingCard !== null || this.props.turned.cards.length === 0) {
+        const turned = this.props.modelView.turned();
+
+        if (this.props.floatingCards.has_any() || turned.cards.length === 0) {
             return;
         }
       
@@ -67,7 +81,7 @@ export default class DeckView extends React.Component<any, any>{
         }
         const box = this.props.turnedRef.current.getBoundingClientRect();
 
-        this.props.onTurnClick(this.props.turned.cards[this.props.turned.cards.length-1], box);
+        this.props.onStartDrag(turned.cards[turned.cards.length-1], box);
     }
     
 }

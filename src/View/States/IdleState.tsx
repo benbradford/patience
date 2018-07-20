@@ -2,7 +2,6 @@ import CardsGameViewStateMachine from '../../ModelView/Cards/CardsGameViewStateM
 import CardsGameViewState from '../../ModelView/Cards/CardsGameViewState'
 import CardBox from '../../ModelView/Cards/CardBox'
 import {ICardView} from '../../ModelView/Cards/ModelViewData'
-import DragState from './DragState'
 import StateFactory from './StateFactory'
 
 export default class IdleState extends CardsGameViewState {
@@ -14,7 +13,6 @@ export default class IdleState extends CardsGameViewState {
         this.stateFactory = stateFactory;
     }
 
-    /* tslint:disable:no-empty */
     public on_start_drag(c: ICardView, box: CardBox): void { 
         this.state_machine().move_to(this.stateFactory.make_drag_state(c, box));
     }

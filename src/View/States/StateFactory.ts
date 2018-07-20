@@ -6,7 +6,9 @@ import FloatingCards from '../../ModelView/Cards/FloatingCards'
 import SolitaireModelView from '../../ModelView/SolitaireModelView'
 import DragToEvaluator from '../DragToEvaluator'
 import IdleState from './IdleState'
+import AnimationState from './AnimationState'
 import AnimationController from '../AnimationController'
+import FloatingCard from '../../ModelView/Cards/FloatingCard'
 
 export default class StateFactory {
 
@@ -37,7 +39,7 @@ export default class StateFactory {
         return new IdleState(this.machine, this);
     }
 
-    public make_anim_state(): AnimationState(card: FloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number) {
+    public make_anim_state(card: FloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number) {
         return new AnimationState(this.machine, this, this.floatingCards, this.animationController, card, box, pileIndex, fromX, fromY, turn, speed);
     }
 }

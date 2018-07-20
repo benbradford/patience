@@ -1,4 +1,3 @@
-import CardProxy from "../../ModelView/Cards/CardProxy";
 import CardsGameViewStateMachine from './CardsGameViewStateMachine'
 import CardBox from './CardBox'
 import {ICardView} from './ModelViewData'

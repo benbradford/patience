@@ -6,7 +6,7 @@ import FloatingCard from '../..//ModelView/Cards/FloatingCard';
 import FloatingCardView from './FloatingCardView'
 
 interface IFloatingCardsViewProps{
-     floatingCards : FloatingCards;
+     floatingCards: FloatingCards;
      cardStyles: any;
      modelViewDataSync: ModelViewDataSync;
 }

@@ -1,12 +1,23 @@
 import * as React from 'react'
 import './Cards.css'
-import {ICardView} from '../ModelView/Cards/ModelViewData'
+import {ICardView, IPileView} from '../ModelView/Cards/ModelViewData'
 import {make_refs} from './Cards/ReactUtil'
+import FloatingCards from '../ModelView/Cards/FloatingCards'
+import ICardStyles from './ICardStyles';
 
-export default class HoldPileView extends React.Component<any, any>{
+interface IHoldPileProps {
+    className: any;
+    key: any; 
+    ref: React.RefObject<HoldPileView>;
+    cardStyles: ICardStyles;
+    pile: IPileView;
+    floatingCards: FloatingCards;
+    onStartDrag: (c: ICardView, box: ClientRect) => void;
+}
+
+export default class HoldPileView extends React.Component<IHoldPileProps, any>{
     
     private readonly cardRefs = make_refs<HTMLElement>(13);
-
     private renderedFront = false;
     
     public render(): JSX.Element {     
@@ -19,6 +30,7 @@ export default class HoldPileView extends React.Component<any, any>{
     }
 
     public box(): ClientRect | null {
+        
         let index = this.props.pile.cards.length - 1;
         if (index < 0) {
             index = 0;
@@ -41,12 +53,12 @@ export default class HoldPileView extends React.Component<any, any>{
         if (this.renderedFront === true) {
             return ( <p/> );
         }
-        if (this.props.movingCard && this.props.pile.cards[0] === this.props.movingCard) {
+        if (this.props.floatingCards.find(this.props.pile.cards[0])) {
             this.renderedFront = true;
             return this.render_empty(this.cardRefs[0]);
         }
 
-        if (card === this.props.movingCard) {
+        if (this.props.floatingCards.find(card)) {
             this.renderedFront = true;
             return ( <p/> );
         }
@@ -54,7 +66,7 @@ export default class HoldPileView extends React.Component<any, any>{
         let s = this.props.cardStyles.piled(card);
         const callback = () =>{ this.onClick(card, index); };
 
-        if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (index < this.props.pile.cards.length-1 && this.props.pile.cards[index+1] === this.props.movingCard)) {
+        if (card === this.props.pile.cards[this.props.pile.cards.length-1] || (index < this.props.pile.cards.length-1 && this.props.floatingCards.find(this.props.pile.cards[index+1]))) {
              s = this.props.cardStyles.front(card);
         } 
 
@@ -75,7 +87,7 @@ export default class HoldPileView extends React.Component<any, any>{
     }
 
     private onClick = (card: ICardView, index: number): void => {
-        if (this.props.movingCard !== null || card.turned === false) {
+        if (this.props.floatingCards.has_any() || card.turned === false) {
             return;
         }
 
@@ -85,7 +97,7 @@ export default class HoldPileView extends React.Component<any, any>{
         }
         const box = r.getBoundingClientRect();
       
-        this.props.onPileClick(card, box);
+        this.props.onStartDrag(card, box);
     
     }
 

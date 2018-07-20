@@ -1,5 +1,3 @@
-
-
 export const cardImages = [
     require('../Asset/Classic/c01.png'),
     require('../Asset/Classic/c02.png'),

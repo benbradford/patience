@@ -5,8 +5,7 @@ import ModelViewDataSync from '../../ModelView/Cards/ModelViewDataSync'
 import FloatingCard from '../../ModelView/Cards/FloatingCard'
 
 interface IFloatingCardViewProps {
-    card: FloatingCard,
-    
+    card: FloatingCard,   
     cardStyles: any,
     modelViewDataSync: ModelViewDataSync;
 }
@@ -15,11 +14,11 @@ export default class FloatingCardView extends React.Component<IFloatingCardViewP
     
     public render(): JSX.Element {     
         
-        const current_card = this.props.card.current();
-        if (current_card === null) {
+        const currentCard = this.props.card.current();
+        if (currentCard === null) {
             return ( <p/> );
         }
-        const cards = this.props.modelViewDataSync.collect_all_cards_above(current_card);
+        const cards = this.props.modelViewDataSync.collect_all_cards_above(currentCard);
         
         return (
             <section style={this.drag_style(this.props.card)} className="Dragging">

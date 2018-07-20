@@ -21,7 +21,10 @@ export default class FloatingCards {
         return this.cards.length > 0;
     }
 
-    public find(card: ICardView): FloatingCard | null {
+    public find(card: ICardView | undefined): FloatingCard | null {
+        if (card === undefined) { 
+            return null; 
+        }
         for(const c of this.cards) {
             if (c.proxy().card_face() === card.face && c.proxy().card_suit() === card.suit) {
                 return c;

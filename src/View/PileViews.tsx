@@ -1,14 +1,23 @@
 import * as React from 'react'
 import './Cards.css'
-import { IPileView } from '../ModelView/Cards/ModelViewData';
+import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
 import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
-import {make_refs, make_card_box} from './Cards/ReactUtil'
-import IBoxFinder from './IBoxFinder'
-import CardBox from '../ModelView/Cards/CardBox'
+import {make_refs} from './Cards/ReactUtil'
+import SolitaireModelView from '../ModelView/SolitaireModelView'
+import FloatingCards from '../ModelView/Cards/FloatingCards'
+import ICardStyles from './ICardStyles';
 
-export default class PileViews extends React.Component<any, any> implements IBoxFinder {
+interface IPileViewsProps {
+    ref: React.RefObject<PileViews>;
+    cardStyles: ICardStyles; 
+    modelView: SolitaireModelView; 
+    floatingCards: FloatingCards;
+    onDeckClick: () => void;
+    onStartDrag: (c: ICardView, box: ClientRect) => void;
+}
+export default class PileViews extends React.Component<IPileViewsProps, any> {
     
     private readonly pileRef = make_refs<HoldPileView>(7);
     private readonly scoresRef = React.createRef<ScorePileViews>(); 
@@ -16,44 +25,40 @@ export default class PileViews extends React.Component<any, any> implements IBox
     private readonly deckRef = React.createRef<HTMLElement>();
     
     public render(): JSX.Element {     
-        const piles : IPileView[] = this.props.hold;
+        const piles : IPileView[] = this.props.modelView.hold();
         return (
             <section>
-                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} score={this.props.score} onClick={this.props.startDrag} movingCard={this.props.movingCard} onScoreClick={this.props.onStartDrag} />    
+                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} modelView={this.props.modelView} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />    
                 <section className="BetweenScoreAndDeck">&nbsp;</section>
-                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} deck={this.props.deck} turned={this.props.turned} movingCard={this.props.movingCard} onDeckClick={this.props.onDeckClick} onTurnClick={this.props.onStartDrag} /> 
+                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} modelView={this.props.modelView} floatingCards={this.props.floatingCards} onDeckClick={this.props.onDeckClick} onStartDrag={this.props.onStartDrag} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
             </section>
         );
     }
 
-    public box_for(pileIndex: number): CardBox | null {
+    public box_for(pileIndex: number): ClientRect | null {
         const holdIndex = pileIndex - 2;
         const scoreIndex = pileIndex - 10;
         
         if (pileIndex === 0 && this.deckRef.current) {
-            return make_card_box(this.deckRef.current.getBoundingClientRect());
+            return this.deckRef.current.getBoundingClientRect();
         } else if (pileIndex === 1 && this.turnedRef.current) {
             // turned pile
-            return make_card_box(this.turnedRef.current.getBoundingClientRect());
+            return this.turnedRef.current.getBoundingClientRect();
         } else if (holdIndex >=0 && holdIndex < 7) {
             const r = this.pileRef[holdIndex];
             if (r === null || r.current === null) {
                     
                 return null;
             }
-            const b = r.current.box();
-            if (b) {
-                return make_card_box(b);
-            }
+            return r.current.box();
+           
         } else if (scoreIndex >=0 && scoreIndex < 4) {
             const scores = this.scoresRef.current;
             if (scores) {
-                const b = scores.box(scoreIndex);
-                if (b) {
-                    return make_card_box(b);
-                }
+                return scores.box(scoreIndex);
+                
             }
         }
         
@@ -66,7 +71,7 @@ export default class PileViews extends React.Component<any, any> implements IBox
             return ( <p/> );
         }
         return (  
-            <HoldPileView key={index} ref={r} cardStyles={this.props.cardStyles} pile={pile} index={index} className="PileDiv" movingCard={this.props.movingCard} onPileClick={this.props.onStartDrag} />
+            <HoldPileView className="PileDiv" key={index} ref={r} cardStyles={this.props.cardStyles} pile={pile} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />
         );
     }
 }
