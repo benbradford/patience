@@ -10,9 +10,11 @@ export default class CardProxy {
     private face: Face = Face.ace;
     private hasCard: boolean = false;
    
-    constructor (dataSync: ModelViewDataSync) {
+    constructor (dataSync: ModelViewDataSync, card: ICardView | null = null) {
         this.dataSync = dataSync;
-
+        if (card) {
+            this.set(card);
+        }
     }
 
     public reset() {

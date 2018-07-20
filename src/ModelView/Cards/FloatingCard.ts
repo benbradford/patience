@@ -10,8 +10,7 @@ export default class FloatingCard {
     private cardScaleX: number;
 
     constructor(card: ICardView, cardX: number, cardY: number, cardScaleX: number, dataSync: ModelViewDataSync) {
-        this.cardProxy = new CardProxy(dataSync);
-        this.cardProxy.set(card);
+        this.cardProxy = new CardProxy(dataSync, card);
         this.cardX = cardX;
         this.cardY = cardY;
         this.cardScaleX = cardScaleX;

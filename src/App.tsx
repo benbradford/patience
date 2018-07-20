@@ -4,10 +4,8 @@ import TableView from './View/TableView'
 class App extends React.Component {
   public render() {
 
-    return (
-      
-          <TableView />
-      
+    return (    
+          <TableView />     
     );
   }
 }

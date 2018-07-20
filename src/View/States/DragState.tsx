@@ -8,6 +8,7 @@ import SolitaireModelView from '../../ModelView/SolitaireModelView'
 import MouseController from '../Cards/MouseController'
 import DragToEvaluator from '../DragToEvaluator'
 import StateFactory from './StateFactory'
+import {IMoveDestination} from '../DragToEvaluator'
 
 export default class DragState extends CardsGameViewState {
 
@@ -57,18 +58,9 @@ export default class DragState extends CardsGameViewState {
         }
         
         const winning = this.dragToEvaluator.winning_pile(this.dragFrom, this.mouseOffsetX, this.mouseOffsetY);
-        if (winning ) {
-            
-            const anim = this.modelView.move_card_to(card, winning.pileIndex ); // have this return an animation action?
-            if (winning.box && anim) {
-                const xOffset = this.dragged_card_offset_x();
-                const yOffset = this.dragged_card_offset_y();
-           
-                // this.animationController.start_animation(anim.card, winning.box, anim.destPileIndex, x, y, false);
-                const state = this.stateFactory.make_anim_state(this.floatingCard, winning.box, anim.destPileIndex, xOffset, yOffset, false, 1 );
-                this.state_machine().move_to(state);
-                return;
-            } 
+        if (winning ) {          
+            this.kick_off_animation_to_winning_pile(card, winning);
+            return;
         } 
         this.cancel();
   
@@ -76,6 +68,17 @@ export default class DragState extends CardsGameViewState {
 
     public on_mouse_leave() {
         this.cancel();
+    }
+
+    private kick_off_animation_to_winning_pile(card: ICardView, dest: IMoveDestination) {
+        const anim = this.modelView.move_card_to(card, dest.pileIndex ); // have this return an animation action?
+            if (dest.box && anim) {
+                const xOffset = this.dragged_card_offset_x();
+                const yOffset = this.dragged_card_offset_y();
+                const state = this.stateFactory.make_anim_state(this.floatingCard, dest.box, anim.destPileIndex, xOffset, yOffset, false, 1 );
+                this.state_machine().move_to(state);
+                return;
+            } 
     }
 
     private dragged_card_offset_x() {

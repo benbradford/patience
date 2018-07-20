@@ -16,7 +16,13 @@ export default class AnimationState extends CardsGameViewState {
                 stateFactory: StateFactory,
                 floatingCards: FloatingCards,
                 animationController: AnimationController,
-                card: FloatingCard, pileBox: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number) {
+                card: FloatingCard, 
+                pileBox: ClientRect, 
+                pileIndex: number, 
+                fromX: number, 
+                fromY: number, 
+                turn: boolean, 
+                speed: number) {
 
         super(machine);
         this.stateFactory = stateFactory;

@@ -4,7 +4,7 @@ import SolitaireModelView from '../ModelView/SolitaireModelView'
 import CardBox from '../ModelView/Cards/CardBox'
 import MouseController from './Cards/MouseController'
 
-interface IMoveDestination {
+export interface IMoveDestination {
     pileIndex: number;
     box: CardBox; 
 }
