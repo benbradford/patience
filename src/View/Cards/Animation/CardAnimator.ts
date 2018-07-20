@@ -1,30 +1,24 @@
-import ICardAnimationData from './ICardAnimationData'
-
-export enum CardAnimatorTickResult {
-    stillAnimating,
-    completed
-}
+import FloatingCard from '../../../ModelView/Cards/FloatingCard'
 
 export default abstract class CardAnimator {
  
-    private data: ICardAnimationData;
+    private card: FloatingCard;
 
-    constructor(data: ICardAnimationData) {
-        this.data = data;
+    constructor(card: FloatingCard) {
+        this.card = card;
     }
 
-    public card_data(): Readonly<ICardAnimationData> {
-        return this.data;
+    public card_data(): Readonly<FloatingCard> {
+        return this.card;
     }
 
-    public abstract tick(): CardAnimatorTickResult;
+    public abstract tick(): void;
 
     protected set_card_position(x: number, y: number) {
-        this.data.cardX = x;
-        this.data.cardY = y;
+        this.card.set_position(x, y);
     }
 
     protected set_card_scale(x: number) {
-        this.data.scaleX = x;
+        this.card.set_scale(x);
     }
 }

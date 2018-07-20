@@ -1,52 +1,42 @@
-import * as React from 'react'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import ICardStyles from './ICardStyles'
-import {ICardView} from '../ModelView/Cards/ModelViewData'
-import CardAnimationView from './Cards/CardAnimationView'
 import SimpleLerpCardAnimator from './Cards/Animation/SimpleLerpCardAnimator'
-import CardProxy from '../ModelView/Cards/CardProxy'
+import FloatingCard from '../ModelView/Cards/FloatingCard'
+import ICardTicker from '../ModelView/Cards/ICardTicker'
+import CardAnimator from './Cards/Animation/CardAnimator'
 
-export default class AnimationController {
+export default class AnimationController implements ICardTicker {
 
     private modelView: SolitaireModelView;
-    private animationView: React.RefObject<CardAnimationView>;
     private cardStyles: ICardStyles;
-    private movingCard: CardProxy;
-    private onAnimationEnd: ()=>void;
-
-    constructor( modelView: SolitaireModelView, animationView: React.RefObject<CardAnimationView>, cardStyles: ICardStyles, onAnimationEnd: ()=>void) {
-        this.modelView = modelView;
-        this.animationView = animationView;
-        this.cardStyles = cardStyles;
-        this.onAnimationEnd = onAnimationEnd;
-        this.movingCard = new CardProxy(modelView.data_sync());
-    }
     
-    public moving_card() {
-        return this.movingCard.current();
+    private running: CardAnimator[] = [];
+   
+    constructor( modelView: SolitaireModelView, cardStyles: ICardStyles) {
+        this.modelView = modelView;
+        this.cardStyles = cardStyles;
     }
 
-    public start_animation(card: ICardView, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number = 1) {
-        
-        if (this.animationView.current) {
-            this.movingCard.set(card)
-            const destX = box.left;
-            let destY = box.top;
+    public start_animation(card: FloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number, onAnimationEnd: ()=>void) {
             
-            if (pileIndex > 1 && pileIndex < 9) {
-                const destPile = this.modelView.hold()[pileIndex - 2];
-                if (destPile.cards.length > 0) {
-                    destY +=  this.cardStyles.previewSize; 
-                }           
-            }
-            const animator = new SimpleLerpCardAnimator({cardX:fromX, cardY:fromY, scaleX:1}, destX + window.scrollX, destY + window.scrollY, turn, speed);
-            this.animationView.current.start_animation(card, animator, this.onAnimEnd);
-        } 
+        const destX = box.left;
+        let destY = box.top;
+        
+        if (pileIndex > 1 && pileIndex < 9) {
+            const destPile = this.modelView.hold()[pileIndex - 2];
+            if (destPile.cards.length > 0) {
+                destY +=  this.cardStyles.previewSize; 
+            }           
+        }
+        const animator = new SimpleLerpCardAnimator(card, destX + window.scrollX, destY + window.scrollY, turn, speed, onAnimationEnd);
+        this.running.push(animator);
     }
 
-    private onAnimEnd = () => {
-        this.movingCard.reset();
-        this.onAnimationEnd();
+    public tick(): void {
+        for (const t of this.running) {
+            t.tick();
+        }
     }
+
     
 }

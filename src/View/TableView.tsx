@@ -1,11 +1,18 @@
 import * as React from 'react'
-import {IModelViewData} from '../ModelView/Cards/ModelViewData'
+import {IModelViewData, ICardView} from '../ModelView/Cards/ModelViewData'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import PileViews from './PileViews'
-import FloatingCardView from './Cards/FloatingCardView'
-import CardAnimationView from './Cards/CardAnimationView'
 import DefaultCardStyles from './DefaultCardStyles'
-import DragController from './DragController'
+import CardTickManager from '../ModelView/Cards/CardTickManager'
+import AnimationController from './AnimationController'
+import FloatingCardsView from './Cards/FloatingCardsView'
+import FloatingCards from '../ModelView/Cards/FloatingCards'
+import CardsGameViewStateMachine from '../ModelView/Cards/CardsGameViewStateMachine'
+import MouseController from './Cards/MouseController'
+import {make_card_box} from './Cards/ReactUtil'
+import StateFactory from './States/StateFactory'
+import DragToEvaluator from './DragToEvaluator';
+import CardBox from '../ModelView/Cards/CardBox'
 
 interface ITableData {
     modelView: IModelViewData;
@@ -15,16 +22,22 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     private modelView = new SolitaireModelView();
     private pileViews = React.createRef<PileViews>();
-    private animationView = React.createRef<CardAnimationView>();
     private cardStyles: DefaultCardStyles = new DefaultCardStyles();
-    private dragController: DragController;
+    private floatingCards = new FloatingCards();
+    private tickManager = new CardTickManager();
+    private animationController = new AnimationController(this.modelView, this.cardStyles);
+    private stateMachine = new CardsGameViewStateMachine();
+    private stateFactory: StateFactory;
 
     private interval : NodeJS.Timer;
 
     constructor(props: any, context: any) {
         super(props, context);
-        
-        this.dragController = new DragController(this.modelView, this.cardStyles, this.animationView, this.pileViews, this.updateState);
+        this.tickManager.add(this.animationController);
+        const drag = new DragToEvaluator(this.cardStyles,  this.box_for, this.modelView);
+        this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this.modelView,drag, this.animationController);
+
+        this.stateMachine.move_to(this.stateFactory.make_idle_state());
     }
    
     public componentDidMount() {
@@ -42,11 +55,10 @@ export default class TableView extends React.Component<{}, ITableData> {
         }
         return (
             <section>
-                <div onMouseMove={this.dragController.handleMouseMove} onMouseUp={this.dragController.handleMouseUp} onMouseLeave={this.dragController.handleMouseLeave} className="Table">   
+                <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     {this.render_undo()}
-                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} movingCard={this.dragController.floating_card()} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.dragController.onStartDrag} />                 
-                    <FloatingCardView cardStyles={this.cardStyles} card={this.dragController.floating_card()} enabled={this.dragController.is_dragged()} modelViewDataSync={this.modelView.data_sync()} cardX={this.dragController.dragged_card_offset_x()} cardY={this.dragController.dragged_card_offset_y()}/>
-                    <CardAnimationView ref={this.animationView} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
+                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} deck={this.modelView.deck()} hold={this.modelView.hold()} turned={this.modelView.turned()} movingCard={this.floatingCards} score={this.modelView.score()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <FloatingCardsView floatingCards={this.floatingCards} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
                     
                 </div>
             </section>
@@ -54,16 +66,18 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 
     private update() {
-        if (this.animationView.current) {
-            if (this.animationView.current.is_animating()) {
-                this.animationView.current.update();
-                this.setState(this.state);
-            }
+        this.tickManager.tick();
+    }
+
+    private box_for(pileIndex: number): CardBox | null {
+        if (this.pileViews.current) {
+            return this.pileViews.current.box_for(pileIndex);
         }
+        return null;
     }
 
     private onDeckClick = () => {
-        if (this.dragController.floating_card() === null) {
+        if (this.floatingCards.has_any() === false) {
             const result = this.modelView.next_card();
             const currentPileViews = this.pileViews.current;
             if (result && currentPileViews) {
@@ -73,11 +87,34 @@ export default class TableView extends React.Component<{}, ITableData> {
                     const pileBox = currentPileViews.box_for(1);
                     const fromBox = currentPileViews.box_for(0);
                     if (pileBox && fromBox) {
-                        this.dragController.animation_controller().start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2, fromBox.top + window.scrollY, true, 0.5);
+                        this.animationController.start_animation(result.card, pileBox, 1, fromBox.left + window.scrollX + this.cardStyles.cardWidthValue/2, fromBox.top + window.scrollY, true, 0.5);
                     }
                 }
             }
         }
+    }
+
+    public onStartDrag = (c: ICardView, box: ClientRect) => {
+        const cardBox = make_card_box(box);
+        this.stateMachine.current().on_start_drag(c, cardBox);
+    }
+
+    public handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+        MouseController.lastMouseX = event.clientX + window.scrollX;
+        MouseController.lastMouseY = event.clientY + window.scrollY;
+        if (this.stateMachine.current().on_mouse_move(MouseController.lastMouseX, MouseController.lastMouseY)) {
+            this.updateState();
+        }     
+    }
+    
+    public handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+        MouseController.lastMouseX = event.clientX + window.scrollX;
+        MouseController.lastMouseY = event.clientY + window.scrollY;
+        this.stateMachine.current().on_mouse_up(MouseController.lastMouseX, MouseController.lastMouseY);
+    }
+
+    public handleMouseLeave = () => {
+        this.stateMachine.current().on_mouse_leave();
     }
 
     private render_undo() {  
@@ -85,7 +122,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 
     private should_enable_undo_button() {
-        return this.modelView.can_undo() && this.dragController.floating_card() === null;
+        return this.modelView.can_undo() && this.floatingCards.has_any() === false;
     }
 
     private onClickUndo =() => {   
@@ -94,7 +131,7 @@ export default class TableView extends React.Component<{}, ITableData> {
              const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
             const boxTo = this.pileViews.current.box_for(result.destPileIndex);
             if (boxFrom && boxTo) {
-                this.dragController.animation_controller().start_animation(result.card, boxTo, result.destPileIndex, boxFrom.left, boxFrom.top, result.turn);
+                this.animationController.start_animation(result.card, boxTo, result.destPileIndex, boxFrom.left, boxFrom.top, result.turn);
             }
         }
     }

@@ -1,4 +1,4 @@
-import * as React from 'react'
+/*import * as React from 'react'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import ICardStyles from './ICardStyles'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
@@ -198,4 +198,4 @@ export default class DragController {
         this.resetDrag();
         
     }
-}
+}*/

@@ -1,6 +1,19 @@
 
+Refactor:
+    State Machine
+    Ticker
+    FloatingCard - CardProxy along with an interface for position and scale
+    FloatingCards
+    FloatingCardViews - renders FloatingCardView for each FloatingCard in FloatingCards
+    Anim removed from view and AnimView goes
+    Anims use a FloatingCard
+    Dragging uses a FloatingCard
+    Move everything that isn't react from View to ModelView and rename extension to .ts
+    Use CardBox instead of ReactBox
+
+
 polish: consider making card turn animation seperate
-improve start_animation to be more general
+
 allow queues of animations
 
 auto-complete

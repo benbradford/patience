@@ -1,30 +1,39 @@
 import * as React from 'react'
 import '../Cards.css'
 import {ICardView} from '../../ModelView/Cards/ModelViewData'
+import ModelViewDataSync from '../../ModelView/Cards/ModelViewDataSync'
+import FloatingCard from '../../ModelView/Cards/FloatingCard'
 
-export default class FloatingCardView extends React.Component<any, any>{
+interface IFloatingCardViewProps {
+    card: FloatingCard,
+    
+    cardStyles: any,
+    modelViewDataSync: ModelViewDataSync;
+}
+
+export default class FloatingCardView extends React.Component<IFloatingCardViewProps, any>{
     
     public render(): JSX.Element {     
         
-        if (this.props.enabled === false) {
+        const current_card = this.props.card.current();
+        if (current_card === null) {
             return ( <p/> );
         }
-
-        const cards = this.props.modelViewDataSync.collect_all_cards_above(this.props.card);
+        const cards = this.props.modelViewDataSync.collect_all_cards_above(current_card);
         
         return (
-            <section style={this.drag_style()} className="Dragging">
+            <section style={this.drag_style(this.props.card)} className="Dragging">
              {cards.map( (card: ICardView, i: number) => this.render_moving_card(card, i === 0, i === cards.length-1))}
             
             </section>
         );
     }
 
-    private drag_style() {
+    private drag_style(card: FloatingCard) {
         return {
-            left: this.props.cardX + "px",
-            top: this.props.cardY + "px",
-            transform: "scale(" + this.props.scaleX + ", 1)"
+            left: card.pos_x() + "px",
+            top: card.pos_y() + "px",
+            transform: "scale(" + card.scale_x() + ", 1)"
         };
     }
 

@@ -1,4 +1,4 @@
-import * as React from 'react'
+/*import * as React from 'react'
 import '../Cards.css'
 import FloatingCardView from './FloatingCardView'
 import {ICardView} from '../../ModelView/Cards/ModelViewData'
@@ -41,5 +41,5 @@ export default class CardAnimationView extends React.Component<any, any>{
         return this.animator !== null;
     }
 
-}
+}*/
 

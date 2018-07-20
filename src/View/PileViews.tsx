@@ -4,9 +4,11 @@ import { IPileView } from '../ModelView/Cards/ModelViewData';
 import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
-import {make_refs} from './Cards/ReactUtil'
+import {make_refs, make_card_box} from './Cards/ReactUtil'
+import IBoxFinder from './IBoxFinder'
+import CardBox from '../ModelView/Cards/CardBox'
 
-export default class PileViews extends React.Component<any, any>{
+export default class PileViews extends React.Component<any, any> implements IBoxFinder {
     
     private readonly pileRef = make_refs<HoldPileView>(7);
     private readonly scoresRef = React.createRef<ScorePileViews>(); 
@@ -26,29 +28,32 @@ export default class PileViews extends React.Component<any, any>{
         );
     }
 
-    public box_for(pileIndex: number): ClientRect | null {
+    public box_for(pileIndex: number): CardBox | null {
+        const holdIndex = pileIndex - 2;
+        const scoreIndex = pileIndex - 10;
+        
         if (pileIndex === 0 && this.deckRef.current) {
-            return this.deckRef.current.getBoundingClientRect();
-        }
-        if (pileIndex === 1 && this.turnedRef.current) {
+            return make_card_box(this.deckRef.current.getBoundingClientRect());
+        } else if (pileIndex === 1 && this.turnedRef.current) {
             // turned pile
-            return this.turnedRef.current.getBoundingClientRect();
-        }
-        const index = pileIndex - 2;
-        if (index >=0 && index < 7) {
-            const r = this.pileRef[index];
+            return make_card_box(this.turnedRef.current.getBoundingClientRect());
+        } else if (holdIndex >=0 && holdIndex < 7) {
+            const r = this.pileRef[holdIndex];
             if (r === null || r.current === null) {
                     
                 return null;
             }
-            return r.current.box();
-        }
-            
-        const scoreIndex = pileIndex - 10;
-        if (scoreIndex >=0 && scoreIndex < 4) {
+            const b = r.current.box();
+            if (b) {
+                return make_card_box(b);
+            }
+        } else if (scoreIndex >=0 && scoreIndex < 4) {
             const scores = this.scoresRef.current;
             if (scores) {
-                return scores.box(scoreIndex);
+                const b = scores.box(scoreIndex);
+                if (b) {
+                    return make_card_box(b);
+                }
             }
         }
         

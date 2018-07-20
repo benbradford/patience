@@ -1,5 +1,4 @@
-import ICardAnimationData from './ICardAnimationData'
-import {CardAnimatorTickResult} from './CardAnimator'
+import FloatingCard from '../../../ModelView/Cards/FloatingCard'
 import CardAnimator from './CardAnimator'
 
 export default class SimpleLerpCardAnimator extends CardAnimator {
@@ -12,17 +11,20 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
     private moveTime = 0;
     private scaleIn: boolean;
     private speed: number;
-    constructor(data: ICardAnimationData, destX: number, destY: number, scaleIn: boolean, speed: number) {
-        super(data);
+    private onAnimationEnd: ()=>void;
+
+    constructor(card: FloatingCard, destX: number, destY: number, scaleIn: boolean, speed: number, onAnimationEnd: ()=>void) {
+        super(card);
         this.scaleIn = scaleIn;
         this.speed = speed;
-        this.fromX = data.cardX;
-        this.fromY = data.cardY;
+        this.fromX = card.pos_x();
+        this.fromY = card.pos_y();
         this.destX = destX;
         this.destY = destY;
+        this.onAnimationEnd = onAnimationEnd;
     }
 
-    public tick(): CardAnimatorTickResult {
+    public tick(): void {
         this.moveTime+=this.speed;
         let delta = this.moveTime / 10;
         if (this.moveTime >= 10) {
@@ -33,9 +35,8 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
             this.set_card_scale(delta);
         }
         if (delta === 10) {
-            return CardAnimatorTickResult.completed;
-        }
-        return CardAnimatorTickResult.stillAnimating;
+            this.onAnimationEnd();
+        } 
     }
 
 }

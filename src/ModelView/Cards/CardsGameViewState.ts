@@ -1,5 +1,7 @@
 import CardProxy from "../../ModelView/Cards/CardProxy";
 import CardsGameViewStateMachine from './CardsGameViewStateMachine'
+import CardBox from './CardBox'
+import {ICardView} from './ModelViewData'
 
 export default abstract class CardsGameViewState {
 
@@ -9,25 +11,15 @@ export default abstract class CardsGameViewState {
         this.machine = machine;
     }
 
-    public floating_card(): CardProxy | null {
-        return null;
-    }
     /* tslint:disable:no-empty */
-    public on_mouse_down(x: number, y: number): void { }
-    public on_mouse_move(x: number, y: number): void { }
+    public on_start_drag(c: ICardView, box: CardBox): void { }
+    public on_mouse_move(x: number, y: number): boolean { return false; } // return true to update state
     public on_mouse_up(x: number, y: number): void { }
+    public on_mouse_leave(): void { }
     public pushed_on() {}
     public popped_in() {}
 
-    protected move_to(state: CardsGameViewState) {
-        this.machine.move_to(state);
-    }
-
-    protected push(state: CardsGameViewState) {
-        this.machine.push(state);
-    }
-
-    protected pop() {
-        this.machine.pop();
+    protected state_machine(): Readonly<CardsGameViewStateMachine> {
+        return this.machine;
     }
 }
