@@ -1,4 +1,4 @@
-import FloatingCard from '../../../ModelView/Cards/FloatingCard'
+import FloatingCard from '../FloatingCard'
 
 export default abstract class CardAnimator {
  

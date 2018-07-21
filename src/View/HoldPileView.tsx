@@ -3,7 +3,7 @@ import './Cards.css'
 import {ICardView, IPileView} from '../ModelView/Cards/ModelViewData'
 import {make_refs} from './Cards/ReactUtil'
 import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from './ICardStyles';
+import ICardStyles from '../ModelView/Cards/ICardStyles'
 
 interface IHoldPileProps {
     className: any;

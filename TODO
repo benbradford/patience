@@ -1,16 +1,15 @@
 
-bug: undo deck turn anim not in correct place
-    - although looks quite nice! make all deck turns start from slightly above itself to give turn illusion
 
-    
-Move everything that isn't react from View to ModelView and rename extension to .ts
 undo and deckClick states
 
-polish: consider making card turn animation seperate - turn cards in hold pile whilst moving
-
-allow queues of animations
+create toolbar with undo, quit, retry, solve?
 
 auto-complete
-animate pickup?
-change shadow to style so can animate shadow
+
 winning sequence
+
+back-end...
+
+deploy to something npm can install
+
+make another card game

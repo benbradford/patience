@@ -1,8 +1,8 @@
-import SolitaireModelView from '../ModelView/SolitaireModelView'
-import ICardStyles from './ICardStyles'
+import SolitaireModelView from './SolitaireModelView'
+import ICardStyles from './Cards/ICardStyles'
 import SimpleLerpCardAnimator from './Cards/Animation/SimpleLerpCardAnimator'
-import FloatingCard from '../ModelView/Cards/FloatingCard'
-import ICardTicker from '../ModelView/Cards/ICardTicker'
+import FloatingCard from './Cards/FloatingCard'
+import ICardTicker from './Cards/ICardTicker'
 import CardAnimator from './Cards/Animation/CardAnimator'
 
 export default class AnimationController implements ICardTicker {

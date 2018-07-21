@@ -13,7 +13,6 @@ import ModelViewDataSync from './Cards/ModelViewDataSync'
 import SolitaireSolver from '../Model/SolitaireSolver'
 import {ICardActionResult} from '../Model/Cards/ICardActionResult'
 import IAnimationAction from './IAnimationAction'
-// import AutoCompleteStepper from './AutoCompleteStepper';
 
 export default class SolitaireModelView {
     private collections = new SolitaireCollections();
@@ -21,7 +20,6 @@ export default class SolitaireModelView {
     private moveCardCommand = new MoveCardCommand(this.collections);
     private nextCardCommand = new NextCardCommand(this.collections);
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
-    // private autoCompleteStepper= new AutoCompleteStepper(this.collections);
     private dataSync: ModelViewDataSync;
 
     constructor () {
@@ -118,11 +116,7 @@ export default class SolitaireModelView {
         }
         return null;
     }
-/*
-    public auto_complete_step(): boolean {
-        return this.autoCompleteStepper.can_autocomplete();
-    }
-    */
+
     public table_data(): IModelViewData {
         return  this.dataSync.model_view_data();
     }

@@ -1,7 +1,7 @@
-import CardsGameViewStateMachine from '../../ModelView/Cards/CardsGameViewStateMachine'
-import CardsGameViewState from '../../ModelView/Cards/CardsGameViewState'
-import CardBox from '../../ModelView/Cards/CardBox'
-import {ICardView} from '../../ModelView/Cards/ModelViewData'
+import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
+import CardsGameViewState from '../Cards/CardsGameViewState'
+import CardBox from '../Cards/CardBox'
+import {ICardView} from '../Cards/ModelViewData'
 import StateFactory from './StateFactory'
 
 export default class IdleState extends CardsGameViewState {

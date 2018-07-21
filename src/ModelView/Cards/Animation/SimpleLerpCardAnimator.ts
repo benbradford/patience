@@ -1,4 +1,4 @@
-import FloatingCard from '../../../ModelView/Cards/FloatingCard'
+import FloatingCard from '../FloatingCard'
 import CardAnimator from './CardAnimator'
 
 export default class SimpleLerpCardAnimator extends CardAnimator {

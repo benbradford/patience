@@ -4,14 +4,14 @@ import SolitaireModelView from '../ModelView/SolitaireModelView'
 import PileViews from './PileViews'
 import DefaultCardStyles from './DefaultCardStyles'
 import CardTickManager from '../ModelView/Cards/CardTickManager'
-import AnimationController from './AnimationController'
+import AnimationController from '../ModelView/AnimationController'
 import FloatingCardsView from './Cards/FloatingCardsView'
 import FloatingCards from '../ModelView/Cards/FloatingCards'
 import CardsGameViewStateMachine from '../ModelView/Cards/CardsGameViewStateMachine'
-import MouseController from './Cards/MouseController'
+import MouseController from '../ModelView/Cards/MouseController'
 import {make_card_box} from './Cards/ReactUtil'
-import StateFactory from './States/StateFactory'
-import DragToEvaluator from './DragToEvaluator';
+import StateFactory from '../ModelView/States/StateFactory'
+import DragToEvaluator from '../ModelView/Cards/DragToEvaluator';
 import CardBox from '../ModelView/Cards/CardBox'
 import FloatingCard from '../ModelView/Cards/FloatingCard'
 
@@ -141,11 +141,11 @@ export default class TableView extends React.Component<{}, ITableData> {
              const boxFrom = this.pileViews.current.box_for(result.startPileIndex);
             const boxTo = this.pileViews.current.box_for(result.destPileIndex);
             if (boxFrom && boxTo) {
-                const x = boxFrom.left;
-                const y = boxFrom.top;
+                const x = boxFrom.left + window.scrollX;
+                const y = boxFrom.top + window.scrollY;
                 const floatingCard = new FloatingCard(result.card, x, y, 1, this.modelView.data_sync());
                 this.floatingCards.add(floatingCard);
-                const state = this.stateFactory.make_anim_state(floatingCard, boxTo, result.destPileIndex, x, y, result.turn, 0.5);     
+                const state = this.stateFactory.make_anim_state(floatingCard, boxTo, result.destPileIndex, x, y, result.destPileIndex === 0, 1.0);     
                 this.stateMachine.move_to(state);
             }
         }

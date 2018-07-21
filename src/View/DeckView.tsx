@@ -2,7 +2,7 @@ import * as React from 'react'
 import './Cards.css'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from './ICardStyles';
+import ICardStyles from '../ModelView/Cards/ICardStyles'
 import {ICardView} from '../ModelView/Cards/ModelViewData'
 
 interface IDeckProps {
@@ -39,9 +39,7 @@ export default class DeckView extends React.Component<IDeckProps, any>{
             return ( <section style={this.props.cardStyles.empty()} ref={this.props.deckRef} onMouseDown={this.deckClick}/> );  
         }
         return (
-            
-            <section style={this.props.cardStyles.front(deck.cards[deck.cards.length-1])} ref={this.props.deckRef} onMouseDown={this.deckClick} />
-            
+            <section style={this.props.cardStyles.front(deck.cards[deck.cards.length-1])} ref={this.props.deckRef} onMouseDown={this.deckClick} />     
         );
     }
 

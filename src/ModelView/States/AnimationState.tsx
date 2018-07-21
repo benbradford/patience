@@ -1,8 +1,8 @@
 
-import CardsGameViewStateMachine from '../../ModelView/Cards/CardsGameViewStateMachine'
-import CardsGameViewState from '../../ModelView/Cards/CardsGameViewState'
-import FloatingCard from '../../ModelView/Cards/FloatingCard'
-import FloatingCards from '../../ModelView/Cards/FloatingCards'
+import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
+import CardsGameViewState from '../Cards/CardsGameViewState'
+import FloatingCard from '../Cards/FloatingCard'
+import FloatingCards from '../Cards/FloatingCards'
 import StateFactory from './StateFactory'
 import AnimationController from '../AnimationController'
 

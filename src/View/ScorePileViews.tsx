@@ -4,7 +4,7 @@ import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
 import {make_refs} from './Cards/ReactUtil'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from './ICardStyles';
+import ICardStyles from '../ModelView/Cards/ICardStyles'
 
 interface IScorePileViews {
     ref: React.RefObject<ScorePileViews>;

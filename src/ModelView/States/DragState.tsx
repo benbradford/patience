@@ -1,14 +1,14 @@
-import CardsGameViewStateMachine from '../../ModelView/Cards/CardsGameViewStateMachine'
-import CardsGameViewState from '../../ModelView/Cards/CardsGameViewState'
-import CardBox from '../../ModelView/Cards/CardBox'
-import {ICardView} from '../../ModelView/Cards/ModelViewData'
-import FloatingCard from '../../ModelView/Cards/FloatingCard'
-import FloatingCards from '../../ModelView/Cards/FloatingCards'
+import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
+import CardsGameViewState from '../Cards/CardsGameViewState'
+import CardBox from '../Cards/CardBox'
+import {ICardView} from '../Cards/ModelViewData'
+import FloatingCard from '../Cards/FloatingCard'
+import FloatingCards from '../Cards/FloatingCards'
 import SolitaireModelView from '../../ModelView/SolitaireModelView'
 import MouseController from '../Cards/MouseController'
-import DragToEvaluator from '../DragToEvaluator'
+import DragToEvaluator from '../Cards/DragToEvaluator'
 import StateFactory from './StateFactory'
-import {IMoveDestination} from '../DragToEvaluator'
+import {IMoveDestination} from '../Cards/DragToEvaluator'
 
 export default class DragState extends CardsGameViewState {
 

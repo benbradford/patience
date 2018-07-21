@@ -7,7 +7,7 @@ import DeckView from './DeckView'
 import {make_refs} from './Cards/ReactUtil'
 import SolitaireModelView from '../ModelView/SolitaireModelView'
 import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from './ICardStyles';
+import ICardStyles from '../ModelView/Cards/ICardStyles'
 
 interface IPileViewsProps {
     ref: React.RefObject<PileViews>;

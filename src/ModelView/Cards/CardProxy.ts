@@ -2,7 +2,6 @@ import ModelViewDataSync from "./ModelViewDataSync";
 import { ICardView } from "./ModelViewData";
 import {Suit, Face} from '../../Model/Cards/Card'
 
-
 export default class CardProxy {
 
     private dataSync: ModelViewDataSync;

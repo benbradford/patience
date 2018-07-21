@@ -1,8 +1,8 @@
 import ICardStyles from './ICardStyles'
-import {ICardView} from '../ModelView/Cards/ModelViewData'
-import SolitaireModelView from '../ModelView/SolitaireModelView'
-import CardBox from '../ModelView/Cards/CardBox'
-import MouseController from './Cards/MouseController'
+import {ICardView} from './ModelViewData'
+import SolitaireModelView from '../SolitaireModelView'
+import CardBox from './CardBox'
+import MouseController from './MouseController'
 
 export interface IMoveDestination {
     pileIndex: number;
