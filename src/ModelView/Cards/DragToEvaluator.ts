@@ -3,13 +3,12 @@ import {ICardView} from './ModelViewData'
 import SolitaireModelView from '../SolitaireModelView'
 import CardBox from './CardBox'
 import MouseController from './MouseController'
+import {BoxFinder} from './BoxFinder'
 
 export interface IMoveDestination {
     pileIndex: number;
     box: CardBox; 
 }
-
-type BoxFinder = (pileIndex: number) => CardBox | null;
 
 export default class DragToEvaluator {
      
