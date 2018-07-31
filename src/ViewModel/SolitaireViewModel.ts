@@ -10,7 +10,6 @@ import CardShuffler from '../Model/Cards/CardShuffler';
 import SolitaireGame from '../Model/SolitaireGame';
 import {Card} from '../Model/Cards/Card'
 import ViewModelDataSync from './Cards/ViewModelDataSync'
-import SolitaireSolver from '../Model/SolitaireSolver'
 import {ICardActionResult} from '../Model/Cards/ICardActionResult'
 import IAnimationAction from './IAnimationAction'
 import FloatingCards from './Cards/FloatingCards'
@@ -21,13 +20,11 @@ import StateFactory from './States/StateFactory'
 import DragToEvaluator from './Cards/DragToEvaluator';
 import ICardStyles from './Cards/ICardStyles'
 import CardBox from './Cards/CardBox'
+import SolitaireViewInterface from './SolitaireViewInterface'
 
-export default class SolitaireViewModel {
-    private collections = new SolitaireCollections();
+export default class SolitaireViewModel extends SolitaireViewInterface{
+    
     private game: SolitaireGame;
-    private moveCardCommand = new MoveCardCommand(this.collections);
-    private nextCardCommand = new NextCardCommand(this.collections);
-    private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
     private dataSync: ViewModelDataSync;
     private stateChangeListener: (data: IViewModelData)=> void | null;
     private floatingCards = new FloatingCards();
@@ -36,19 +33,23 @@ export default class SolitaireViewModel {
     private stateFactory: StateFactory;
     private tickManager = new CardTickManager();
 
-
     constructor (cardStyles: ICardStyles, boxFor: (pileIndex: number) => CardBox | null ) {
+        super();
+        const collections = new SolitaireCollections();
+
         this.game = new SolitaireGame(
-            this.collections, 
+            collections, 
             new CardInitialiser(new DeckMaker(), new CardShuffler()),
-            this.moveCardCommand,
-            this.nextCardCommand,
-            this.moveManyCardsCommand);
+            new MoveCardCommand(collections),
+            new NextCardCommand(collections),
+            new MoveManyCardsCommand(collections));
+
         this.animationController = new AnimationController(this, cardStyles);
         this.tickManager.add(this.animationController);
         const drag = new DragToEvaluator(cardStyles, boxFor, this);
         this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this,drag, this.animationController, boxFor);
         this.stateMachine.move_to(this.stateFactory.make_idle_state());
+        this.dataSync = new ViewModelDataSync(this.game.collections().table);
     }
 
     public register_state_change_listener( listener: (data: IViewModelData) => void) {
@@ -56,8 +57,7 @@ export default class SolitaireViewModel {
     }
 
     public initialise_table() {
-        this.lay_out_table();
-        this.dataSync = new ViewModelDataSync(this.collections.table);
+        this.game.lay_out_table();
         this.update_state();
     }
 
@@ -73,28 +73,15 @@ export default class SolitaireViewModel {
         return this.floatingCards;
     }
 
-    public update_state() {
-        // :TODO: make this non-public
-        this.dataSync.sync_view_with_model();
-        if (this.stateChangeListener ) {
-            this.stateChangeListener(this.table_data());
-        }
-    }
-
-    // :TODO: be nice to not have to expose this
-    public data_sync() : ViewModelDataSync {
-        return this.dataSync;
-    }
-
-    public deck(): IPileView {
+    public deck(): Readonly<IPileView> {
         return this.dataSync.view_pile(0);
     }
 
-    public turned(): IPileView {
+    public turned(): Readonly<IPileView> {
         return this.dataSync.view_pile(1);
     }
 
-    public hold(): IPileView[] {
+    public hold(): Readonly<IPileView[]> {
         const piles: IPileView[]= [];
         for (let i = 2; i < 9; ++i) {
             piles.push(this.dataSync.view_pile(i));
@@ -102,7 +89,7 @@ export default class SolitaireViewModel {
         return piles;
     }
 
-    public score(): IPileView[] {
+    public score(): Readonly<IPileView[]> {
         const piles: IPileView[]= [];
         for (let i = 10; i <= 13; ++i) {
             piles.push(this.dataSync.view_pile(i));
@@ -141,6 +128,12 @@ export default class SolitaireViewModel {
        this.stateMachine.current().on_mouse_up(x, y);
     }
 
+        // :TODO: be nice to not have to expose this
+    public data_sync() : ViewModelDataSync {
+        return this.dataSync;
+    }
+
+    // All of these below belong somewhere else
     public perform_undo() {
         const result = this.game.undo();
         if (result) {
@@ -150,11 +143,20 @@ export default class SolitaireViewModel {
         return null;
     }
 
+    public update_state() {
+        // :TODO: make this non-public
+        this.dataSync.sync_view_with_model();
+        if (this.stateChangeListener ) {
+            this.stateChangeListener(this.table_data());
+        }
+    }
+
+    // :TODO: move this
     public valid_move_to_destinations(card: ICardView): number[] {
         const modelCard = this.dataSync.model_card(card);
         const destinations: number[] = [];
         for (let i = 0; i < this.dataSync.model_view_data().piles.length; ++i) {
-            if (this.is_valid_move_to(modelCard, this.collections.table.collection(i))) {
+            if (this.is_valid_move_to(modelCard, this.game.collections().table.collection(i))) {
                 destinations.push(i);
             }
         }
@@ -207,8 +209,7 @@ export default class SolitaireViewModel {
         };
     }
 
-    private is_valid_move_to(modelCard: Card, collection: CardCollection): boolean{
-            
+    private is_valid_move_to(modelCard: Card, collection: CardCollection): boolean{ 
         if (modelCard.collection && modelCard.collection.peek() === modelCard) {
             return this.can_move_card_to(modelCard, collection);
         } else {
@@ -217,41 +218,11 @@ export default class SolitaireViewModel {
     }
 
     private can_move_card_to(c: Card, d: CardCollection): boolean {
-         return this.moveCardCommand.can_execute({card: c, from: c.collection, to: d});
+         return this.game.can_move_card_to(c, d);
     }
 
     private can_move_many_cards_to(c: Card, d: CardCollection): boolean {
-        return this.moveManyCardsCommand.can_execute({card: c, from: c.collection, to: d});
+        return this.game.can_move_many_cards_to(c, d);
     }
 
-    private lay_out_table(): void {
-        for (let i = 0; i < 7; ++i) {
-            const faceUpCard = this.collections.deck().remove();
-            const holdCardCollection = this.collections.hold(i);
-            if (faceUpCard === null || holdCardCollection === null)  {
-                return;
-            }  
-            if (i === 0) {
-                faceUpCard.turn();
-            } 
-            holdCardCollection.push(faceUpCard);
-            for (let j=i-1; j >=0; --j) {
-
-                const card = this.collections.deck().remove();
-                if (card === null) {
-                       return;
-                }
-                if (j === 0) {
-                    card.turn();
-                }
-                holdCardCollection.push(card);
-            }
-        }
-
-        const solver = new SolitaireSolver(this.collections,this.moveCardCommand, this.moveCardCommand, this.nextCardCommand);
-        solver.solve();
-        if (solver.winning_sequence().length > 0) {
-            throw Error("solved!");
-        }
-    }
 }

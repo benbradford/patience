@@ -5,14 +5,14 @@ import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
 import {make_refs} from './Cards/ReactUtil'
-import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
+import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
 import FloatingCards from '../ViewModel/Cards/FloatingCards'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 interface IPileViewsProps {
     ref: React.RefObject<PileViews>;
     cardStyles: ICardStyles; 
-    viewModel: SolitaireViewModel; 
+    viewModel: SolitaireViewInterface; 
     floatingCards: FloatingCards;
     onDeckClick: () => void;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
@@ -25,7 +25,7 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
     private readonly deckRef = React.createRef<HTMLElement>();
     
     public render(): JSX.Element {     
-        const piles : IPileView[] = this.props.viewModel.hold();
+        const piles = this.props.viewModel.hold();
         return (
             <section>
                 <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} viewModel={this.props.viewModel} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />    

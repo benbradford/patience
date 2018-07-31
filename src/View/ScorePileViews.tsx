@@ -2,14 +2,14 @@ import * as React from 'react'
 import './Cards.css'
 import {IPileView, ICardView} from '../ViewModel/Cards/ViewModelData'
 import {make_refs} from './Cards/ReactUtil'
-import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
+import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
 import FloatingCards from '../ViewModel/Cards/FloatingCards'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 interface IScorePileViews {
     ref: React.RefObject<ScorePileViews>;
     cardStyles: ICardStyles; 
-    viewModel: SolitaireViewModel; 
+    viewModel: SolitaireViewInterface; 
     floatingCards: FloatingCards;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
 }

@@ -1,8 +1,8 @@
 
 
-make view listen for state changes
-remove logic from view
-
+make SolitaireViewModel have an interface only for the view 
+    - maybe rename it ViewInterface
+    - move other stuff into a new class
 
 allow different cards and backs and table
 

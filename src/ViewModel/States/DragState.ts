@@ -51,7 +51,6 @@ export default class DragState extends CardsGameViewState {
     }
 
     public on_mouse_up(x: number, y: number): void {
-
         const card = this.floatingCard.current();
         if (card === null) {
             this.state_machine().move_to(this.stateFactory.make_idle_state());

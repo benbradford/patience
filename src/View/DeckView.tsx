@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Cards.css'
-import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
+import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
 import FloatingCards from '../ViewModel/Cards/FloatingCards'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
 import {ICardView} from '../ViewModel/Cards/ViewModelData'
@@ -10,7 +10,7 @@ interface IDeckProps {
     deckRef: any;
     turnedRef: any;
     key: any;
-    viewModel: SolitaireViewModel;
+    viewModel: SolitaireViewInterface;
     floatingCards: FloatingCards;
     onDeckClick: () => void;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
