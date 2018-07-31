@@ -1,4 +1,4 @@
-import {IModelViewData, ICardView, IPileView} from './Cards/ModelViewData'
+import {IViewModelData, ICardView, IPileView} from './Cards/ViewModelData'
 import SolitaireCollections from '../Model/SolitaireCollections'
 import CardInitialiser from '../Model/CardInitialiser'
 import CardCollection from '../Model/Cards/CardCollection';
@@ -9,18 +9,18 @@ import DeckMaker from '../Model/Cards/DeckMaker';
 import CardShuffler from '../Model/Cards/CardShuffler';
 import SolitaireGame from '../Model/SolitaireGame';
 import {Card} from '../Model/Cards/Card'
-import ModelViewDataSync from './Cards/ModelViewDataSync'
+import ViewModelDataSync from './Cards/ViewModelDataSync'
 import SolitaireSolver from '../Model/SolitaireSolver'
 import {ICardActionResult} from '../Model/Cards/ICardActionResult'
 import IAnimationAction from './IAnimationAction'
 
-export default class SolitaireModelView {
+export default class SolitaireViewModel {
     private collections = new SolitaireCollections();
     private game: SolitaireGame;
     private moveCardCommand = new MoveCardCommand(this.collections);
     private nextCardCommand = new NextCardCommand(this.collections);
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
-    private dataSync: ModelViewDataSync;
+    private dataSync: ViewModelDataSync;
 
     constructor () {
         this.game = new SolitaireGame(
@@ -31,11 +31,11 @@ export default class SolitaireModelView {
             this.moveManyCardsCommand);
 
         this.lay_out_table();
-        this.dataSync = new ModelViewDataSync(this.collections.table);
+        this.dataSync = new ViewModelDataSync(this.collections.table);
     }
 
     // :TODO: be nice to not have to expose this
-    public data_sync() : ModelViewDataSync {
+    public data_sync() : ViewModelDataSync {
         return this.dataSync;
     }
 
@@ -117,7 +117,7 @@ export default class SolitaireModelView {
         return null;
     }
 
-    public table_data(): IModelViewData {
+    public table_data(): IViewModelData {
         return  this.dataSync.model_view_data();
     }
 

@@ -1,14 +1,14 @@
 import * as React from 'react'
 
-import ModelViewDataSync from '../../ModelView/Cards/ModelViewDataSync'
-import FloatingCards from '../../ModelView/Cards/FloatingCards'
-import FloatingCard from '../..//ModelView/Cards/FloatingCard';
+import ViewModelDataSync from '../../ViewModel/Cards/ViewModelDataSync'
+import FloatingCards from '../../ViewModel/Cards/FloatingCards'
+import FloatingCard from '../..//ViewModel/Cards/FloatingCard';
 import FloatingCardView from './FloatingCardView'
 
 interface IFloatingCardsViewProps{
      floatingCards: FloatingCards;
      cardStyles: any;
-     modelViewDataSync: ModelViewDataSync;
+     viewModelDataSync: ViewModelDataSync;
 }
 
 export default class FloatingCardsView extends React.Component<IFloatingCardsViewProps, any>{
@@ -23,7 +23,7 @@ export default class FloatingCardsView extends React.Component<IFloatingCardsVie
     }
 
     private render_floating(fc: FloatingCard) {
-        return ( <FloatingCardView card={fc} cardStyles={this.props.cardStyles} modelViewDataSync={this.props.modelViewDataSync} /> );
+        return ( <FloatingCardView card={fc} cardStyles={this.props.cardStyles} viewModelDataSync={this.props.viewModelDataSync} /> );
     }
 
 }

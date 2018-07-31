@@ -1,5 +1,5 @@
 import * as React from 'react'
-import CardBox from '../../ModelView/Cards/CardBox'
+import CardBox from '../../ViewModel/Cards/CardBox'
 
 export function make_refs<T>(num: number): Array<React.RefObject<T>> {
     const refs: Array<React.RefObject<T>> = [];

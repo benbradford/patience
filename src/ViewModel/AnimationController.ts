@@ -1,4 +1,4 @@
-import SolitaireModelView from './SolitaireModelView'
+import SolitaireViewModel from './SolitaireViewModel'
 import ICardStyles from './Cards/ICardStyles'
 import SimpleLerpCardAnimator from './Cards/Animation/SimpleLerpCardAnimator'
 import FloatingCard from './Cards/FloatingCard'
@@ -7,14 +7,14 @@ import CardAnimator from './Cards/Animation/CardAnimator'
 
 export default class AnimationController implements ICardTicker {
 
-    private modelView: SolitaireModelView;
+    private viewModel: SolitaireViewModel;
     private cardStyles: ICardStyles;
     private onAnimationEnd: ()=>void;
     private running: CardAnimator[] = [];
     private updateState: () =>void;
    
-    constructor( modelView: SolitaireModelView, cardStyles: ICardStyles, updateState: () =>void) {
-        this.modelView = modelView;
+    constructor( viewModel: SolitaireViewModel, cardStyles: ICardStyles, updateState: () =>void) {
+        this.viewModel = viewModel;
         this.cardStyles = cardStyles;
         this.updateState = updateState;
     }
@@ -26,7 +26,7 @@ export default class AnimationController implements ICardTicker {
         let destY = box.top;
         
         if (pileIndex > 1 && pileIndex < 9) {
-            const destPile = this.modelView.hold()[pileIndex - 2];
+            const destPile = this.viewModel.hold()[pileIndex - 2];
             if (destPile.cards.length > 0) {
                 destY +=  this.cardStyles.previewSize; 
             }           

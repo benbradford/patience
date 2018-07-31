@@ -1,4 +1,4 @@
-import {ICardView} from './ModelViewData'
+import {ICardView} from './ViewModelData'
 
 export default interface ICardStyles {
     readonly cardWidthValue : number;

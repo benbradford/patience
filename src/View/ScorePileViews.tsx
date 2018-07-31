@@ -1,15 +1,15 @@
 import * as React from 'react'
 import './Cards.css'
-import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
+import {IPileView, ICardView} from '../ViewModel/Cards/ViewModelData'
 import {make_refs} from './Cards/ReactUtil'
-import SolitaireModelView from '../ModelView/SolitaireModelView'
-import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from '../ModelView/Cards/ICardStyles'
+import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
+import FloatingCards from '../ViewModel/Cards/FloatingCards'
+import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 interface IScorePileViews {
     ref: React.RefObject<ScorePileViews>;
     cardStyles: ICardStyles; 
-    modelView: SolitaireModelView; 
+    viewModel: SolitaireViewModel; 
     floatingCards: FloatingCards;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
 }
@@ -22,7 +22,7 @@ export default class ScorePileViews extends React.Component<IScorePileViews, any
         return (
             <section>
                 <div className="PileDiv" />
-                {this.props.modelView.score().map( (pile: IPileView, index: number) => this.render_card(pile, index))}
+                {this.props.viewModel.score().map( (pile: IPileView, index: number) => this.render_card(pile, index))}
             </section>
         );  
     }

@@ -11,6 +11,6 @@ export interface IPileView {
     cards : ICardView[];
 }
 
-export interface IModelViewData {
+export interface IViewModelData {
     piles: IPileView [];
 }

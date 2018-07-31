@@ -1,15 +1,15 @@
-import ModelViewDataSync from "./ModelViewDataSync";
-import { ICardView } from "./ModelViewData";
+import ViewModelDataSync from "./ViewModelDataSync";
+import { ICardView } from "./ViewModelData";
 import {Suit, Face} from '../../Model/Cards/Card'
 
 export default class CardProxy {
 
-    private dataSync: ModelViewDataSync;
+    private dataSync: ViewModelDataSync;
     private suit: Suit = Suit.hearts;
     private face: Face = Face.ace;
     private hasCard: boolean = false;
    
-    constructor (dataSync: ModelViewDataSync, card: ICardView | null = null) {
+    constructor (dataSync: ViewModelDataSync, card: ICardView | null = null) {
         this.dataSync = dataSync;
         if (card) {
             this.set(card);

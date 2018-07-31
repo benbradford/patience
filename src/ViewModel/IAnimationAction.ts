@@ -1,4 +1,4 @@
-import { ICardView } from "./Cards/ModelViewData";
+import { ICardView } from "./Cards/ViewModelData";
 
 export default interface IAnimationAction {
     card: ICardView;

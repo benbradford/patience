@@ -1,6 +1,6 @@
 import CardsGameViewStateMachine from './CardsGameViewStateMachine'
 import CardBox from './CardBox'
-import {ICardView} from './ModelViewData'
+import {ICardView} from './ViewModelData'
 
 export default abstract class CardsGameViewState {
 

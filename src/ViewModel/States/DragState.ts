@@ -1,10 +1,10 @@
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
 import CardsGameViewState from '../Cards/CardsGameViewState'
 import CardBox from '../Cards/CardBox'
-import {ICardView} from '../Cards/ModelViewData'
+import {ICardView} from '../Cards/ViewModelData'
 import FloatingCard from '../Cards/FloatingCard'
 import FloatingCards from '../Cards/FloatingCards'
-import SolitaireModelView from '../../ModelView/SolitaireModelView'
+import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
 import MouseController from '../Cards/MouseController'
 import DragToEvaluator from '../Cards/DragToEvaluator'
 import StateFactory from './StateFactory'
@@ -18,23 +18,23 @@ export default class DragState extends CardsGameViewState {
     private readonly dragFrom: CardBox;
     private readonly dragToEvaluator: DragToEvaluator;
     private readonly stateFactory: StateFactory;
-    private readonly modelView: SolitaireModelView;
+    private readonly viewModel: SolitaireViewModel;
 
     constructor(machine: CardsGameViewStateMachine,
                 floatingCards: FloatingCards,
-                modelView: SolitaireModelView,
+                viewModel: SolitaireViewModel,
                 dragToEvaluator: DragToEvaluator,
                 stateFactory: StateFactory,
                 c: ICardView, box: CardBox) {
 
         super(machine);
-        this.modelView = modelView;
+        this.viewModel = viewModel;
         this.stateFactory = stateFactory;
         this.dragToEvaluator = dragToEvaluator;    
         this.mouseOffsetX = (box.left - MouseController.lastMouseX) - 14;
         this.mouseOffsetY= (box.top - MouseController.lastMouseY) - 8;
         this.dragFrom = box;
-        this.floatingCard = new FloatingCard(c, this.dragged_card_offset_x(), this.dragged_card_offset_y(), 1, modelView.data_sync());
+        this.floatingCard = new FloatingCard(c, this.dragged_card_offset_x(), this.dragged_card_offset_y(), 1, viewModel.data_sync());
         floatingCards.add(this.floatingCard);
 
         this.dragToEvaluator.set_valid_destinations(c);      
@@ -71,7 +71,7 @@ export default class DragState extends CardsGameViewState {
     }
 
     private kick_off_animation_to_winning_pile(card: ICardView, dest: IMoveDestination) {
-        const anim = this.modelView.move_card_to(card, dest.pileIndex ); // have this return an animation action?
+        const anim = this.viewModel.move_card_to(card, dest.pileIndex ); // have this return an animation action?
             if (dest.box && anim) {
                 const xOffset = this.dragged_card_offset_x();
                 const yOffset = this.dragged_card_offset_y();

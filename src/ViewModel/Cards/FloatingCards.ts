@@ -1,4 +1,4 @@
-import { ICardView } from "./ModelViewData";
+import { ICardView } from "./ViewModelData";
 import {Suit, Face} from '../../Model/Cards/Card'
 import FloatingCard from './FloatingCard'
 

@@ -1,9 +1,9 @@
 import * as React from 'react'
 import './Cards.css'
-import {ICardView, IPileView} from '../ModelView/Cards/ModelViewData'
+import {ICardView, IPileView} from '../ViewModel/Cards/ViewModelData'
 import {make_refs} from './Cards/ReactUtil'
-import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from '../ModelView/Cards/ICardStyles'
+import FloatingCards from '../ViewModel/Cards/FloatingCards'
+import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 interface IHoldPileProps {
     className: any;

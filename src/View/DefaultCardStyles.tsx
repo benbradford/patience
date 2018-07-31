@@ -1,6 +1,6 @@
-import {ICardView} from '../ModelView/Cards/ModelViewData'
+import {ICardView} from '../ViewModel/Cards/ViewModelData'
 import {cardImages} from './CardImages'
-import ICardStyles from '../ModelView/Cards/ICardStyles'
+import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 const emptyCard = [
     require('../Asset/organic-tiles.png')

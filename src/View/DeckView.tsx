@@ -1,16 +1,16 @@
 import * as React from 'react'
 import './Cards.css'
-import SolitaireModelView from '../ModelView/SolitaireModelView'
-import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from '../ModelView/Cards/ICardStyles'
-import {ICardView} from '../ModelView/Cards/ModelViewData'
+import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
+import FloatingCards from '../ViewModel/Cards/FloatingCards'
+import ICardStyles from '../ViewModel/Cards/ICardStyles'
+import {ICardView} from '../ViewModel/Cards/ViewModelData'
 
 interface IDeckProps {
     cardStyles: ICardStyles;
     deckRef: any;
     turnedRef: any;
     key: any;
-    modelView: SolitaireModelView;
+    viewModel: SolitaireViewModel;
     floatingCards: FloatingCards;
     onDeckClick: () => void;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
@@ -34,7 +34,7 @@ export default class DeckView extends React.Component<IDeckProps, any>{
 
     private render_deck() {
 
-        const deck = this.props.modelView.deck();
+        const deck = this.props.viewModel.deck();
         if (deck.cards.length === 0) {
             return ( <section style={this.props.cardStyles.empty()} ref={this.props.deckRef} onMouseDown={this.deckClick}/> );  
         }
@@ -44,7 +44,7 @@ export default class DeckView extends React.Component<IDeckProps, any>{
     }
 
     private render_turned_card() {
-        const turned = this.props.modelView.turned();
+        const turned = this.props.viewModel.turned();
 
         let indexToShow : number = 0;
         if (this.props.floatingCards.find(turned.cards[turned.cards.length-1])) {
@@ -68,7 +68,7 @@ export default class DeckView extends React.Component<IDeckProps, any>{
     }
 
     private turnClick = (): void => {
-        const turned = this.props.modelView.turned();
+        const turned = this.props.viewModel.turned();
 
         if (this.props.floatingCards.has_any() || turned.cards.length === 0) {
             return;

@@ -1,26 +1,26 @@
 import * as React from 'react'
-import {IModelViewData, ICardView} from '../ModelView/Cards/ModelViewData'
-import SolitaireModelView from '../ModelView/SolitaireModelView'
+import {IViewModelData, ICardView} from '../ViewModel/Cards/ViewModelData'
+import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
 import PileViews from './PileViews'
 import DefaultCardStyles from './DefaultCardStyles'
-import CardTickManager from '../ModelView/Cards/CardTickManager'
-import AnimationController from '../ModelView/AnimationController'
+import CardTickManager from '../ViewModel/Cards/CardTickManager'
+import AnimationController from '../ViewModel/AnimationController'
 import FloatingCardsView from './Cards/FloatingCardsView'
-import FloatingCards from '../ModelView/Cards/FloatingCards'
-import CardsGameViewStateMachine from '../ModelView/Cards/CardsGameViewStateMachine'
-import MouseController from '../ModelView/Cards/MouseController'
+import FloatingCards from '../ViewModel/Cards/FloatingCards'
+import CardsGameViewStateMachine from '../ViewModel/Cards/CardsGameViewStateMachine'
+import MouseController from '../ViewModel/Cards/MouseController'
 import {make_card_box} from './Cards/ReactUtil'
-import StateFactory from '../ModelView/States/StateFactory'
-import DragToEvaluator from '../ModelView/Cards/DragToEvaluator';
-import CardBox from '../ModelView/Cards/CardBox'
+import StateFactory from '../ViewModel/States/StateFactory'
+import DragToEvaluator from '../ViewModel/Cards/DragToEvaluator';
+import CardBox from '../ViewModel/Cards/CardBox'
 
 interface ITableData {
-    modelView: IModelViewData;
+    viewModel: IViewModelData;
 }
 
 export default class TableView extends React.Component<{}, ITableData> {
 
-    private modelView = new SolitaireModelView();
+    private viewModel = new SolitaireViewModel();
     private pileViews = React.createRef<PileViews>();
     private cardStyles: DefaultCardStyles = new DefaultCardStyles();
     private floatingCards = new FloatingCards();
@@ -33,10 +33,10 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     constructor(props: any, context: any) {
         super(props, context);
-        this.animationController = new AnimationController(this.modelView, this.cardStyles, this.updateState);
+        this.animationController = new AnimationController(this.viewModel, this.cardStyles, this.updateState);
         this.tickManager.add(this.animationController);
-        const drag = new DragToEvaluator(this.cardStyles,  this.boxFor, this.modelView);
-        this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this.modelView,drag, this.animationController, this.boxFor);
+        const drag = new DragToEvaluator(this.cardStyles,  this.boxFor, this.viewModel);
+        this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this.viewModel,drag, this.animationController, this.boxFor);
         this.stateMachine.move_to(this.stateFactory.make_idle_state());
     }
    
@@ -57,8 +57,8 @@ export default class TableView extends React.Component<{}, ITableData> {
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     {this.render_undo()}
-                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} modelView={this.modelView} floatingCards={this.floatingCards} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
-                    <FloatingCardsView floatingCards={this.floatingCards} cardStyles={this.cardStyles} modelViewDataSync={this.modelView.data_sync()} />
+                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} viewModel={this.viewModel} floatingCards={this.floatingCards} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <FloatingCardsView floatingCards={this.floatingCards} cardStyles={this.cardStyles} viewModelDataSync={this.viewModel.data_sync()} />
                     
                 </div>
             </section>
@@ -104,7 +104,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
 
     private should_enable_undo_button() {
-        return this.modelView.can_undo() && this.floatingCards.has_any() === false;
+        return this.viewModel.can_undo() && this.floatingCards.has_any() === false;
     }
 
     private onClickUndo =() => {   
@@ -113,7 +113,7 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     private updateState = ()=> {
         const data: ITableData = {
-            modelView: this.modelView.table_data()
+            viewModel: this.viewModel.table_data()
         };
         this.setState(data);
     }

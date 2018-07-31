@@ -1,6 +1,6 @@
 import CardProxy from './CardProxy'
-import { ICardView } from "./ModelViewData";
-import ModelViewDataSync from "./ModelViewDataSync";
+import { ICardView } from "./ViewModelData";
+import ViewModelDataSync from "./ViewModelDataSync";
 
 export default class FloatingCard {
 
@@ -9,7 +9,7 @@ export default class FloatingCard {
     private cardY: number;
     private cardScaleX: number;
 
-    constructor(card: ICardView, cardX: number, cardY: number, cardScaleX: number, dataSync: ModelViewDataSync) {
+    constructor(card: ICardView, cardX: number, cardY: number, cardScaleX: number, dataSync: ViewModelDataSync) {
         this.cardProxy = new CardProxy(dataSync, card);
         this.cardX = cardX;
         this.cardY = cardY;

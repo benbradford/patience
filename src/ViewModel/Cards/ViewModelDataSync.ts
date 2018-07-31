@@ -1,10 +1,10 @@
-import {IModelViewData, IPileView, ICardView} from './ModelViewData'
+import {IViewModelData, IPileView, ICardView} from './ViewModelData'
 import CardCollection from '../../Model/Cards/CardCollection';
 import CardTable from '../../Model/Cards/CardTable';
 import {Card, Suit, Face} from '../../Model/Cards/Card'
 
-export default class ModelViewDataSync {
-    private modelViewData: IModelViewData;
+export default class ViewModelDataSync {
+    private viewModelData: IViewModelData;
     private collections: CardTable;
 
     constructor(collections: CardTable) {
@@ -13,13 +13,13 @@ export default class ModelViewDataSync {
     }
 
     public sync_view_with_model() {
-        this.modelViewData = {
+        this.viewModelData = {
             piles: this.make_view_piles()
         };
     }
 
-    public model_view_data(): Readonly<IModelViewData> {
-        return this.modelViewData;
+    public model_view_data(): Readonly<IViewModelData> {
+        return this.viewModelData;
     }
 
     public model_pile(viewPileIndex: number): CardCollection {
@@ -27,7 +27,7 @@ export default class ModelViewDataSync {
     }
 
     public view_pile(viewPileIndex: number): IPileView {
-        return this.modelViewData.piles[viewPileIndex];
+        return this.viewModelData.piles[viewPileIndex];
     }
 
     // :TODO: this function is in the wrong place - where should it go?
@@ -59,7 +59,7 @@ export default class ModelViewDataSync {
 
     public view_card(card: Card, pileIndex: number): ICardView {
         
-        const collection = this.modelViewData.piles[pileIndex];
+        const collection = this.viewModelData.piles[pileIndex];
         for (const c of collection.cards) {
             if (c.suit === card.suit && c.face === card.face) {
                 return c;
@@ -71,7 +71,7 @@ export default class ModelViewDataSync {
     }
 
     public find_view_card(suit: Suit, face: Face) {
-        for (const p of this.modelViewData.piles) {
+        for (const p of this.viewModelData.piles) {
             for (const c of p.cards) {
                 if (c.suit === suit && c.face === face) {
                     return c;

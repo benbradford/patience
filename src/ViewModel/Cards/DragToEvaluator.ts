@@ -1,6 +1,6 @@
 import ICardStyles from './ICardStyles'
-import {ICardView} from './ModelViewData'
-import SolitaireModelView from '../SolitaireModelView'
+import {ICardView} from './ViewModelData'
+import SolitaireViewModel from '../SolitaireViewModel'
 import CardBox from './CardBox'
 import MouseController from './MouseController'
 import {BoxFinder} from './BoxFinder'
@@ -14,18 +14,18 @@ export default class DragToEvaluator {
      
     private cardStyles: ICardStyles;
     private boxFinder: BoxFinder;
-    private modelView: SolitaireModelView;
+    private viewModel: SolitaireViewModel;
 
     private validDestinations : IMoveDestination[];
 
-    constructor(cardStyles: ICardStyles, boxFinder: BoxFinder, modelView: SolitaireModelView) {
+    constructor(cardStyles: ICardStyles, boxFinder: BoxFinder, viewModel: SolitaireViewModel) {
         this.cardStyles = cardStyles;
         this.boxFinder = boxFinder;
-        this.modelView = modelView;
+        this.viewModel = viewModel;
     }
 
     public set_valid_destinations(card: ICardView) {
-        const destinationPiles = this.modelView.valid_move_to_destinations(card);
+        const destinationPiles = this.viewModel.valid_move_to_destinations(card);
         this.validDestinations  = [];
         for (const p of destinationPiles) {
             const b= this.boxFinder(p);

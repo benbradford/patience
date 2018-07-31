@@ -1,18 +1,18 @@
 import * as React from 'react'
 import './Cards.css'
-import {IPileView, ICardView} from '../ModelView/Cards/ModelViewData'
+import {IPileView, ICardView} from '../ViewModel/Cards/ViewModelData'
 import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
 import {make_refs} from './Cards/ReactUtil'
-import SolitaireModelView from '../ModelView/SolitaireModelView'
-import FloatingCards from '../ModelView/Cards/FloatingCards'
-import ICardStyles from '../ModelView/Cards/ICardStyles'
+import SolitaireViewModel from '../ViewModel/SolitaireViewModel'
+import FloatingCards from '../ViewModel/Cards/FloatingCards'
+import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 interface IPileViewsProps {
     ref: React.RefObject<PileViews>;
     cardStyles: ICardStyles; 
-    modelView: SolitaireModelView; 
+    viewModel: SolitaireViewModel; 
     floatingCards: FloatingCards;
     onDeckClick: () => void;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
@@ -25,12 +25,12 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
     private readonly deckRef = React.createRef<HTMLElement>();
     
     public render(): JSX.Element {     
-        const piles : IPileView[] = this.props.modelView.hold();
+        const piles : IPileView[] = this.props.viewModel.hold();
         return (
             <section>
-                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} modelView={this.props.modelView} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />    
+                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} viewModel={this.props.viewModel} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />    
                 <section className="BetweenScoreAndDeck">&nbsp;</section>
-                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} modelView={this.props.modelView} floatingCards={this.props.floatingCards} onDeckClick={this.props.onDeckClick} onStartDrag={this.props.onStartDrag} /> 
+                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} viewModel={this.props.viewModel} floatingCards={this.props.floatingCards} onDeckClick={this.props.onDeckClick} onStartDrag={this.props.onStartDrag} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
                 {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
             </section>

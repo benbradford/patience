@@ -1,14 +1,14 @@
 import DragState from './DragState'
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
 import CardBox from '../Cards/CardBox'
-import {ICardView} from '../Cards/ModelViewData'
+import {ICardView} from '../Cards/ViewModelData'
 import FloatingCards from '../Cards/FloatingCards'
-import SolitaireModelView from '../../ModelView/SolitaireModelView'
+import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
 import DragToEvaluator from '../Cards/DragToEvaluator'
 import IdleState from './IdleState'
 import AnimationState from './AnimationState'
 import AnimationController from '../AnimationController'
-import FloatingCard from '../../ModelView/Cards/FloatingCard'
+import FloatingCard from '../../ViewModel/Cards/FloatingCard'
 import {BoxFinder} from '../Cards/BoxFinder'
 import UndoState from './UndoState'
 import DeckClickState from './DeckClickState'
@@ -17,28 +17,28 @@ export default class StateFactory {
 
     private machine: CardsGameViewStateMachine;
     private floatingCards: FloatingCards;
-    private modelView: SolitaireModelView;
+    private viewModel: SolitaireViewModel;
     private dragToEvaluator: DragToEvaluator;
     private animationController: AnimationController;
     private boxFinder: BoxFinder;
 
     constructor(machine: CardsGameViewStateMachine,
                 floatingCards: FloatingCards,
-                modelView: SolitaireModelView,
+                viewModel: SolitaireViewModel,
                 dragToEvaluator: DragToEvaluator,
                 animationController: AnimationController,
                 boxFinder: BoxFinder) {
 
         this.machine = machine;
         this.floatingCards = floatingCards;
-        this.modelView = modelView;
+        this.viewModel = viewModel;
         this.dragToEvaluator = dragToEvaluator;   
         this.animationController = animationController;      
         this.boxFinder = boxFinder;  
     }
 
     public make_drag_state(c: ICardView, box: CardBox): DragState {
-        return new DragState(this.machine, this.floatingCards, this.modelView, this.dragToEvaluator, this, c, box);
+        return new DragState(this.machine, this.floatingCards, this.viewModel, this.dragToEvaluator, this, c, box);
     }
 
     public make_idle_state(): IdleState {
@@ -50,10 +50,10 @@ export default class StateFactory {
     }
 
     public make_undo_state() {
-        return new UndoState(this.machine, this.floatingCards, this.modelView, this, this.boxFinder);
+        return new UndoState(this.machine, this.floatingCards, this.viewModel, this, this.boxFinder);
     }
 
     public make_deck_click_state() {
-        return new DeckClickState(this.machine, this.floatingCards, this.modelView, this, this.boxFinder);
+        return new DeckClickState(this.machine, this.floatingCards, this.viewModel, this, this.boxFinder);
     }
 }
