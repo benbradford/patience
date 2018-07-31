@@ -12,7 +12,7 @@ export default class UndoState extends CardsGameViewState {
 
     constructor(machine: CardsGameViewStateMachine, floatingCards: FloatingCards, viewModel: SolitaireViewModel, stateFactory: StateFactory, boxFinder: BoxFinder) {
         super(machine);
-        const result = viewModel.undo();
+        const result = viewModel.perform_undo();
         if (result) {
             const boxFrom = boxFinder(result.startPileIndex);
             const boxTo = boxFinder(result.destPileIndex);

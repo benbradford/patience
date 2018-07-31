@@ -13,6 +13,14 @@ import ViewModelDataSync from './Cards/ViewModelDataSync'
 import SolitaireSolver from '../Model/SolitaireSolver'
 import {ICardActionResult} from '../Model/Cards/ICardActionResult'
 import IAnimationAction from './IAnimationAction'
+import FloatingCards from './Cards/FloatingCards'
+import CardsGameViewStateMachine from './Cards/CardsGameViewStateMachine'
+import CardTickManager from './Cards/CardTickManager'
+import AnimationController from './AnimationController'
+import StateFactory from './States/StateFactory'
+import DragToEvaluator from './Cards/DragToEvaluator';
+import ICardStyles from './Cards/ICardStyles'
+import CardBox from './Cards/CardBox'
 
 export default class SolitaireViewModel {
     private collections = new SolitaireCollections();
@@ -22,14 +30,25 @@ export default class SolitaireViewModel {
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
     private dataSync: ViewModelDataSync;
     private stateChangeListener: (data: IViewModelData)=> void | null;
+    private floatingCards = new FloatingCards();
+    private animationController: AnimationController;
+    private stateMachine = new CardsGameViewStateMachine();
+    private stateFactory: StateFactory;
+    private tickManager = new CardTickManager();
 
-    constructor () {
+
+    constructor (cardStyles: ICardStyles, boxFor: (pileIndex: number) => CardBox | null ) {
         this.game = new SolitaireGame(
             this.collections, 
             new CardInitialiser(new DeckMaker(), new CardShuffler()),
             this.moveCardCommand,
             this.nextCardCommand,
             this.moveManyCardsCommand);
+        this.animationController = new AnimationController(this, cardStyles);
+        this.tickManager.add(this.animationController);
+        const drag = new DragToEvaluator(cardStyles, boxFor, this);
+        this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this,drag, this.animationController, boxFor);
+        this.stateMachine.move_to(this.stateFactory.make_idle_state());
     }
 
     public register_state_change_listener( listener: (data: IViewModelData) => void) {
@@ -40,6 +59,18 @@ export default class SolitaireViewModel {
         this.lay_out_table();
         this.dataSync = new ViewModelDataSync(this.collections.table);
         this.update_state();
+    }
+
+    public tick() {
+        this.tickManager.tick();
+    }
+
+    public should_enable_undo_button() {
+        return this.can_undo() && this.floatingCards.has_any() === false;
+    }
+
+    public floating_cards() {
+        return this.floatingCards;
     }
 
     public update_state() {
@@ -83,7 +114,34 @@ export default class SolitaireViewModel {
         return this.game.can_undo();
     }
 
-    public undo(): IAnimationAction | null {
+    public undo() {
+        this.stateMachine.move_to(this.stateFactory.make_undo_state());
+    }
+
+    public on_mouse_leave() {
+        this.stateMachine.current().on_mouse_leave();
+    }
+
+    public click_deck() {
+        if (this.floatingCards.has_any() === false) {
+            this.stateMachine.move_to(this.stateFactory.make_deck_click_state());
+        }
+    }
+
+    public on_start_drag (c: ICardView, box: CardBox) {
+         this.stateMachine.current().on_start_drag(c, box);
+    }
+
+    public on_mouse_move(x: number, y: number) {
+
+        this.stateMachine.current().on_mouse_move(x, y);
+    }
+    
+    public on_mouse_up(x: number, y: number) {
+       this.stateMachine.current().on_mouse_up(x, y);
+    }
+
+    public perform_undo() {
         const result = this.game.undo();
         if (result) {
             this.update_state();
