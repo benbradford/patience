@@ -1,4 +1,9 @@
 
+
+make view listen for state changes
+remove logic from view
+
+
 allow different cards and backs and table
 
 create toolbar with undo, quit, retry, solve?

@@ -45,6 +45,7 @@ export default class DragState extends CardsGameViewState {
             this.dragged_card_offset_x(),
             this.dragged_card_offset_y()
         );
+        this.viewModel.update_state();
        
         return true;
     }

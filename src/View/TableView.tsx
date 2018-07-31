@@ -14,11 +14,7 @@ import StateFactory from '../ViewModel/States/StateFactory'
 import DragToEvaluator from '../ViewModel/Cards/DragToEvaluator';
 import CardBox from '../ViewModel/Cards/CardBox'
 
-interface ITableData {
-    viewModel: IViewModelData;
-}
-
-export default class TableView extends React.Component<{}, ITableData> {
+export default class TableView extends React.Component<{}, IViewModelData> {
 
     private viewModel = new SolitaireViewModel();
     private pileViews = React.createRef<PileViews>();
@@ -33,7 +29,9 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     constructor(props: any, context: any) {
         super(props, context);
-        this.animationController = new AnimationController(this.viewModel, this.cardStyles, this.updateState);
+        const stateUpdater = (data: IViewModelData): void => {this.setState(data); };
+        this.viewModel.register_state_change_listener(stateUpdater);
+        this.animationController = new AnimationController(this.viewModel, this.cardStyles);
         this.tickManager.add(this.animationController);
         const drag = new DragToEvaluator(this.cardStyles,  this.boxFor, this.viewModel);
         this.stateFactory = new StateFactory(this.stateMachine, this.floatingCards, this.viewModel,drag, this.animationController, this.boxFor);
@@ -41,7 +39,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     }
    
     public componentDidMount() {
-       this.updateState();
+       this.viewModel.initialise_table();
        this.interval = setInterval(() => this.update(), 10);
     }
     
@@ -81,9 +79,7 @@ export default class TableView extends React.Component<{}, ITableData> {
     private handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
         MouseController.lastMouseX = event.clientX + window.scrollX;
         MouseController.lastMouseY = event.clientY + window.scrollY;
-        if (this.stateMachine.current().on_mouse_move(MouseController.lastMouseX, MouseController.lastMouseY)) {
-            this.updateState();
-        }     
+        this.stateMachine.current().on_mouse_move(MouseController.lastMouseX, MouseController.lastMouseY);
     }
     
     private handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -99,7 +95,6 @@ export default class TableView extends React.Component<{}, ITableData> {
     private onDeckClick = () => {
         if (this.floatingCards.has_any() === false) {
             this.stateMachine.move_to(this.stateFactory.make_deck_click_state());
-            this.updateState();
         }
     }
 
@@ -109,13 +104,6 @@ export default class TableView extends React.Component<{}, ITableData> {
 
     private onClickUndo =() => {   
         this.stateMachine.move_to(this.stateFactory.make_undo_state());
-    }
-
-    private updateState = ()=> {
-        const data: ITableData = {
-            viewModel: this.viewModel.table_data()
-        };
-        this.setState(data);
     }
 
     private boxFor = (pileIndex: number): CardBox | null => {

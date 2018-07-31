@@ -21,6 +21,7 @@ export default class SolitaireViewModel {
     private nextCardCommand = new NextCardCommand(this.collections);
     private moveManyCardsCommand = new MoveManyCardsCommand(this.collections);
     private dataSync: ViewModelDataSync;
+    private stateChangeListener: (data: IViewModelData)=> void | null;
 
     constructor () {
         this.game = new SolitaireGame(
@@ -29,9 +30,24 @@ export default class SolitaireViewModel {
             this.moveCardCommand,
             this.nextCardCommand,
             this.moveManyCardsCommand);
+    }
 
+    public register_state_change_listener( listener: (data: IViewModelData) => void) {
+        this.stateChangeListener = listener;
+    }
+
+    public initialise_table() {
         this.lay_out_table();
         this.dataSync = new ViewModelDataSync(this.collections.table);
+        this.update_state();
+    }
+
+    public update_state() {
+        // :TODO: make this non-public
+        this.dataSync.sync_view_with_model();
+        if (this.stateChangeListener ) {
+            this.stateChangeListener(this.table_data());
+        }
     }
 
     // :TODO: be nice to not have to expose this
@@ -70,7 +86,7 @@ export default class SolitaireViewModel {
     public undo(): IAnimationAction | null {
         const result = this.game.undo();
         if (result) {
-            this.dataSync.sync_view_with_model();
+            this.update_state();
             return this.to_animation_action(result);
         }
         return null;
@@ -102,7 +118,7 @@ export default class SolitaireViewModel {
             moved = this.game.move_many(modelCard, toPile);
         }
         if (moved) {
-            this.dataSync.sync_view_with_model();
+            this.update_state();
             return this.to_animation_action(moved);
         }
         return null;
@@ -111,7 +127,7 @@ export default class SolitaireViewModel {
     public next_card(): IAnimationAction | null {
         const result = this.game.next();
         if (result) {
-            this.dataSync.sync_view_with_model();
+            this.update_state();
             return this.to_animation_action(result);
         }
         return null;

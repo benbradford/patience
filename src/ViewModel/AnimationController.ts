@@ -11,12 +11,10 @@ export default class AnimationController implements ICardTicker {
     private cardStyles: ICardStyles;
     private onAnimationEnd: ()=>void;
     private running: CardAnimator[] = [];
-    private updateState: () =>void;
    
-    constructor( viewModel: SolitaireViewModel, cardStyles: ICardStyles, updateState: () =>void) {
+    constructor( viewModel: SolitaireViewModel, cardStyles: ICardStyles) {
         this.viewModel = viewModel;
         this.cardStyles = cardStyles;
-        this.updateState = updateState;
     }
 
     public start_animation(card: FloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number, onAnimationEnd: ()=>void) {
@@ -40,14 +38,14 @@ export default class AnimationController implements ICardTicker {
             t.tick();
         }
         if (this.running.length) {
-            this.updateState();
+            this.viewModel.update_state();
         }
     }
 
     private onAnimEnd = () => {
         this.running.pop();
         this.onAnimationEnd();
-        this.updateState();
+        this.viewModel.update_state();
     }
     
 }
