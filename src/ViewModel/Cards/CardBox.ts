@@ -27,4 +27,11 @@ export default class CardBox {
     public scaleY() {
         return 1.0;
     }
+
+    public set_position(x: number, y: number) {
+        this.left = x;
+        this.top = y;
+        this.right = x + this.width;
+        this.bottom = y + this.height;
+    }
 }

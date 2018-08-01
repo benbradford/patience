@@ -25,12 +25,26 @@ export default class ScorePileViews extends React.Component<IScorePileViews, any
         );  
     }
 
-    public box(index: number): ClientRect | null {   
+    public box_for_pile(index: number): ClientRect | null {   
         const r = this.cardRefs[index].current;
         if (r === null) {
             return null;
         }
         return r.getBoundingClientRect();
+    }
+
+    public box_for_card(card: ICardView): ClientRect | null {
+        const cards = this.props.scorePiles[card.pileIndex - 9].cards;
+        for (let i = 0; i < cards.length; ++i) {
+            if (card.suit ===cards[i].suit && card.face === cards[i].face) {
+                const r = this.cardRefs[i].current;
+                if (r === null) {
+                    return null;
+                }
+                return r.getBoundingClientRect();
+            }
+        }
+        return null;
     }
    
     private render_card(pile: ICardCollectionViewData, index: number): JSX.Element  {

@@ -6,9 +6,9 @@ import CardCollection from './Cards/CardCollection';
 import MoveCardCommand from './Command/MoveCardCommand'
 import MoveManyCardsCommand from './Command/MoveManyCardsCommand'
 import NextCardCommand from './Command/NextCardCommand'
-import CardAction from '../Model/Cards/CardAction';
-import CardActionExecutor from '../Model/Cards/CardActionExecutor';
-import {ICardActionResult} from '../Model/Cards/ICardActionResult'
+import CardAction from './Cards/CardAction';
+import CardActionExecutor from './Cards/CardActionExecutor';
+import {ICardActionResult} from './Cards/ICardActionResult'
 
 export default class SolitaireGame {
 

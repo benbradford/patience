@@ -26,7 +26,7 @@ export default class HoldPileView extends React.Component<IHoldPileProps, any>{
         );
     }
 
-    public box(): ClientRect | null {
+    public box_for_pile(): ClientRect | null {
         
         let index = this.props.pile.cards.length - 1;
         if (index < 0) {
@@ -37,6 +37,19 @@ export default class HoldPileView extends React.Component<IHoldPileProps, any>{
             return null;
         }
         return r.getBoundingClientRect();
+    }
+
+    public box_for_card(card: ICardView): ClientRect | null {
+        for (let i = 0; i < this.props.pile.cards.length; ++i) {
+            if (card.suit === this.props.pile.cards[i].suit && card.face === this.props.pile.cards[i].face) {
+                const r = this.cardRefs[i].current;
+                if (r === null) {
+                    return null;
+                }
+                return r.getBoundingClientRect();
+            }
+        }
+        return null;
     }
 
     private render_cards() {

@@ -1,13 +1,12 @@
 import DragState from './DragState'
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
-import CardBox from '../Cards/CardBox'
 import {ICardView, IFloatingCard} from '../Cards/ViewModelData'
-import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
+import SolitaireViewModel from '../SolitaireViewModel'
 import DragToEvaluator from '../Cards/DragToEvaluator'
 import IdleState from './IdleState'
 import AnimationState from './AnimationState'
 import AnimationController from '../AnimationController'
-import {BoxFinder} from '../Cards/BoxFinder'
+import BoxFinder from '../Cards/BoxFinder'
 import UndoState from './UndoState'
 import DeckClickState from './DeckClickState'
 
@@ -32,8 +31,8 @@ export default class StateFactory {
         this.boxFinder = boxFinder;  
     }
 
-    public make_drag_state(c: ICardView, box: CardBox): DragState {
-        return new DragState(this.machine, this.viewModel, this.dragToEvaluator, this, c, box);
+    public make_drag_state(c: ICardView): DragState {
+        return new DragState(this.machine, this.viewModel, this.dragToEvaluator, this, c, this.boxFinder);
     }
 
     public make_idle_state(): IdleState {

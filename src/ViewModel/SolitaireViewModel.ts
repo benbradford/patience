@@ -20,7 +20,8 @@ import DragToEvaluator from './Cards/DragToEvaluator';
 import ICardStyles from './Cards/ICardStyles'
 import CardBox from './Cards/CardBox'
 import SolitaireViewInterface from './SolitaireViewInterface'
-import { floating_cards} from '../ViewModel/SolitaireCardCollectionsViewModel'
+import { floating_cards} from './SolitaireCardCollectionsViewModel'
+import BoxFinder from './Cards/BoxFinder';
 
 export default class SolitaireViewModel extends SolitaireViewInterface{
     
@@ -32,7 +33,7 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     private stateFactory: StateFactory;
     private tickManager = new CardTickManager();
 
-    constructor (cardStyles: ICardStyles, boxFor: (pileIndex: number) => CardBox | null ) {
+    constructor (cardStyles: ICardStyles, boxFinder: BoxFinder ) {
         super();
         const collections = new SolitaireCollections();
 
@@ -43,10 +44,10 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
             new NextCardCommand(collections),
             new MoveManyCardsCommand(collections));
 
-        this.animationController = new AnimationController(this, cardStyles);
+        this.animationController = new AnimationController(this, cardStyles, boxFinder);
         this.tickManager.add(this.animationController);
-        const drag = new DragToEvaluator(cardStyles, boxFor, this);
-        this.stateFactory = new StateFactory(this.stateMachine, this, drag, this.animationController, boxFor);
+        const drag = new DragToEvaluator(cardStyles, boxFinder, this);
+        this.stateFactory = new StateFactory(this.stateMachine, this, drag, this.animationController, boxFinder);
         this.stateMachine.move_to(this.stateFactory.make_idle_state());
         this.dataSync = new ViewModelDataSync(this.game.collections().table);
     }

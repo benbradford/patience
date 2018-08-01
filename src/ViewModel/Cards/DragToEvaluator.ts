@@ -3,7 +3,7 @@ import {ICardView} from './ViewModelData'
 import SolitaireViewModel from '../SolitaireViewModel'
 import CardBox from './CardBox'
 import MouseController from './MouseController'
-import {BoxFinder} from './BoxFinder'
+import BoxFinder from './BoxFinder'
 
 export interface IMoveDestination {
     pileIndex: number;
@@ -28,7 +28,7 @@ export default class DragToEvaluator {
         const destinationPiles = this.viewModel.valid_move_to_destinations(card);
         this.validDestinations  = [];
         for (const p of destinationPiles) {
-            const b= this.boxFinder(p);
+            const b= this.boxFinder.boxForPile(p);
             if (b) {
                 this.validDestinations.push({pileIndex: p, box: b}); 
             }                   

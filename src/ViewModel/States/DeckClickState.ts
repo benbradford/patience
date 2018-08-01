@@ -2,9 +2,9 @@ import CardsGameViewState from "../Cards/CardsGameViewState";
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
 
 
-import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
+import SolitaireViewModel from '../SolitaireViewModel'
 import StateFactory from './StateFactory'
-import {BoxFinder} from '../Cards/BoxFinder'
+import BoxFinder from '../Cards/BoxFinder'
 import IFloatingCardHolder from '../Cards/IFloatingCardHolder'
 
 export default class DeckClickState extends CardsGameViewState {
@@ -14,8 +14,8 @@ export default class DeckClickState extends CardsGameViewState {
         const result = viewModel.next_card();
             if (result) {
                 if (result.destPileIndex > 0) {
-                    const pileBox = boxFinder(1);
-                    const fromBox = boxFinder(0);
+                    const pileBox = boxFinder.boxForPile(1);
+                    const fromBox = boxFinder.boxForPile(0);
                     if (pileBox && fromBox) {
                         const halfWidth = (pileBox.right-pileBox.left) / 2;
                         const x = fromBox.left + window.scrollX + halfWidth;

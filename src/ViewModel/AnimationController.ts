@@ -5,6 +5,7 @@ import {IFloatingCard} from './Cards/ViewModelData'
 import ICardTicker from './Cards/ICardTicker'
 import CardAnimator from './Cards/Animation/CardAnimator'
 import {hold_pile} from './SolitaireCardCollectionsViewModel'
+import BoxFinder from './Cards/BoxFinder';
 
 export default class AnimationController implements ICardTicker {
 
@@ -12,10 +13,12 @@ export default class AnimationController implements ICardTicker {
     private cardStyles: ICardStyles;
     private onAnimationEnd: ()=>void;
     private running: CardAnimator[] = [];
+    private boxFinder: BoxFinder;
    
-    constructor( viewModel: SolitaireViewModel, cardStyles: ICardStyles) {
+    constructor( viewModel: SolitaireViewModel, cardStyles: ICardStyles, boxFinder: BoxFinder) {
         this.viewModel = viewModel;
         this.cardStyles = cardStyles;
+        this.boxFinder = boxFinder;
     }
 
     public start_animation(card: IFloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number, onAnimationEnd: ()=>void) {
@@ -30,7 +33,7 @@ export default class AnimationController implements ICardTicker {
                 destY +=  this.cardStyles.previewSize; 
             }           
         }
-        const animator = new SimpleLerpCardAnimator(card, destX + window.scrollX, destY + window.scrollY, turn, speed, this.onAnimEnd);
+        const animator = new SimpleLerpCardAnimator(card, destX + window.scrollX, destY + window.scrollY, turn, speed, this.onAnimEnd, this.viewModel.data_sync(), this.boxFinder);
         this.running.push(animator);
     }
 

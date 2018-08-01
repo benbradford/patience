@@ -1,10 +1,9 @@
 import CardsGameViewState from "../Cards/CardsGameViewState";
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
-import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
+import SolitaireViewModel from '../SolitaireViewModel'
 import StateFactory from './StateFactory'
-import {BoxFinder} from '../Cards/BoxFinder'
+import BoxFinder from '../Cards/BoxFinder'
 import IFloatingCardHolder from "../Cards/IFloatingCardHolder";
-
 
 export default class UndoState extends CardsGameViewState {
 
@@ -12,8 +11,8 @@ export default class UndoState extends CardsGameViewState {
         super(machine);
         const result = viewModel.perform_undo();
         if (result) {
-            const boxFrom = boxFinder(result.startPileIndex);
-            const boxTo = boxFinder(result.destPileIndex);
+            const boxFrom = boxFinder.boxForPile(result.startPileIndex);
+            const boxTo = boxFinder.boxForPile(result.destPileIndex);
             if (boxFrom && boxTo) {
                 const x = boxFrom.left + window.scrollX;
                 const y = boxFrom.top + window.scrollY;

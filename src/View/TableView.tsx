@@ -9,6 +9,7 @@ import {make_card_box} from './Cards/ReactUtil'
 import CardBox from '../ViewModel/Cards/CardBox'
 import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
 import { floating_cards } from '../ViewModel/SolitaireCardCollectionsViewModel';
+import BoxFinder from '../ViewModel/Cards/BoxFinder';
 
 export default class TableView extends React.Component<{}, IViewModelData> {
 
@@ -21,7 +22,7 @@ export default class TableView extends React.Component<{}, IViewModelData> {
     constructor(props: any, context: any) {
         super(props, context);
         const stateUpdater = (data: IViewModelData): void => {this.setState(data); };
-        this.viewInterface = new SolitaireViewModel(this.cardStyles, this.boxFor);
+        this.viewInterface = new SolitaireViewModel(this.cardStyles, new BoxFinder(this.boxForPile, this.boxForCard));
         this.viewInterface.register_state_change_listener(stateUpdater);
     }
    
@@ -91,13 +92,23 @@ export default class TableView extends React.Component<{}, IViewModelData> {
         this.viewInterface.undo();
     }
 
-    private boxFor = (pileIndex: number): CardBox | null => {
+    private boxForPile = (pileIndex: number): CardBox | null => {
         if (this.pileViews.current) {
-            const box = this.pileViews.current.box_for(pileIndex);
+            const box = this.pileViews.current.box_for_pile(pileIndex);
             if (box) {
                 return make_card_box(box);
             }
         }
         return null;
+    }
+
+    private boxForCard = (card: ICardView): CardBox => {
+        if (this.pileViews.current) {
+            const box = this.pileViews.current.box_for_card(card);
+            if (box) {
+                return make_card_box(box);
+            }
+        }
+        throw new Error("cannot get box for card");
     }
 }

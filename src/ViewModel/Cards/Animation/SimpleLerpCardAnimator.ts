@@ -1,5 +1,8 @@
 import {IFloatingCard} from '../ViewModelData'
 import CardAnimator from './CardAnimator'
+import MultipleCardsSyncHelper from '../MultipleCardsSyncHelper'
+import ViewModelDataSync from '../ViewModelDataSync';
+import BoxFinder from '../BoxFinder';
 
 export default class SimpleLerpCardAnimator extends CardAnimator {
 
@@ -12,8 +15,9 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
     private scaleIn: boolean;
     private speed: number;
     private onAnimationEnd: ()=>void;
+    private cardSyncHelper: MultipleCardsSyncHelper;
 
-    constructor(card: IFloatingCard, destX: number, destY: number, scaleIn: boolean, speed: number, onAnimationEnd: ()=>void) {
+    constructor(card: IFloatingCard, destX: number, destY: number, scaleIn: boolean, speed: number, onAnimationEnd: ()=>void, viewModel: ViewModelDataSync, boxFinder: BoxFinder) {
         super(card);
         this.scaleIn = scaleIn;
         this.speed = speed;
@@ -22,6 +26,7 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
         this.destX = destX;
         this.destY = destY;
         this.onAnimationEnd = onAnimationEnd;
+        this.cardSyncHelper = new MultipleCardsSyncHelper(card.card, boxFinder, viewModel);
     }
 
     public tick(): void {
@@ -34,6 +39,7 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
         if (this.scaleIn) {
             this.set_card_scale(delta);
         }
+        this.cardSyncHelper.update_positions();
         if (delta === 10) {
             this.onAnimationEnd();
         } 

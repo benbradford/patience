@@ -2,12 +2,14 @@ import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
 import CardsGameViewState from '../Cards/CardsGameViewState'
 import CardBox from '../Cards/CardBox'
 import {ICardView, IFloatingCard} from '../Cards/ViewModelData'
-import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
+import SolitaireViewModel from '../SolitaireViewModel'
 import MouseController from '../Cards/MouseController'
 import DragToEvaluator from '../Cards/DragToEvaluator'
 import StateFactory from './StateFactory'
 import {IMoveDestination} from '../Cards/DragToEvaluator'
 import { floating_cards } from '../SolitaireCardCollectionsViewModel';
+import MultipleCardsSyncHelper from '../Cards/MultipleCardsSyncHelper'
+import BoxFinder from '../Cards/BoxFinder';
 
 export default class DragState extends CardsGameViewState {
 
@@ -17,22 +19,27 @@ export default class DragState extends CardsGameViewState {
     private readonly dragToEvaluator: DragToEvaluator;
     private readonly stateFactory: StateFactory;
     private readonly viewModel: SolitaireViewModel;
+    private cardSyncHelper: MultipleCardsSyncHelper;
 
     constructor(machine: CardsGameViewStateMachine,
                 viewModel: SolitaireViewModel,
                 dragToEvaluator: DragToEvaluator,
                 stateFactory: StateFactory,
-                c: ICardView, box: CardBox) {
+                c: ICardView, boxFinder: BoxFinder) {
 
         super(machine);
         this.viewModel = viewModel;
         this.stateFactory = stateFactory;
         this.dragToEvaluator = dragToEvaluator;    
-        this.mouseOffsetX = (box.left - MouseController.lastMouseX) - 14;
-        this.mouseOffsetY= (box.top - MouseController.lastMouseY) - 8;
-        this.dragFrom = new CardBox(box.left, box.right, box.bottom, box.top, box.width, box.height);
-        this.viewModel.data_sync().pickupCard(c, box);
 
+        this.cardSyncHelper = new MultipleCardsSyncHelper(c, boxFinder, viewModel.data_sync());
+        const floating: IFloatingCard[] = this.cardSyncHelper.floating_cards();
+        this.viewModel.data_sync().pickupCards(floating);
+        
+        this.mouseOffsetX = (floating[0].box.left - MouseController.lastMouseX) - 14;
+        this.mouseOffsetY= (floating[0].box.top - MouseController.lastMouseY) - 8;
+        this.dragFrom = new CardBox(floating[0].box.left, floating[0].box.right, floating[0].box.bottom, floating[0].box.top, floating[0].box.width, floating[0].box.height);
+       
         this.dragToEvaluator.set_valid_destinations(c);      
     }
 
@@ -42,13 +49,15 @@ export default class DragState extends CardsGameViewState {
             throw new Error("no floating card to drag");
             return false;
         }
+        
         const box = floating[0].box;
         box.left = this.dragged_card_offset_x();
         box.top = this.dragged_card_offset_y();
         box.right = box.left + box.width;
         box.bottom = box.top + box.height;
+        this.cardSyncHelper.update_positions();
         this.viewModel.update_state();
-       
+        
         return true;
     }
 

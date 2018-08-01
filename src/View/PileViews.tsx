@@ -36,7 +36,7 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
         );
     }
 
-    public box_for(pileIndex: number): ClientRect | null {
+    public box_for_pile(pileIndex: number): ClientRect | null {
         const holdIndex = pileIndex - 2;
         const scoreIndex = pileIndex - 10;
         
@@ -51,16 +51,39 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
                     
                 return null;
             }
-            return r.current.box();
+            return r.current.box_for_pile();
            
         } else if (scoreIndex >=0 && scoreIndex < 4) {
             const scores = this.scoresRef.current;
             if (scores) {
-                return scores.box(scoreIndex);
+                return scores.box_for_pile(scoreIndex);
                 
             }
         }
         
+        return null;
+    }
+
+    public box_for_card(card: ICardView): ClientRect | null {
+        const holdIndex = card.pileIndex  - 2;
+        const scoreIndex = card.pileIndex  - 10;
+
+        if (card.pileIndex === 0 && this.deckRef.current) {
+            return this.deckRef.current.getBoundingClientRect();
+        } else if (card.pileIndex === 1 && this.turnedRef.current) {
+            // turned pile
+            return this.turnedRef.current.getBoundingClientRect();
+        }  else if (holdIndex >=0 && holdIndex < 7) {
+            const r = this.pileRef[holdIndex];
+            if (r.current ) {
+                return r.current.box_for_card(card);
+            }
+        } else if (scoreIndex >=0 && scoreIndex < 4) {
+            const scores = this.scoresRef.current;
+            if (scores) {   
+                return scores.box_for_card(card);
+            }
+        }
         return null;
     }
 
