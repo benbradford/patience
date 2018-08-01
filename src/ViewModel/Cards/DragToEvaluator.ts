@@ -32,8 +32,7 @@ export default class DragToEvaluator {
             if (b) {
                 this.validDestinations.push({pileIndex: p, box: b}); 
             }                   
-        }
-        
+        }       
     }
 
     public winning_pile(dragFrom: CardBox, mouseOffsetX: number, mouseOffsetY: number) : IMoveDestination | null {

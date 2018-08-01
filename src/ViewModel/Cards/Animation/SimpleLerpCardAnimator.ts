@@ -1,4 +1,4 @@
-import FloatingCard from '../FloatingCard'
+import {IFloatingCard} from '../ViewModelData'
 import CardAnimator from './CardAnimator'
 
 export default class SimpleLerpCardAnimator extends CardAnimator {
@@ -13,12 +13,12 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
     private speed: number;
     private onAnimationEnd: ()=>void;
 
-    constructor(card: FloatingCard, destX: number, destY: number, scaleIn: boolean, speed: number, onAnimationEnd: ()=>void) {
+    constructor(card: IFloatingCard, destX: number, destY: number, scaleIn: boolean, speed: number, onAnimationEnd: ()=>void) {
         super(card);
         this.scaleIn = scaleIn;
         this.speed = speed;
-        this.fromX = card.pos_x();
-        this.fromY = card.pos_y();
+        this.fromX = card.box.left;
+        this.fromY = card.box.top;
         this.destX = destX;
         this.destY = destY;
         this.onAnimationEnd = onAnimationEnd;

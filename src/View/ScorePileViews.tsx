@@ -1,16 +1,14 @@
 import * as React from 'react'
 import './Cards.css'
-import {IPileView, ICardView} from '../ViewModel/Cards/ViewModelData'
+import {ICardCollectionViewData, ICardView} from '../ViewModel/Cards/ViewModelData'
 import {make_refs} from './Cards/ReactUtil'
-import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
-import FloatingCards from '../ViewModel/Cards/FloatingCards'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
 
 interface IScorePileViews {
     ref: React.RefObject<ScorePileViews>;
     cardStyles: ICardStyles; 
-    viewModel: SolitaireViewInterface; 
-    floatingCards: FloatingCards;
+    scorePiles: ICardCollectionViewData[];
+    hasFloatingCards: boolean;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
 }
 
@@ -22,7 +20,7 @@ export default class ScorePileViews extends React.Component<IScorePileViews, any
         return (
             <section>
                 <div className="PileDiv" />
-                {this.props.viewModel.score().map( (pile: IPileView, index: number) => this.render_card(pile, index))}
+                {this.props.scorePiles.map( (pile: ICardCollectionViewData, index: number) => this.render_card(pile, index))}
             </section>
         );  
     }
@@ -35,15 +33,13 @@ export default class ScorePileViews extends React.Component<IScorePileViews, any
         return r.getBoundingClientRect();
     }
    
-    private render_card(pile: IPileView, index: number): JSX.Element  {
-        if (pile.cards.length === 0 || (pile.cards.length === 1 && this.props.floatingCards.find(pile.cards[0]))) {
+    private render_card(pile: ICardCollectionViewData, index: number): JSX.Element  {
+        if (pile.cards.length === 0 ) {
             return this.render_empty(this.cardRefs[index])
         }
 
-        let card = pile.cards[pile.cards.length-1];
-        if (this.props.floatingCards.find(card)) {
-            card = pile.cards[pile.cards.length-2];
-        }
+        const card = pile.cards[pile.cards.length-1];
+        
         const callback = () =>{ this.onClick(card, index); };
         return ( <div className="PileDiv"> <section style={this.props.cardStyles.front(card)} key={index} ref={this.cardRefs[index]} onMouseDown={callback} /> </div> );   
     }
@@ -59,7 +55,7 @@ export default class ScorePileViews extends React.Component<IScorePileViews, any
     }
 
     private onClick = (card: ICardView, index: number): void => {
-        if (this.props.floatingCards.has_any()) {
+        if (this.props.hasFloatingCards) {
             return;
         }
 

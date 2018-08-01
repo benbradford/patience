@@ -1,4 +1,8 @@
 
+When dragging or animating, make cards below main card follow based on the same offset as at the start
+Cancelling anim - need to store old position
+
+CardBox - make scalable - fixed width and height? makes no sense
 
 make SolitaireViewModel have an interface only for the view 
     - maybe rename it ViewInterface

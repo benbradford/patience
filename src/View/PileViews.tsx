@@ -1,19 +1,17 @@
 import * as React from 'react'
 import './Cards.css'
-import {IPileView, ICardView} from '../ViewModel/Cards/ViewModelData'
+import {ICardView, IViewModelData, ICardCollectionViewData} from '../ViewModel/Cards/ViewModelData'
 import HoldPileView from './HoldPileView';
 import ScorePileViews from './ScorePileViews';
 import DeckView from './DeckView'
 import {make_refs} from './Cards/ReactUtil'
-import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
-import FloatingCards from '../ViewModel/Cards/FloatingCards'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
+import {hold_piles, score_piles, deck_pile, turned_pile} from '../ViewModel/SolitaireCardCollectionsViewModel'
 
 interface IPileViewsProps {
     ref: React.RefObject<PileViews>;
     cardStyles: ICardStyles; 
-    viewModel: SolitaireViewInterface; 
-    floatingCards: FloatingCards;
+    viewModelData: IViewModelData;
     onDeckClick: () => void;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
 }
@@ -25,14 +23,15 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
     private readonly deckRef = React.createRef<HTMLElement>();
     
     public render(): JSX.Element {     
-        const piles = this.props.viewModel.hold();
+        const piles = hold_piles(this.props.viewModelData);
+        const score: ICardCollectionViewData[] = score_piles(this.props.viewModelData);
         return (
             <section>
-                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} viewModel={this.props.viewModel} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />    
+                <ScorePileViews ref={this.scoresRef} cardStyles={this.props.cardStyles} hasFloatingCards={this.has_floating_cards()} scorePiles={score} onStartDrag={this.props.onStartDrag} />    
                 <section className="BetweenScoreAndDeck">&nbsp;</section>
-                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} viewModel={this.props.viewModel} floatingCards={this.props.floatingCards} onDeckClick={this.props.onDeckClick} onStartDrag={this.props.onStartDrag} /> 
+                <DeckView cardStyles={this.props.cardStyles} deckRef={this.deckRef} turnedRef={this.turnedRef} key={1} hasFloatingCards={this.has_floating_cards()}  onDeckClick={this.props.onDeckClick} onStartDrag={this.props.onStartDrag} deck={deck_pile(this.props.viewModelData)} turned={turned_pile(this.props.viewModelData)} /> 
                 <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-                {piles.map((pile: IPileView, index: number) => this.render_pile(pile, index))} 
+                {piles.map((pile: ICardCollectionViewData, index: number) => this.render_pile(pile, index))} 
             </section>
         );
     }
@@ -65,13 +64,17 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
         return null;
     }
 
-    private render_pile(pile: IPileView, index: number) {
+    private render_pile(pile: ICardCollectionViewData, index: number) {
         const r = this.pileRef[index];
         if (r === null) {
             return ( <p/> );
         }
         return (  
-            <HoldPileView className="PileDiv" key={index} ref={r} cardStyles={this.props.cardStyles} pile={pile} floatingCards={this.props.floatingCards} onStartDrag={this.props.onStartDrag} />
+            <HoldPileView className="PileDiv" key={index} ref={r} cardStyles={this.props.cardStyles} hasFloatingCards={this.has_floating_cards()} pile={pile} onStartDrag={this.props.onStartDrag} />
         );
+    }
+
+    private has_floating_cards() {
+        return this.props.viewModelData.floating.length > 0;
     }
 }

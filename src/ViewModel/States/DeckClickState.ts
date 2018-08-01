@@ -1,16 +1,15 @@
 import CardsGameViewState from "../Cards/CardsGameViewState";
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
 
-import FloatingCard from '../Cards/FloatingCard'
-import FloatingCards from '../Cards/FloatingCards'
+
 import SolitaireViewModel from '../../ViewModel/SolitaireViewModel'
 import StateFactory from './StateFactory'
 import {BoxFinder} from '../Cards/BoxFinder'
-
+import IFloatingCardHolder from '../Cards/IFloatingCardHolder'
 
 export default class DeckClickState extends CardsGameViewState {
 
-    constructor(machine: CardsGameViewStateMachine, floatingCards: FloatingCards, viewModel: SolitaireViewModel, stateFactory: StateFactory, boxFinder: BoxFinder) {
+    constructor(machine: CardsGameViewStateMachine, floatingCardHolder: IFloatingCardHolder, viewModel: SolitaireViewModel, stateFactory: StateFactory, boxFinder: BoxFinder) {
         super(machine);
         const result = viewModel.next_card();
             if (result) {
@@ -21,8 +20,7 @@ export default class DeckClickState extends CardsGameViewState {
                         const halfWidth = (pileBox.right-pileBox.left) / 2;
                         const x = fromBox.left + window.scrollX + halfWidth;
                         const y = fromBox.top + window.scrollY;
-                        const floatingCard = new FloatingCard(result.card, x, y, 1, viewModel.data_sync());
-                        floatingCards.add(floatingCard);
+                        const floatingCard = floatingCardHolder.pickupCard(result.card, fromBox);
                         const state = stateFactory.make_anim_state(floatingCard, pileBox, 1, x, y, true, 0.5);
                         machine.move_to(state);
                     }

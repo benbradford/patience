@@ -1,17 +1,16 @@
 import * as React from 'react'
 import './Cards.css'
-import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
-import FloatingCards from '../ViewModel/Cards/FloatingCards'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
-import {ICardView} from '../ViewModel/Cards/ViewModelData'
+import {ICardView, ICardCollectionViewData} from '../ViewModel/Cards/ViewModelData'
 
 interface IDeckProps {
     cardStyles: ICardStyles;
     deckRef: any;
     turnedRef: any;
     key: any;
-    viewModel: SolitaireViewInterface;
-    floatingCards: FloatingCards;
+    turned: ICardCollectionViewData;
+    deck: ICardCollectionViewData;
+    hasFloatingCards: boolean;
     onDeckClick: () => void;
     onStartDrag: (c: ICardView, box: ClientRect) => void;
 }
@@ -33,8 +32,7 @@ export default class DeckView extends React.Component<IDeckProps, any>{
     }
 
     private render_deck() {
-
-        const deck = this.props.viewModel.deck();
+        const deck = this.props.deck;
         if (deck.cards.length === 0) {
             return ( <section style={this.props.cardStyles.empty()} ref={this.props.deckRef} onMouseDown={this.deckClick}/> );  
         }
@@ -44,21 +42,15 @@ export default class DeckView extends React.Component<IDeckProps, any>{
     }
 
     private render_turned_card() {
-        const turned = this.props.viewModel.turned();
-
-        let indexToShow : number = 0;
-        if (this.props.floatingCards.find(turned.cards[turned.cards.length-1])) {
-            ++indexToShow;
-        }
-
-        if (indexToShow >= turned.cards.length) {
-
+        const turned = this.props.turned;
+ 
+        if (turned.cards.length === 0) {
             return ( <section style={this.props.cardStyles.empty()} ref={this.props.turnedRef} /> );          
         }
    
         return (
            <section>
-              <section ref={this.props.turnedRef} style={this.props.cardStyles.front(turned.cards[turned.cards.length-1-indexToShow])} onMouseDown={this.turnClick} />
+              <section ref={this.props.turnedRef} style={this.props.cardStyles.front(turned.cards[turned.cards.length-1])} onMouseDown={this.turnClick} />
            </section>  
         );
     }
@@ -68,9 +60,9 @@ export default class DeckView extends React.Component<IDeckProps, any>{
     }
 
     private turnClick = (): void => {
-        const turned = this.props.viewModel.turned();
+        const turned = this.props.turned;
 
-        if (this.props.floatingCards.has_any() || turned.cards.length === 0) {
+        if (this.props.hasFloatingCards || turned.cards.length === 0) {
             return;
         }
       

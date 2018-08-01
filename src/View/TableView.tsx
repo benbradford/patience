@@ -8,6 +8,7 @@ import MouseController from '../ViewModel/Cards/MouseController'
 import {make_card_box} from './Cards/ReactUtil'
 import CardBox from '../ViewModel/Cards/CardBox'
 import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
+import { floating_cards } from '../ViewModel/SolitaireCardCollectionsViewModel';
 
 export default class TableView extends React.Component<{}, IViewModelData> {
 
@@ -41,8 +42,8 @@ export default class TableView extends React.Component<{}, IViewModelData> {
             <section>
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     {this.render_undo()}
-                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} viewModel={this.viewInterface} floatingCards={this.viewInterface.floating_cards()} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
-                    <FloatingCardsView floatingCards={this.viewInterface.floating_cards()} cardStyles={this.cardStyles} viewModelDataSync={this.viewInterface.data_sync()} />
+                    <PileViews ref={this.pileViews} cardStyles={this.cardStyles} viewModelData={this.state} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
+                    <FloatingCardsView cardStyles={this.cardStyles} floatingCards={floating_cards(this.state)} />
                     
                 </div>
             </section>

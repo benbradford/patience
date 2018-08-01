@@ -1,51 +1,46 @@
-import {IViewModelData, IPileView, ICardView} from './ViewModelData'
+import {IViewModelData, ICardView, IFloatingCard, ICardCollectionViewData} from './ViewModelData'
 import CardCollection from '../../Model/Cards/CardCollection';
 import CardTable from '../../Model/Cards/CardTable';
 import {Card, Suit, Face} from '../../Model/Cards/Card'
+import CardBox from './CardBox'
+import IViewModelDataHolder from './IViewModelDataHolder'
+import IFloatingCardHolder from './IFloatingCardHolder'
 
-export default class ViewModelDataSync {
+export default class ViewModelDataSync implements IViewModelDataHolder, IFloatingCardHolder {
     private viewModelData: IViewModelData;
     private collections: CardTable;
+    private floating: IFloatingCard[] = [];
 
     constructor(collections: CardTable) {
         this.collections = collections;
         this.sync_view_with_model();
     }
 
-    public sync_view_with_model() {
-        this.viewModelData = {
-            piles: this.make_view_piles()
-        };
-    }
-
-    public model_view_data(): Readonly<IViewModelData> {
+    public data(): Readonly<IViewModelData> {
         return this.viewModelData;
     }
 
-    public model_pile(viewPileIndex: number): CardCollection {
-        return this.collections.collection(viewPileIndex);
+    public sync_view_with_model() {
+        this.viewModelData = {
+            piles: this.make_view_piles(),
+            floating: this.floating
+        };
     }
 
-    public view_pile(viewPileIndex: number): IPileView {
-        return this.viewModelData.piles[viewPileIndex];
+    public pickupCard(c: ICardView, b: CardBox): IFloatingCard {
+        this.floating = [{card: c, box: b}];
+        this.sync_view_with_model();
+        return this.floating[0];
     }
 
-    // :TODO: this function is in the wrong place - where should it go?
-    public collect_all_cards_above(card: ICardView): ICardView[] {
-        let fromIndex: number | undefined;
-        const pile = this.view_pile(card.pileIndex);
-        for (let i = 0; i < pile.cards.length; ++i) {
-            if (pile.cards[i].suit === card.suit && pile.cards[i].face === card.face) {
-                fromIndex = i;
-                break;
-            }
-        }
-    
-        if (fromIndex === undefined) {
-            throw Error("cannot get from index")
-        }
-    
-        return pile.cards.slice(fromIndex, pile.cards.length);
+    public pickupCards(cards: IFloatingCard[]): void {
+        this.floating = cards;
+        this.sync_view_with_model();
+    }
+
+    public dropCards(): void {
+        this.floating = [];
+        this.sync_view_with_model();
     }
 
     public model_card(viewCard: ICardView): Card {
@@ -66,8 +61,7 @@ export default class ViewModelDataSync {
             }
         }
         
-        throw Error("cannot get view card");
-        
+        throw Error("cannot get view card");    
     }
 
     public find_view_card(suit: Suit, face: Face) {
@@ -90,8 +84,34 @@ export default class ViewModelDataSync {
         throw Error("cannot find pile");
     }
 
-    private make_view_piles(): IPileView[] {
-        const piles: IPileView[] = [];
+    public model_pile(viewPileIndex: number): CardCollection {
+        return this.collections.collection(viewPileIndex);
+    }
+
+    public view_pile(viewPileIndex: number): ICardCollectionViewData {
+        return this.viewModelData.piles[viewPileIndex];
+    }
+
+    public floats(suit: Suit, face: Face) {
+        for (const c of this.floating) {
+            if (c.card.suit === suit && c.card.face === face) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public floating_card(suit: Suit, face: Face) {
+        for (const c of this.floating) {
+            if (c.card.suit === suit && c.card.face === face) {
+                return c;
+            }
+        }
+        throw new Error("no floating card");
+    }
+
+    private make_view_piles(): ICardCollectionViewData[] {
+        const piles: ICardCollectionViewData[] = [];
         for (let i = 0; i < this.collections.max(); ++i) {
             piles.push({cards: this.make_view_cards(i)});
         }
@@ -104,12 +124,16 @@ export default class ViewModelDataSync {
         for (let i = modelCardCollection.size()-1; i >= 0; --i) {
             const modelCard = modelCardCollection.peek(i);
             if (modelCard) {
-                cards.push({
+                if (this.floats(modelCard.suit, modelCard.face)) {
+                    break;
+                }
+                const viewCard = {
                     suit: modelCard.suit,
                     face: modelCard.face,
                     turned: modelCard.is_turned_up(),
                     pileIndex: pile
-                });
+                };
+                cards.push(viewCard);
             }
         }
         return cards;
