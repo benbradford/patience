@@ -5,6 +5,8 @@ export default class CardBox {
     public top: number;
     public width: number;
     public height: number;
+    public scaleX: number = 1;
+    public scaleY: number = 1;
 
     constructor(  left: number,
          right: number,
@@ -18,14 +20,6 @@ export default class CardBox {
         this.top = top;
         this.width = width;
         this.height = height;
-    }
-
-    public scaleX() {
-        return 1.0;
-    }
-
-    public scaleY() {
-        return 1.0;
     }
 
     public set_position(x: number, y: number) {

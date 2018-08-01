@@ -21,9 +21,7 @@ export default abstract class CardAnimator {
         this.card.box.bottom = y + this.card.box.height;
     }
 
-    /* tslint:disable:no-empty */
     protected set_card_scale(x: number) {
-        // :TODO: how do we set card scale?
-
+        this.card.box.scaleX = x;
     }
 }

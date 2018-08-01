@@ -24,14 +24,12 @@ export default class FloatingCardView extends React.Component<IFloatingCardViewP
         return {
             left: card.box.left + "px",
             top: card.box.top + "px",
-            transform: "scale(" + card.box.scaleX() + ", 1)"
+            transform: "scale(" + card.box.scaleX + ", " + card.box.scaleY + ")"
         };
     }
 
     private render_moving_card(card: ICardView, isTop: boolean): JSX.Element  {
-
-        if (isTop) {
-            
+        if (isTop) {        
             return ( <section style={this.props.cardStyles.front(card)}/>);
         }
         return ( <section style={this.props.cardStyles.piled(card)}/>  );

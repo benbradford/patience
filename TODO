@@ -1,7 +1,4 @@
 
-When dragging or animating, make cards below main card follow based on the same offset as at the start
-Cancelling anim - need to store old position
-
 CardBox - make scalable - fixed width and height? makes no sense
 
 Take a look at what more could go into Cards/

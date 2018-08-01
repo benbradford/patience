@@ -13,7 +13,7 @@ export function hold_pile(data: IViewModelData, index: number) {
 }
 
 export function score_pile(data: IViewModelData, index: number) {
-    return data.piles[9 + index];
+    return data.piles[10 + index];
 }
 
 export function hold_piles(data: IViewModelData) {
