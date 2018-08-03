@@ -22,9 +22,9 @@ export default class FloatingCardView extends React.Component<IFloatingCardViewP
 
     private drag_style(card: IFloatingCard) {
         return {
-            left: card.box.left + "px",
-            top: card.box.top + "px",
-            transform: "scale(" + card.box.scaleX + ", " + card.box.scaleY + ")"
+            left: card.box.left() + "px",
+            top: card.box.top() + "px",
+            transform: "scale(" + card.box.scaleX() + ", " + card.box.scaleY() + ")"
         };
     }
 

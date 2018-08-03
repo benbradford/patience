@@ -5,6 +5,7 @@ import StateFactory from './StateFactory'
 import AnimationController from '../AnimationController'
 import IFloatingCardHolder from '../Cards/IFloatingCardHolder'
 import {IFloatingCard} from '../Cards/ViewModelData'
+import CardBox from '../Cards/CardBox';
 
 export default class AnimationState extends CardsGameViewState {
 
@@ -16,7 +17,7 @@ export default class AnimationState extends CardsGameViewState {
                 holder: IFloatingCardHolder,
                 animationController: AnimationController,
                 card: IFloatingCard, 
-                pileBox: ClientRect, 
+                pileBox: CardBox, 
                 pileIndex: number, 
                 fromX: number, 
                 fromY: number, 

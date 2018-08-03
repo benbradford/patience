@@ -1,7 +1,5 @@
 import CardsGameViewState from "../Cards/CardsGameViewState";
 import CardsGameViewStateMachine from '../Cards/CardsGameViewStateMachine'
-
-
 import SolitaireViewModel from '../SolitaireViewModel'
 import StateFactory from './StateFactory'
 import BoxFinder from '../Cards/BoxFinder'
@@ -17,9 +15,9 @@ export default class DeckClickState extends CardsGameViewState {
                     const pileBox = boxFinder.boxForPile(1);
                     const fromBox = boxFinder.boxForPile(0);
                     if (pileBox && fromBox) {
-                        const halfWidth = (pileBox.right-pileBox.left) / 2;
-                        const x = fromBox.left + window.scrollX + halfWidth;
-                        const y = fromBox.top + window.scrollY;
+                        const halfWidth = (pileBox.right()-pileBox.left()) / 2;
+                        const x = fromBox.left() + window.scrollX + halfWidth;
+                        const y = fromBox.top() + window.scrollY;
                         const floatingCard = floatingCardHolder.pickupCard(result.card, fromBox);
                         const state = stateFactory.make_anim_state(floatingCard, pileBox, 1, x, y, true, 0.5);
                         machine.move_to(state);

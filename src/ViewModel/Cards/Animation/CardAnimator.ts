@@ -15,13 +15,10 @@ export default abstract class CardAnimator {
     public abstract tick(): void;
 
     protected set_card_position(x: number, y: number) {
-        this.card.box.left = x;
-        this.card.box.right = x + this.card.box.width;
-        this.card.box.top = y;
-        this.card.box.bottom = y + this.card.box.height;
+        this.card.box.set_position(x, y);
     }
 
     protected set_card_scale(x: number) {
-        this.card.box.scaleX = x;
+        this.card.box.set_scale(x, 1);
     }
 }

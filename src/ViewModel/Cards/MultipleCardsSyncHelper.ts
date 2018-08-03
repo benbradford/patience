@@ -31,13 +31,13 @@ export default class MultipleCardsSyncHelper {
 
     public update_positions() {
         for (let i = 1; i < this.cards.length; ++i) {
-            this.cards[i].box.set_position(this.cards[i-1].box.left + this.offsets[i].x, this.cards[i-1].box.top + this.offsets[i].y);
+            this.cards[i].box.set_position(this.cards[0].box.left() + this.offsets[i].x, this.cards[0].box.top() + this.offsets[i].y);
         }
     }
 
     private create_offsets() {
         for (let i = 1; i < this.cards.length; ++i) {
-            this.offsets.push({x: this.cards[i].box.left - this.cards[0].box.left, y: this.cards[i].box.top - this.cards[0].box.top});
+            this.offsets.push({x: this.cards[i].box.left() - this.cards[0].box.left(), y: this.cards[i].box.top() - this.cards[0].box.top()});
         }
     }
 }

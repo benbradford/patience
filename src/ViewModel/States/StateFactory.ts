@@ -9,6 +9,7 @@ import AnimationController from '../AnimationController'
 import BoxFinder from '../Cards/BoxFinder'
 import UndoState from './UndoState'
 import DeckClickState from './DeckClickState'
+import CardBox from '../Cards/CardBox'
 
 export default class StateFactory {
 
@@ -39,7 +40,7 @@ export default class StateFactory {
         return new IdleState(this.machine, this);
     }
 
-    public make_anim_state(card: IFloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number) {
+    public make_anim_state(card: IFloatingCard, box: CardBox, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number) {
         return new AnimationState(this.machine, this, this.viewModel.data_sync(), this.animationController, card, box, pileIndex, fromX, fromY, turn, speed);
     }
 

@@ -6,6 +6,7 @@ import ICardTicker from './Cards/ICardTicker'
 import CardAnimator from './Cards/Animation/CardAnimator'
 import {hold_pile} from './SolitaireCardCollectionsViewModel'
 import BoxFinder from './Cards/BoxFinder';
+import CardBox from './Cards/CardBox';
 
 export default class AnimationController implements ICardTicker {
 
@@ -21,11 +22,11 @@ export default class AnimationController implements ICardTicker {
         this.boxFinder = boxFinder;
     }
 
-    public start_animation(card: IFloatingCard, box: ClientRect, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number, onAnimationEnd: ()=>void) {
+    public start_animation(card: IFloatingCard, box: CardBox, pileIndex: number, fromX: number, fromY: number, turn: boolean, speed: number, onAnimationEnd: ()=>void) {
         
         this.onAnimationEnd = onAnimationEnd;
-        const destX = box.left;
-        let destY = box.top;
+        const destX = box.left();
+        let destY = box.top();
         
         if (pileIndex > 1 && pileIndex < 9) {
             const destPile = hold_pile(this.viewModel.data_sync().data(), pileIndex-2);

@@ -21,8 +21,8 @@ export default class SimpleLerpCardAnimator extends CardAnimator {
         super(card);
         this.scaleIn = scaleIn;
         this.speed = speed;
-        this.fromX = card.box.left;
-        this.fromY = card.box.top;
+        this.fromX = card.box.left();
+        this.fromY = card.box.top();
         this.destX = destX;
         this.destY = destY;
         this.onAnimationEnd = onAnimationEnd;

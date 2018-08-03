@@ -59,26 +59,26 @@ export default class DragToEvaluator {
         return winningPile;
     }
 
-    private check_overlap(box: ClientRect | null, dminX: number, dminY: number, dmaxX: number, dmaxY: number): number {
+    private check_overlap(box: CardBox | null, dminX: number, dminY: number, dmaxX: number, dmaxY: number): number {
         if (box === null) {
             return -1;
         }
 
-        if (dminX > box.right || dmaxX < box.left || dminY > box.bottom || dmaxY < box.top) {
+        if (dminX > box.right() || dmaxX < box.left() || dminY > box.bottom() || dmaxY < box.top()) {
             return -1;
         }
 
         let left = dminX;
-        let right = box.right;
-        if (box.left > dminX) {
-            left = box.left;
+        let right = box.right();
+        if (box.left() > dminX) {
+            left = box.left();
             right = dmaxX;
         }
 
         let top = dminY;
-        let bottom = box.bottom;
-        if (box.top > dminY) {
-            top = box.top;
+        let bottom = box.bottom();
+        if (box.top() > dminY) {
+            top = box.top();
             bottom = dmaxY;
         }
 

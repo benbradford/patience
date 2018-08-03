@@ -14,11 +14,11 @@ export default class UndoState extends CardsGameViewState {
             const boxFrom = boxFinder.boxForPile(result.startPileIndex);
             const boxTo = boxFinder.boxForPile(result.destPileIndex);
             if (boxFrom && boxTo) {
-                const x = boxFrom.left + window.scrollX;
-                const y = boxFrom.top + window.scrollY;
+                const x = boxFrom.left() + window.scrollX;
+                const y = boxFrom.top() + window.scrollY;
                 const floatingCard = floatingCardHolder.pickupCard(result.card, boxFrom);
 
-                const state = stateFactory.make_anim_state(floatingCard, boxTo, result.destPileIndex, x, y, result.destPileIndex === 0, 1.0);     
+                const state = stateFactory.make_anim_state(floatingCard, boxTo, result.destPileIndex, x, y, result.destPileIndex === 0, 3);     
                 machine.move_to(state);
             }
         }
