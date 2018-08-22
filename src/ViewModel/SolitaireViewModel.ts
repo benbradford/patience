@@ -11,10 +11,8 @@ import SolitaireGame from '../Model/SolitaireGame';
 import {Card} from '../Model/Cards/Card'
 import ViewModelDataSync from './Cards/ViewModelDataSync'
 import {ICardActionResult} from '../Model/Cards/ICardActionResult'
-import IAnimationAction from './IAnimationAction'
 import CardsGameViewStateMachine from './Cards/CardsGameViewStateMachine'
 import CardTickManager from './Cards/CardTickManager'
-import AnimationController from './AnimationController'
 import StateFactory from './States/StateFactory'
 import DragToEvaluator from './Cards/DragToEvaluator';
 import ICardStyles from './Cards/ICardStyles'
@@ -28,7 +26,6 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     private game: SolitaireGame;
     private dataSync: ViewModelDataSync;
     private stateChangeListener: (data: IViewModelData)=> void | null;
-    private animationController: AnimationController;
     private stateMachine = new CardsGameViewStateMachine();
     private stateFactory: StateFactory;
     private tickManager = new CardTickManager();
@@ -44,10 +41,8 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
             new NextCardCommand(collections),
             new MoveManyCardsCommand(collections));
 
-        this.animationController = new AnimationController(this, cardStyles, boxFinder);
-        this.tickManager.add(this.animationController);
         const drag = new DragToEvaluator(cardStyles, boxFinder, this);
-        this.stateFactory = new StateFactory(this.stateMachine, this, drag, this.animationController, boxFinder);
+        this.stateFactory = new StateFactory(this.stateMachine, this, drag, boxFinder);
         this.stateMachine.move_to(this.stateFactory.make_idle_state());
         this.dataSync = new ViewModelDataSync(this.game.collections().table);
     }
@@ -73,17 +68,13 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
         return this.game.can_undo();
     }
 
-    public undo() {
-        this.stateMachine.move_to(this.stateFactory.make_undo_state());
-    }
-
     public on_mouse_leave() {
         this.stateMachine.current().on_mouse_leave();
     }
 
     public click_deck() {
         if (this.dataSync.data().floating.length === 0) {
-            this.stateMachine.move_to(this.stateFactory.make_deck_click_state());
+            this.next_card();
             this.update_state();
         }
     }
@@ -102,20 +93,20 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
        this.stateMachine.current().on_mouse_up(x, y);
     }
 
+    public undo() {
+        const result = this.game.undo();
+        if (result) {
+            this.update_state();
+        }
+    }
+
         // :TODO: be nice to not have to expose this
     public data_sync() : ViewModelDataSync {
         return this.dataSync;
     }
 
     // All of these below belong somewhere else
-    public perform_undo() {
-        const result = this.game.undo();
-        if (result) {
-            this.update_state();
-            return this.to_animation_action(result);
-        }
-        return null;
-    }
+
 
     public update_state() {
         // :TODO: make this non-public
@@ -137,10 +128,10 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
         return destinations;
     }
 
-    public move_card_to(card: ICardView, destIndex: number): IAnimationAction | null {
+    public move_card_to(card: ICardView, destIndex: number){
         const modelCard = this.dataSync.model_pile(card.pileIndex).find(card.suit, card.face);
         if (modelCard === null) {
-            return null;
+            return;
         }
         const toPile = this.dataSync.model_pile(destIndex);
 
@@ -153,40 +144,18 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
         }
         if (moved) {
             this.update_state();
-            return this.to_animation_action(moved);
         }
-        return null;
     }
 
-    public next_card(): IAnimationAction | null {
+    public next_card() {
         const result = this.game.next();
         if (result) {
             this.update_state();
-            return this.to_animation_action(result);
         }
-        return null;
     }
 
     public table_data(): IViewModelData {
         return  this.dataSync.data();
-    }
-
-    private to_animation_action(result: ICardActionResult): IAnimationAction {
-        
-        const destIndex = this.dataSync.pile_index(result.move.to);
-        const startIndex = this.dataSync.pile_index(result.move.from);
-        let c: ICardView | null = null;
-        if (this.dataSync.floats(result.move.card.suit, result.move.card.face)) {
-            c = this.dataSync.floating_card(result.move.card.suit, result.move.card.face).card;
-        } else {
-            c = this.dataSync.view_card(result.move.card, destIndex);
-        }
-        return {
-            card: c,
-            startPileIndex: startIndex,
-            destPileIndex: destIndex,
-            turn: result.flip !== null
-        };
     }
 
     private is_valid_move_to(modelCard: Card, collection: CardCollection): boolean{ 

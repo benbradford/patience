@@ -6,7 +6,6 @@ import SolitaireViewModel from '../SolitaireViewModel'
 import MouseController from '../Cards/MouseController'
 import DragToEvaluator from '../Cards/DragToEvaluator'
 import StateFactory from './StateFactory'
-import {IMoveDestination} from '../Cards/DragToEvaluator'
 import { floating_cards } from '../SolitaireCardCollectionsViewModel';
 import MultipleCardsSyncHelper from '../Cards/MultipleCardsSyncHelper'
 import BoxFinder from '../Cards/BoxFinder';
@@ -66,29 +65,23 @@ export default class DragState extends CardsGameViewState {
             this.state_machine().move_to(this.stateFactory.make_idle_state());
             return;
         }
-        
+
+        this.viewModel.data_sync().dropCards();
+    
         const winning = this.dragToEvaluator.winning_pile(this.dragFrom, this.mouseOffsetX, this.mouseOffsetY);
+        
         if (winning ) {          
-            this.kick_off_animation_to_winning_pile(winning);
-            return;
+            this.viewModel.move_card_to(card.card, winning.pileIndex );
+            
         } 
         this.cancel();
   
     }
 
     public on_mouse_leave() {
+        this.viewModel.data_sync().dropCards();
+     
         this.cancel();
-    }
-
-    private kick_off_animation_to_winning_pile(dest: IMoveDestination) {
-        const anim = this.viewModel.move_card_to(this.floating_card().card, dest.pileIndex );
-            if (dest.box && anim) {
-                const xOffset = this.dragged_card_offset_x();
-                const yOffset = this.dragged_card_offset_y();
-                const state = this.stateFactory.make_anim_state(this.floating_card(), dest.box, anim.destPileIndex, xOffset, yOffset, false, 1 );
-                this.state_machine().move_to(state);
-                return;
-            } 
     }
 
     private dragged_card_offset_x() {
@@ -100,17 +93,9 @@ export default class DragState extends CardsGameViewState {
     }
 
     private cancel() {
-        const card = this.floating_card();
-        if (card && this.dragFrom) {
-            const x = this.dragged_card_offset_x();
-            const y = this.dragged_card_offset_y();
-           
-            const state = this.stateFactory.make_anim_state(this.floating_card(), this.dragFrom, 0, x, y, false, 1 ); // :TODO: get pile to move back to?
-            this.state_machine().move_to(state);
-        } else {
-            throw new Error("cannot cancel drag");
-        }  
         
+        const state = this.stateFactory.make_idle_state();
+        this.state_machine().move_to(state);
     }
 
     private floating_card(): IFloatingCard {

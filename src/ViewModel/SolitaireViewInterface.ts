@@ -9,7 +9,7 @@ export default abstract class  SolitaireViewInterface {
     public abstract initialise_table(): void;
     public abstract tick(): void;
     public abstract should_enable_undo_button(): boolean;
-    public abstract undo(): void; // rename - press undo?
+    public abstract undo(): void; 
     public abstract on_mouse_leave(): void;
     public abstract click_deck(): void;
     public abstract on_start_drag (c: ICardView, box: CardBox): void;

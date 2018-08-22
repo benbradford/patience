@@ -11,6 +11,12 @@ import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
 import { floating_cards } from '../ViewModel/SolitaireCardCollectionsViewModel';
 import BoxFinder from '../ViewModel/Cards/BoxFinder';
 
+/*
+import styled, {keyframes} from 'styled-components'
+
+import './Cards.css'
+*/
+
 export default class TableView extends React.Component<{}, IViewModelData> {
 
     private viewInterface: SolitaireViewInterface;
@@ -39,14 +45,32 @@ export default class TableView extends React.Component<{}, IViewModelData> {
         if (this.state === null) {
             return ( <p/> );
         }
+/*
+        const rotate = keyframes`
+            0%   {transform: translate(0px, 0px);}
+            50%  {transform: translate(500px, -10px);}
+            100%  {transform: translate(280px, 100px);}
+        `;
+        const MyAnimation = styled.section`
+            animation : ${rotate} 1s linear
+            ${this.cardStyles.front({suit: 0, face: 0, turned: true, pileIndex: 0})}
+            position: absolute
+        `; */
+
+        /*  <section className="Dragging" >
+                        <MyAnimation/>
+                    </section>*/
         return (
             <section>
+                
                 <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
                     {this.render_undo()}
                     <PileViews ref={this.pileViews} cardStyles={this.cardStyles} viewModelData={this.state} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
                     <FloatingCardsView cardStyles={this.cardStyles} floatingCards={floating_cards(this.state)} />
-                    
+                   
                 </div>
+
+               
             </section>
         );
     }
