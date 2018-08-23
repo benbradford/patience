@@ -1,4 +1,4 @@
-import {IViewModelData, ICardView} from './Cards/ViewModelData'
+import {IViewModelData, ICardView, IFloatingCard} from './Cards/ViewModelData'
 import SolitaireCollections from '../Model/SolitaireCollections'
 import CardInitialiser from '../Model/CardInitialiser'
 import CardCollection from '../Model/Cards/CardCollection';
@@ -29,11 +29,12 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     private stateMachine = new CardsGameViewStateMachine();
     private stateFactory: StateFactory;
     private tickManager = new CardTickManager();
+    private boxFinder: BoxFinder;
 
     constructor (cardStyles: ICardStyles, boxFinder: BoxFinder ) {
         super();
         const collections = new SolitaireCollections();
-
+        this.boxFinder = boxFinder;
         this.game = new SolitaireGame(
             collections, 
             new CardInitialiser(new DeckMaker(), new CardShuffler()),
@@ -111,6 +112,13 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     public update_state() {
         // :TODO: make this non-public
         this.dataSync.sync_view_with_model();
+        if (this.stateChangeListener ) {
+            this.stateChangeListener(this.table_data());
+        }
+    }
+
+    public update_animations(floating: IFloatingCard[]) {
+        this.dataSync.sync_view_with_animation_requests(this.boxFinder, floating);
         if (this.stateChangeListener ) {
             this.stateChangeListener(this.table_data());
         }

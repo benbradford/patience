@@ -7,6 +7,8 @@ import DeckView from './DeckView'
 import {make_refs} from './Cards/ReactUtil'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
 import {hold_piles, score_piles, deck_pile, turned_pile} from '../ViewModel/SolitaireCardCollectionsViewModel'
+import CardBox from '../ViewModel/Cards/CardBox'
+import {make_card_box} from './Cards/ReactUtil'
 
 interface IPileViewsProps {
     ref: React.RefObject<PileViews>;
@@ -85,6 +87,36 @@ export default class PileViews extends React.Component<IPileViewsProps, any> {
             }
         }
         return null;
+    }
+
+    public static_box(pileIndex: number, cardIndex: number): CardBox {
+        const holdIndex = pileIndex - 2;
+        const scoreIndex = pileIndex - 10;
+        
+        if (pileIndex === 0 && this.deckRef.current) {
+            return make_card_box(this.deckRef.current.getBoundingClientRect());
+        } else if (pileIndex === 1 && this.turnedRef.current) {
+            // turned pile
+            return make_card_box(this.turnedRef.current.getBoundingClientRect());
+        } else if (holdIndex >=0 && holdIndex < 7) {
+            const r = this.pileRef[holdIndex];
+            if (r === null || r.current === null) {
+                    
+                throw new Error("cannot find hold pile");
+            }
+            return r.current.static_box(cardIndex);
+           
+        } else if (scoreIndex >=0 && scoreIndex < 4) {
+            const scores = this.scoresRef.current;
+            if (scores) {
+                const box = scores.box_for_pile(scoreIndex)
+                if (box) {
+                    return make_card_box(box);
+                }     
+            }
+        }
+
+        throw new Error("cannot find pile");
     }
 
     private render_pile(pile: ICardCollectionViewData, index: number) {

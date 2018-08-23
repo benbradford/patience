@@ -17,8 +17,15 @@ export interface IFloatingCard {
     box: CardBox;
 }
 
+export interface IAnimationRequest {
+    card: ICardView;
+    from: CardBox;
+    to: CardBox;
+}
+
 export interface IViewModelData {
     piles: ICardCollectionViewData[];
     floating: IFloatingCard[];
+    animationRequests: IAnimationRequest[];
 }
 

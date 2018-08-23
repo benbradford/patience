@@ -1,13 +1,15 @@
-import {IViewModelData, ICardView, IFloatingCard, ICardCollectionViewData} from './ViewModelData'
+import {IViewModelData, ICardView, IFloatingCard, ICardCollectionViewData, IAnimationRequest} from './ViewModelData'
 import CardCollection from '../../Model/Cards/CardCollection';
 import CardTable from '../../Model/Cards/CardTable';
 import {Card, Suit, Face} from '../../Model/Cards/Card'
 import CardBox from './CardBox'
 import IViewModelDataHolder from './IViewModelDataHolder'
 import IFloatingCardHolder from './IFloatingCardHolder'
+import BoxFinder from './BoxFinder'
 
 export default class ViewModelDataSync implements IViewModelDataHolder, IFloatingCardHolder {
     private viewModelData: IViewModelData;
+    private lastViewModelData: IViewModelData;
     private collections: CardTable;
     private floating: IFloatingCard[] = [];
 
@@ -21,10 +23,40 @@ export default class ViewModelDataSync implements IViewModelDataHolder, IFloatin
     }
 
     public sync_view_with_model() {
+        this.lastViewModelData = this.viewModelData;
         this.viewModelData = {
             piles: this.make_view_piles(),
-            floating: this.floating
+            floating: this.floating,
+            animationRequests: []
         };
+    }
+
+    public sync_view_with_animation_requests(boxFinder: BoxFinder, floating: IFloatingCard[]) {
+       
+        // look for differences and then create animation requests from it
+        const requests: IAnimationRequest[] = [];
+        for (let pileIndex = 0; pileIndex < this.lastViewModelData.piles.length; ++pileIndex) {
+            const numInLast = this.lastViewModelData.piles[pileIndex].cards.length;
+            const numInCurr = this.viewModelData.piles[pileIndex].cards.length;
+            if (numInCurr > numInLast) {
+                // need to remove all cards in curr that were not in last - and make anims out of them
+                for (let cardIndex = numInLast; cardIndex < numInCurr; ++cardIndex) {
+
+                    // find where it came from - was it in floating or in another pile?
+                    // checking floating piles first - if not there, then use static_box_finder to get its original position
+                    // use static_box_finder to get its destination
+                    
+                    const c = this.viewModelData.piles[pileIndex].cards[cardIndex];
+                    const f = this.box_for_from_card(floating, boxFinder, c);
+                    const t = boxFinder.staticBox(pileIndex, cardIndex);
+                    requests.push( {card: c, from: f, to: t} );
+                }
+
+                // finally: trim off the extra cards
+                this.viewModelData.piles[pileIndex].cards = this.lastViewModelData.piles[pileIndex].cards;
+            }
+        }
+        this.viewModelData.animationRequests = requests;
     }
 
     public pickupCard(c: ICardView, b: CardBox): IFloatingCard {
@@ -40,7 +72,10 @@ export default class ViewModelDataSync implements IViewModelDataHolder, IFloatin
 
     public dropCards(): void {
         this.floating = [];
-        this.sync_view_with_model();
+    }
+
+    public floating_cards() {
+        return this.floating;
     }
 
     public model_card(viewCard: ICardView): Card {
@@ -137,5 +172,25 @@ export default class ViewModelDataSync implements IViewModelDataHolder, IFloatin
             }
         }
         return cards;
+    }
+
+    private box_for_from_card(floating: IFloatingCard[], boxFinder: BoxFinder, card: ICardView): CardBox {
+        for (const f of floating) {
+            if (f.card.face === card.face && f.card.suit === card.suit) {
+                return f.box;
+            }
+        }
+
+        for (let pileIndex = 0; pileIndex < this.lastViewModelData.piles.length; ++pileIndex) {
+            const numInLast = this.lastViewModelData.piles[pileIndex].cards.length;
+            for (let cardIndex = 0; cardIndex < numInLast; ++cardIndex) {
+                const candidate = this.lastViewModelData.piles[pileIndex].cards[cardIndex];
+                if (candidate.face === card.face && candidate.suit === card.suit) {
+                    return boxFinder.staticBox(pileIndex, cardIndex);
+                }
+            }
+
+        }
+        throw new Error("cannot find card in last");
     }
 }

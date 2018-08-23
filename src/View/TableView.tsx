@@ -28,7 +28,7 @@ export default class TableView extends React.Component<{}, IViewModelData> {
     constructor(props: any, context: any) {
         super(props, context);
         const stateUpdater = (data: IViewModelData): void => {this.setState(data); };
-        this.viewInterface = new SolitaireViewModel(this.cardStyles, new BoxFinder(this.boxForPile, this.boxForCard));
+        this.viewInterface = new SolitaireViewModel(this.cardStyles, new BoxFinder(this.boxForPile, this.boxForCard, this.staticBox));
         this.viewInterface.register_state_change_listener(stateUpdater);
     }
    
@@ -45,6 +45,10 @@ export default class TableView extends React.Component<{}, IViewModelData> {
         if (this.state === null) {
             return ( <p/> );
         }
+        /*
+        if (this.state.animationRequests.length > 0) {
+            return ( <p/> );
+        }*/
 /*
         const rotate = keyframes`
             0%   {transform: translate(0px, 0px);}
@@ -134,5 +138,12 @@ export default class TableView extends React.Component<{}, IViewModelData> {
             }
         }
         throw new Error("cannot get box for card");
+    }
+
+    private staticBox = (pileIndex: number, cardIndex: number): CardBox => {
+        if (this.pileViews.current) {
+            return this.pileViews.current.static_box(pileIndex, cardIndex);
+        }
+        throw new Error("no pileviews");
     }
 }

@@ -3,6 +3,8 @@ import './Cards.css'
 import {ICardView, ICardCollectionViewData} from '../ViewModel/Cards/ViewModelData'
 import {make_refs} from './Cards/ReactUtil'
 import ICardStyles from '../ViewModel/Cards/ICardStyles'
+import CardBox from '../ViewModel/Cards/CardBox'
+import {make_card_box} from './Cards/ReactUtil'
 
 interface IHoldPileProps {
     className: any;
@@ -26,8 +28,7 @@ export default class HoldPileView extends React.Component<IHoldPileProps, any>{
         );
     }
 
-    public box_for_pile(): ClientRect | null {
-        
+    public box_for_pile(): ClientRect | null {       
         let index = this.props.pile.cards.length - 1;
         if (index < 0) {
             index = 0;
@@ -50,6 +51,16 @@ export default class HoldPileView extends React.Component<IHoldPileProps, any>{
             }
         }
         return null;
+    }
+
+    public static_box(cardIndex: number): CardBox {
+        const cardView = this.cardRefs[0].current;
+        if (cardView) {
+            const box = make_card_box(cardView.getBoundingClientRect());
+            box.set_position(box.left(), box.top() + (this.props.cardStyles.previewSize * cardIndex))
+            return box;
+        }
+        throw new Error("cannot get box");
     }
 
     private render_cards() {

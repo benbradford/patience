@@ -19,7 +19,7 @@ export default class DragState extends CardsGameViewState {
     private readonly stateFactory: StateFactory;
     private readonly viewModel: SolitaireViewModel;
     private cardSyncHelper: MultipleCardsSyncHelper;
-
+  
     constructor(machine: CardsGameViewStateMachine,
                 viewModel: SolitaireViewModel,
                 dragToEvaluator: DragToEvaluator,
@@ -30,7 +30,7 @@ export default class DragState extends CardsGameViewState {
         this.viewModel = viewModel;
         this.stateFactory = stateFactory;
         this.dragToEvaluator = dragToEvaluator;    
-
+      
         this.cardSyncHelper = new MultipleCardsSyncHelper(c, boxFinder, viewModel.data_sync());
         const floating: IFloatingCard[] = this.cardSyncHelper.floating_cards();
         this.viewModel.data_sync().pickupCards(floating);
@@ -66,22 +66,20 @@ export default class DragState extends CardsGameViewState {
             return;
         }
 
-        this.viewModel.data_sync().dropCards();
-    
+        const floating = this.viewModel.data_sync().floating_cards();
         const winning = this.dragToEvaluator.winning_pile(this.dragFrom, this.mouseOffsetX, this.mouseOffsetY);
-        
+        this.viewModel.data_sync().dropCards();
         if (winning ) {          
-            this.viewModel.move_card_to(card.card, winning.pileIndex );
-            
+            this.viewModel.move_card_to(card.card, winning.pileIndex );    
         } 
-        this.cancel();
-  
+        this.cancel(floating);
     }
 
     public on_mouse_leave() {
+        const floating = this.viewModel.data_sync().floating_cards();
         this.viewModel.data_sync().dropCards();
-     
-        this.cancel();
+        
+        this.cancel(floating);
     }
 
     private dragged_card_offset_x() {
@@ -92,10 +90,12 @@ export default class DragState extends CardsGameViewState {
         return MouseController.lastMouseY + this.mouseOffsetY + window.scrollY
     }
 
-    private cancel() {
+    private cancel(floating: IFloatingCard[]) {
         
+        this.viewModel.update_animations(floating);
         const state = this.stateFactory.make_idle_state();
         this.state_machine().move_to(state);
+
     }
 
     private floating_card(): IFloatingCard {
