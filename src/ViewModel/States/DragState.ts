@@ -71,14 +71,16 @@ export default class DragState extends CardsGameViewState {
         this.viewModel.data_sync().dropCards();
         if (winning ) {          
             this.viewModel.move_card_to(card.card, winning.pileIndex );    
-        } 
+        } else {
+            this.viewModel.update_state();
+        }
         this.cancel(floating);
     }
 
     public on_mouse_leave() {
         const floating = this.viewModel.data_sync().floating_cards();
         this.viewModel.data_sync().dropCards();
-        
+        this.viewModel.update_state();
         this.cancel(floating);
     }
 

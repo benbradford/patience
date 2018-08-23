@@ -10,12 +10,7 @@ import CardBox from '../ViewModel/Cards/CardBox'
 import SolitaireViewInterface from '../ViewModel/SolitaireViewInterface'
 import { floating_cards } from '../ViewModel/SolitaireCardCollectionsViewModel';
 import BoxFinder from '../ViewModel/Cards/BoxFinder';
-
-/*
-import styled, {keyframes} from 'styled-components'
-
-import './Cards.css'
-*/
+import CardAnimationsView from './Cards/CardAnimationsView'
 
 export default class TableView extends React.Component<{}, IViewModelData> {
 
@@ -24,17 +19,18 @@ export default class TableView extends React.Component<{}, IViewModelData> {
     private pileViews = React.createRef<PileViews>();
     private cardStyles: DefaultCardStyles = new DefaultCardStyles();
     private interval : NodeJS.Timer;
+    private pauseTimer: number = 0;
 
     constructor(props: any, context: any) {
         super(props, context);
-        const stateUpdater = (data: IViewModelData): void => {this.setState(data); };
+        const stateUpdater = (data: IViewModelData): void => {this.setState(data); if (data.animationRequests.length > 0) { this.pauseTimer = 30; }};
         this.viewInterface = new SolitaireViewModel(this.cardStyles, new BoxFinder(this.boxForPile, this.boxForCard, this.staticBox));
         this.viewInterface.register_state_change_listener(stateUpdater);
     }
    
     public componentDidMount() {
        this.viewInterface.initialise_table();
-       this.interval = setInterval(() => this.update(), 10);
+       this.interval = setInterval(() => this.update(), 1);
     }
     
     public  componentWillUnmount() {
@@ -45,33 +41,16 @@ export default class TableView extends React.Component<{}, IViewModelData> {
         if (this.state === null) {
             return ( <p/> );
         }
-        /*
-        if (this.state.animationRequests.length > 0) {
-            return ( <p/> );
-        }*/
-/*
-        const rotate = keyframes`
-            0%   {transform: translate(0px, 0px);}
-            50%  {transform: translate(500px, -10px);}
-            100%  {transform: translate(280px, 100px);}
-        `;
-        const MyAnimation = styled.section`
-            animation : ${rotate} 1s linear
-            ${this.cardStyles.front({suit: 0, face: 0, turned: true, pileIndex: 0})}
-            position: absolute
-        `; */
-
-        /*  <section className="Dragging" >
-                        <MyAnimation/>
-                    </section>*/
+       
         return (
             <section>
-                
-                <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">   
+                 <CardAnimationsView animationRequests={this.state.animationRequests} cardStyles={this.cardStyles}  /> 
+                <div onMouseMove={this.handleMouseMove} onMouseUp={this.handleMouseUp} onMouseLeave={this.handleMouseLeave} className="Table">  
+                    
                     {this.render_undo()}
                     <PileViews ref={this.pileViews} cardStyles={this.cardStyles} viewModelData={this.state} onDeckClick={this.onDeckClick} onStartDrag={this.onStartDrag} />                 
                     <FloatingCardsView cardStyles={this.cardStyles} floatingCards={floating_cards(this.state)} />
-                   
+                    
                 </div>
 
                
@@ -84,10 +63,19 @@ export default class TableView extends React.Component<{}, IViewModelData> {
     }
 
     private update() {
+        if (this.pauseTimer > 0) {
+            --this.pauseTimer;
+            if (this.pauseTimer === 0) {
+                this.viewInterface.update_state();
+            }
+        }
         this.viewInterface.tick();
     }
 
     private onStartDrag = (c: ICardView, box: ClientRect) => {
+        if (this.pauseTimer > 0) {
+            return;
+        }
         const cardBox = make_card_box(box);
         this.viewInterface.on_start_drag(c, cardBox);
     }
@@ -109,14 +97,20 @@ export default class TableView extends React.Component<{}, IViewModelData> {
     }
 
     private onDeckClick = () => {
+        if (this.pauseTimer > 0) {
+            return;
+        }
         this.viewInterface.click_deck();
     }
 
     private should_enable_undo_button() {
-        return this.viewInterface.should_enable_undo_button();
+        return this.pauseTimer === 0 && this.viewInterface.should_enable_undo_button();
     }
 
-    private onClickUndo =() => {   
+    private onClickUndo =() => {  
+        if (this.pauseTimer > 0) {
+            return;
+        }
         this.viewInterface.undo();
     }
 

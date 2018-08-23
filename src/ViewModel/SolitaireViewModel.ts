@@ -76,7 +76,7 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     public click_deck() {
         if (this.dataSync.data().floating.length === 0) {
             this.next_card();
-            this.update_state();
+            this.update_animations([]);
         }
     }
 
@@ -95,6 +95,7 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     }
 
     public undo() {
+        
         const result = this.game.undo();
         if (result) {
             this.update_state();
@@ -109,7 +110,7 @@ export default class SolitaireViewModel extends SolitaireViewInterface{
     // All of these below belong somewhere else
 
 
-    public update_state() {
+    public update_state(): void {
         // :TODO: make this non-public
         this.dataSync.sync_view_with_model();
         if (this.stateChangeListener ) {

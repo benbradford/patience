@@ -18,4 +18,5 @@ export default abstract class  SolitaireViewInterface {
 
     // this can be removed once we have floating cards in viewData
     public abstract data_sync(): ViewModelDataSync;
+    public abstract update_state(): void;
 };
